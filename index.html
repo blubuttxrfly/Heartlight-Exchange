@@ -887,10 +887,15 @@
   /* ── MOBILE RESPONSIVE ── */
   @media (max-width: 640px) {
 
-    /* Background: tile the gradient so it doesn't stretch weirdly */
-    body, html {
-      background-size: 100% 400px !important;
-      background-repeat: repeat-y !important;
+    /* Background: single full-page gradient, no tiling */
+    html {
+      min-height: 100%;
+    }
+    body {
+      min-height: 100vh;
+      background-size: 100% 100% !important;
+      background-repeat: no-repeat !important;
+      background-attachment: scroll !important;
     }
 
     /* Admin settings grid → single column */
