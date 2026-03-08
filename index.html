@@ -4842,7 +4842,12 @@ function renderProfileCorner() {
   const corner = document.getElementById('profileCorner');
   if (!corner) return;
   const user = getCurrentUser();
+  const submitBtn = document.getElementById('navBtnSubmit');
+  const joinCta   = document.getElementById('joinCta');
   if (user) {
+    // Signed in — hide C.E.S. Profile nav tab and join CTA
+    if (submitBtn) submitBtn.style.display = 'none';
+    if (joinCta)   joinCta.style.display   = 'none';
     const initial = (user.name||'?')[0].toUpperCase();
     const avatarHtml = user.photo
       ? `<img src="${user.photo}" class="profile-avatar-img" alt="${user.name}">`
@@ -4850,10 +4855,16 @@ function renderProfileCorner() {
     corner.innerHTML = `
       <button class="profile-avatar-btn" onclick="openProfileModal()">
         ${avatarHtml}
-        <span class="profile-btn-label">Profile</span>
-      </button>`;
+        <span class="profile-btn-label">My Profile</span>
+      </button>
+      <button class="join-corner-btn" style="margin-left:0.4rem;opacity:0.55;font-size:0.65rem" onclick="signOutUser()">Sign Out</button>`;
   } else {
-    corner.innerHTML = `<button class="join-corner-btn" onclick="setView('submit',document.querySelectorAll('nav button')[2])">✦ Join</button>`;
+    // Not signed in — show nav tab and join CTA
+    if (submitBtn) submitBtn.style.display = '';
+    if (joinCta)   joinCta.style.display   = '';
+    corner.innerHTML = `
+      <button class="join-corner-btn" onclick="setView('submit',document.getElementById('navBtnSubmit'))">✦ Join</button>
+      <button class="join-corner-btn" style="margin-left:0.4rem;background:rgba(200,146,42,0.06)" onclick="openSignIn()">Sign In</button>`;
   }
 }
 
@@ -5745,7 +5756,101 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
+// ── BEING SIGN-IN SYSTEM ──
+
+function openSignIn() {
+  const overlay = document.getElementById('signInOverlay');
+  if (overlay) {
+    overlay.style.display = 'flex';
+    setTimeout(() => {
+      const inp = document.getElementById('signInCESInput');
+      if (inp) inp.focus();
+    }, 80);
+  }
+}
+
+function closeSignIn() {
+  const overlay = document.getElementById('signInOverlay');
+  if (overlay) overlay.style.display = 'none';
+  const inp = document.getElementById('signInCESInput');
+  if (inp) inp.value = '';
+  const err = document.getElementById('signInCESError');
+  if (err) err.style.display = 'none';
+}
+
+function submitSignIn() {
+  const inp = document.getElementById('signInCESInput');
+  const err = document.getElementById('signInCESError');
+  if (!inp) return;
+  const val = inp.value.trim();
+
+  if (val.length !== 9 || !/^\d{9}$/.test(val)) {
+    err.textContent = 'Please enter your full 9-digit C.E.S. number.';
+    err.style.display = 'block';
+    return;
+  }
+
+  // Search pending + approved for a profile with this CES number
+  const pending  = getStorage('pending', []);
+  const approved = getStorage('approved', []);
+  const all = [...pending, ...approved];
+  const found = all.find(p => p.cesNumber === val || p.ces === val || p.cesPlain === val);
+
+  if (found) {
+    setCurrentUser(found);
+    renderProfileCorner();
+    closeSignIn();
+    // Navigate to directory so they can see themselves
+    setView('directory', document.querySelector('nav button'));
+  } else {
+    // Not found — offer to create a profile
+    err.textContent = 'No profile found with this C.E.S. number. Would you like to create one?';
+    err.style.display = 'block';
+    err.style.color = 'rgba(232,184,75,0.8)';
+    // Change button text to guide them
+    setTimeout(() => {
+      inp.value = '';
+      closeSignIn();
+      setView('submit', document.getElementById('navBtnSubmit'));
+    }, 2200);
+  }
+}
+
+function signOutUser() {
+  if (!confirm('Sign out of your C.E.S. session?')) return;
+  clearCurrentUser();
+  renderProfileCorner();
+  setView('directory', document.querySelector('nav button'));
+}
+
+
 </script>
+
+
+  <!-- SIGN-IN OVERLAY -->
+  <div id="signInOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,5,0.92);z-index:450;align-items:center;justify-content:center;backdrop-filter:blur(10px)" onclick="if(event.target===this)closeSignIn()">
+    <div style="background:linear-gradient(160deg,#1a0040 0%,#0d0025 100%);border:1px solid rgba(200,146,42,0.2);border-radius:20px;width:100%;max-width:400px;padding:2.5rem;text-align:center;position:relative;margin:1rem">
+      <button onclick="closeSignIn()" style="position:absolute;top:1rem;right:1.2rem;background:none;border:none;color:rgba(240,232,213,0.2);font-size:1rem;cursor:pointer;transition:color 0.2s" onmouseover="this.style.color='rgba(240,232,213,0.6)'" onmouseout="this.style.color='rgba(240,232,213,0.2)'">✕</button>
+      <div style="font-size:1.8rem;margin-bottom:0.9rem">✦</div>
+      <div style="font-family:'Alice',serif;font-size:1.25rem;color:var(--orichalcum-pale);margin-bottom:0.3rem">Welcome Back</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:rgba(240,232,213,0.45);margin-bottom:1.8rem;line-height:1.6">Enter your C.E.S. number to return to your frequency.</div>
+
+      <div style="text-align:left;margin-bottom:1.2rem">
+        <label style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--orichalcum);opacity:0.7;display:block;margin-bottom:0.4rem">Your C.E.S. Number</label>
+        <input id="signInCESInput" type="text" inputmode="numeric" maxlength="9" placeholder="e.g. 123456789"
+          style="width:100%;box-sizing:border-box;padding:0.75rem 1rem;border-radius:0.6rem;border:1px solid rgba(200,146,42,0.25);background:rgba(255,255,255,0.04);color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:1.1rem;letter-spacing:0.2em;text-align:center;outline:none"
+          oninput="this.value=this.value.replace(/[^0-9]/g,'');signInCESError.style.display='none'"
+          onkeydown="if(event.key==='Enter')submitSignIn()">
+        <div id="signInCESError" style="display:none;color:#e8a0a0;font-size:0.75rem;margin-top:0.5rem;font-family:'Atkinson Hyperlegible',sans-serif"></div>
+      </div>
+
+      <button onclick="submitSignIn()" style="width:100%;padding:0.85rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05));color:var(--orichalcum-light);font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;margin-bottom:1rem" onmouseover="this.style.background='linear-gradient(135deg,rgba(200,146,42,0.24),rgba(200,146,42,0.1))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05))'">✦ Enter the Exchange</button>
+
+      <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.72rem;color:rgba(240,232,213,0.3);line-height:1.6">
+        New here? <button onclick="closeSignIn();setView('submit',document.getElementById('navBtnSubmit'))" style="background:none;border:none;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">Create your C.E.S. Profile</button>
+      </div>
+    </div>
+  </div>
 
   <!-- STEWARD GATE OVERLAY — triggered by triple-click on "Synchronicities" -->
   <div id="stewardGateOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,5,0.92);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(10px)" onclick="if(event.target===this)closeStewardGate()">
