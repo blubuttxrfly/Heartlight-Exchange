@@ -70,8 +70,11 @@
   @media (max-width: 640px) {
     .wrap { padding: 0 1rem; }
     .site-title { font-size: 1.9rem; }
-    nav { gap: 0.35rem; padding: 0.9rem 0; }
-    nav button { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
+    nav { gap: 0; padding: 0.7rem 0 0; }
+    nav button { font-size: 0.65rem; padding: 0.35rem 0.7rem; }
+    .nav-primary { gap: 0.35rem; padding-bottom: 0.5rem; }
+    .nav-secondary { gap: 0.3rem; padding: 0.45rem 0.6rem 0.65rem; }
+    .nav-btn-primary { font-size: 0.72rem !important; padding: 0.42rem 0.9rem !important; }
     .directory-grid { grid-template-columns: 1fr; }
     .ces-form-wrap { grid-template-columns: 1fr !important; }
     .ces-preview-sticky { position: static !important; }
@@ -175,25 +178,48 @@
   /* ── NAV ── */
   nav {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 1.1rem 0 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 2.5rem;
+  }
+  .nav-primary {
+    display: flex;
     justify-content: center;
     gap: 0.5rem;
     flex-wrap: wrap;
-    padding: 1.25rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    margin-bottom: 2.5rem;
+    padding-bottom: 0.65rem;
+  }
+  .nav-secondary {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0 0.8rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    width: 100%;
   }
   nav button {
     font-family: 'Atkinson Hyperlegible', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
-    padding: 0.5rem 1.2rem;
+    padding: 0.42rem 1rem;
     border-radius: 2rem;
-    border: 1px solid rgba(200,146,42,0.3);
+    border: 1px solid rgba(200,146,42,0.22);
     background: transparent;
     color: var(--muted);
     cursor: pointer;
     transition: all 0.3s;
+  }
+  /* Primary tier — slightly larger and brighter */
+  nav .nav-btn-primary {
+    font-size: 0.8rem;
+    letter-spacing: 0.13em;
+    padding: 0.52rem 1.3rem;
+    border-color: rgba(200,146,42,0.32);
   }
   nav button:hover, nav button.active {
     background: rgba(200,146,42,0.12);
@@ -698,6 +724,10 @@
   }
 
   /* ── FOOTER ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   footer {
     text-align: center;
     padding: 2rem 0;
@@ -989,12 +1019,17 @@
   </div>
 
   <nav>
-    <button class="active" onclick="setView('directory', this)">✦ Directory</button>
-    <button onclick="setView('seasonal', this)">🌱 Seasonal Portals</button>
-    <button onclick="setView('submit', this)">🌟 Become a Co-Creator</button>
-    <button onclick="setView('wish', this)">🕯️ Wish Portal</button>
-    <button onclick="setView('codes', this)">💎 Codes of ALL</button>
-    <button onclick="setView('privacy', this)">🔒 Privacy Assurance</button>
+    <div class="nav-primary">
+      <button class="active nav-btn-primary" onclick="setView('directory', this)">✦ Directory</button>
+      <button class="nav-btn-primary" onclick="setView('seasonal', this)">🌱 Seasonal Portals</button>
+      <button class="nav-btn-primary" onclick="setView('submit', this)">🌟 Co-Creator Profile</button>
+    </div>
+    <div class="nav-secondary">
+      <button onclick="setView('wish', this)">🕯️ Wish Portal</button>
+      <button onclick="setView('codes', this)">💎 Codes of ALL</button>
+      <button onclick="setView('charter', this)">📜 Charter</button>
+      <button onclick="setView('privacy', this)">🔒 Privacy Assurance</button>
+    </div>
   </nav>
 
 
@@ -1025,8 +1060,11 @@
       <div class="ray-pill" data-ray="Green" onclick="setRayFilter('Green', this)">
         <span class="ray-dot" style="background:#3a9b6f"></span> Green
       </div>
-      <div class="ray-pill" data-ray="Cyan-Blue" onclick="setRayFilter('Cyan-Blue', this)">
-        <span class="ray-dot" style="background:#2ab3c4"></span> Cyan-Blue
+      <div class="ray-pill" data-ray="Turquoise" onclick="setRayFilter('Turquoise', this)">
+        <span class="ray-dot" style="background:#2ab3c4"></span> Turquoise
+      </div>
+      <div class="ray-pill" data-ray="Blue" onclick="setRayFilter('Blue', this)">
+        <span class="ray-dot" style="background:#3a6bb5"></span> Blue
       </div>
       <div class="ray-pill" data-ray="Indigo" onclick="setRayFilter('Indigo', this)">
         <span class="ray-dot" style="background:#5a4a9e"></span> Indigo
@@ -1036,6 +1074,15 @@
       </div>
       <div class="ray-pill" data-ray="Magenta" onclick="setRayFilter('Magenta', this)">
         <span class="ray-dot" style="background:#c4407a"></span> Magenta
+      </div>
+      <div class="ray-pill" data-ray="Omni" onclick="setRayFilter('Omni', this)">
+        <span class="ray-dot" style="background:#c0c0d8"></span> Omni
+      </div>
+      <div class="ray-pill" data-ray="Elemental" onclick="setRayFilter('Elemental', this)">
+        <span class="ray-dot" style="background:#7a9e5a"></span> Elemental
+      </div>
+      <div class="ray-pill" data-ray="ALL" onclick="setRayFilter('ALL', this)">
+        <span class="ray-dot" style="background:linear-gradient(135deg,#c4407a,#8b4fb5,#e8d4ff)"></span> ALL
       </div>
     </div>
 
@@ -1116,8 +1163,9 @@
       .form-section-hint {
         font-family: 'Cormorant Garamond', serif;
         font-style: italic;
-        font-size: 0.85rem;
-        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.65;
+        color: rgba(240,232,213,0.6);
         margin-bottom: 1.2rem;
       }
 
@@ -1514,10 +1562,15 @@
         cursor: pointer;
         transition: all 0.2s;
         margin-top: 1px;
+        color: transparent;
+        font-size: 0.82rem;
+        font-weight: bold;
       }
       .oath-checkbox.checked {
-        background: rgba(200,146,42,0.15);
+        background: rgba(200,146,42,0.18);
         border-color: var(--orichalcum);
+        color: var(--orichalcum-light);
+        box-shadow: 0 0 8px rgba(200,146,42,0.25);
       }
       .oath-check-label {
         font-size: 0.82rem;
@@ -1526,10 +1579,37 @@
         font-family: 'Cormorant Garamond', serif;
         font-style: italic;
       }
+      .oath-link-btn {
+        display: inline;
+        background: none;
+        border: none;
+        color: var(--orichalcum);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        padding: 0;
+        margin-left: 0.5rem;
+        font-family: 'Atkinson Hyperlegible', sans-serif;
+        vertical-align: middle;
+        opacity: 0.8;
+        transition: opacity 0.2s;
+      }
+      .oath-link-btn:hover { opacity: 1; }
+      /* Submit button states */
+      .ces-submit-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        pointer-events: none;
+        box-shadow: none;
+      }
     </style>
 
-    <div class="section-heading">Offer Your C.E.S. Profile</div>
-    <p class="section-sub">Your Core Energetic Signature — every field shapes your living presence in the Directory</p>
+    <div style="max-width:680px;margin:0 auto 2rem;text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.72);line-height:1.9">Each being carries a unique Core Energetic Signature that allows for them to co-create in a way that is authentic to them, and allows for all of us to share in a way that feels resonant for our being. The Core Energetic Signature (C.E.S.) Profile holds space for your frequency to connect, create, and share.</div>
+    </div>
+    <div class="section-heading">Create Your C.E.S. Profile</div>
+    <p class="section-sub">Your Core Energetic Signature is how your frequency resonates in the field</p>
 
     <div class="ces-form-wrap">
 
@@ -1537,15 +1617,11 @@
       <div>
 
         <!-- QUOTE -->
-        <div style="padding:1.4rem 1.6rem;border:1px solid rgba(200,146,42,0.18);border-radius:14px;background:rgba(200,146,42,0.03);margin-bottom:1.5rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(240,232,213,0.72);line-height:1.85;margin-bottom:0.7rem">"Each Atlastizen carries a subtle Energetic Signature — a field memory within their aura. The Island whispers balance to those who listen."</div>
-          <div style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--orichalcum);opacity:0.6">— Atlas of ALL the Living</div>
-        </div>
+        
 
         <!-- SECTION 1: IDENTITY -->
         <div class="form-section">
           <div class="form-section-title">✦ Identity</div>
-          <div class="form-section-hint">How you arrive in the field</div>
           <div class="field-grid-2" style="margin-bottom:0.9rem">
             <div>
               <label class="field-label">Name</label>
@@ -1578,16 +1654,23 @@
           </div>
           <div>
             <label class="field-label">Profile Photo</label>
-            <div id="photoUploadArea" style="margin-top:0.4rem;display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap">
-              <div id="photoPreviewCircle" style="width:72px;height:72px;border-radius:50%;border:2px solid rgba(200,146,42,0.35);background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;position:relative;cursor:pointer" onclick="document.getElementById('photoFileInput').click()">
-                <img id="photoPreviewImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;border-radius:50%">
-                <span id="photoPlaceholder" style="font-size:0.7rem;color:var(--muted);text-align:center;padding:0.5rem;line-height:1.4">Upload<br>Photo</span>
+            <div id="photoUploadArea" style="margin-top:0.4rem">
+              <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:0.9rem">
+                <div id="photoPreviewCircle" style="width:72px;height:72px;border-radius:50%;border:2px solid rgba(200,146,42,0.35);background:rgba(40,30,60,0.7);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;cursor:pointer" onclick="document.getElementById('photoFileInput').click()" title="Upload photo">
+                  <img id="photoPreviewImg" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none;border-radius:50%">
+                  <span id="photoPlaceholder" style="font-size:1.8rem;color:var(--orichalcum-pale);font-family:'Alice',serif">🌟</span>
+                </div>
+                <div>
+                  <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+                  <button type="button" onclick="document.getElementById('photoFileInput').click()" style="padding:0.45rem 1.1rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.3);background:transparent;color:var(--orichalcum);font-size:0.78rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;transition:all 0.2s;display:block;margin-bottom:0.4rem" onmouseover="this.style.background='rgba(200,146,42,0.08)'" onmouseout="this.style.background='transparent'">Upload Photo</button>
+                  <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.76rem;color:var(--muted)">Optional · defaults to your initial</div>
+                  <div id="photoName" style="font-size:0.72rem;color:var(--orichalcum);margin-top:0.2rem;opacity:0.8"></div>
+                </div>
               </div>
               <div>
-                <input type="file" id="photoFileInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
-                <button type="button" onclick="document.getElementById('photoFileInput').click()" style="padding:0.45rem 1.1rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.3);background:transparent;color:var(--orichalcum);font-size:0.78rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.08)'" onmouseout="this.style.background='transparent'">Choose Photo</button>
-                <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.78rem;color:var(--muted);margin-top:0.4rem">Square image works best · JPG, PNG, WEBP</div>
-                <div id="photoName" style="font-size:0.72rem;color:var(--orichalcum);margin-top:0.2rem;opacity:0.8"></div>
+                <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.55);margin-bottom:0.45rem">Or choose an emoji</div>
+                <div style="display:flex;flex-wrap:wrap;gap:0.35rem" id="emojiPickerRow"></div>
+                <div id="selectedEmojiDisplay" style="margin-top:0.5rem;font-size:0.72rem;color:rgba(200,146,42,0.6);font-family:'Atkinson Hyperlegible',sans-serif"></div>
               </div>
             </div>
           </div>
@@ -1596,8 +1679,8 @@
         <!-- SECTION 2: HEARTLIGHT STATEMENT -->
         <div class="form-section">
           <div class="form-section-title">💛 Heartlight Statement</div>
-          <div class="form-section-hint">A soul-declaration of your co-creative purpose — this is your resonance invitation to the world</div>
-          <textarea class="field-input italic-font" id="f_heartlight" rows="3" placeholder="Speak your truth here. What do you co-create, and why does it matter to your soul?" oninput="updatePreview()" style="resize:vertical"></textarea>
+          <div class="form-section-hint">Speak your truth here. What do you co-create, and why does it matter to your soul?</div>
+          <textarea class="field-input italic-font" id="f_heartlight" rows="3" placeholder="" oninput="updatePreview()" style="resize:vertical"></textarea>
         </div>
 
         <!-- SECTION 3: RAY RESONANCE -->
@@ -1703,18 +1786,29 @@
 
         <!-- RESONANCE OATH -->
         <div class="oath-block">
-          <p>"I uphold consent, sovereignty, kindness, and the Codes of ALL in all exchanges."</p>
-          <div style="text-align:right;margin-top:0.5rem">
-            <button onclick="setView('codes', document.querySelectorAll('nav button')[4])" style="background:none;border:none;color:var(--orichalcum);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:0;font-family:'Atkinson Hyperlegible',sans-serif">View Codes of ALL →</button>
-          </div>
           <div class="oath-check-row" onclick="toggleOath()">
             <div class="oath-checkbox" id="oathBox">✓</div>
-            <div class="oath-check-label">I speak this vow and offer my C.E.S. Profile in full resonance with the Heartlight Exchanges Charter.</div>
+            <div class="oath-check-label">
+              I uphold consent, sovereignty, kindness, and the Codes of ALL in all exchanges.
+              <button onclick="event.stopPropagation();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('codes',document.querySelectorAll('nav button')[4]),320)" class="oath-link-btn">View Codes of ALL →</button>
+            </div>
+          </div>
+          <div class="oath-check-row" onclick="toggleOath2()" style="margin-top:0.75rem">
+            <div class="oath-checkbox" id="oathBox2">✓</div>
+            <div class="oath-check-label">
+              I speak this vow and offer my C.E.S. Profile in full resonance with the Heartlight Exchanges Charter.
+              <button onclick="event.stopPropagation();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('charter',document.querySelectorAll('nav button')[5]),320)" class="oath-link-btn">View Charter →</button>
+            </div>
           </div>
         </div>
 
-        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()">✦ Offer My C.E.S. Profile to the Exchange</button>
-        <p style="text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.82rem;color:var(--muted);margin-top:0.75rem">A steward will welcome you and confirm your place in the Directory within one lunar cycle.</p>
+        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>✦ Offer My C.E.S. Profile to the Exchange</button>
+        <div id="cesConfirmation" style="display:none;text-align:center;padding:2rem 1rem;animation:fadeIn 0.6s ease">
+          <div style="font-size:2rem;margin-bottom:1rem">🌈✨</div>
+          <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your C.E.S. Profile has been offered to the Exchange.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(240,232,213,0.82);line-height:1.85;max-width:480px;margin:0 auto">A steward will welcome you and confirm your place in the Directory within one lunar cycle.</div>
+          <div style="margin-top:1.2rem;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,146,42,0.6);font-family:'Atkinson Hyperlegible',sans-serif">All That Loves Allow Synchronicities 🏝️</div>
+        </div>
       </div>
 
       <!-- RIGHT: LIVE PREVIEW -->
@@ -2762,6 +2856,220 @@
   </div>
 
 
+  <!-- HEARTLIGHT EXCHANGES CHARTER VIEW -->
+  <div id="view-charter" style="display:none">
+    <style>
+      .charter-hero { text-align:center; padding:1rem 0 2.5rem; max-width:680px; margin:0 auto; }
+      .charter-hero-title { font-family:'Alice',serif; font-size:2rem; color:var(--orichalcum-pale); margin-bottom:0.5rem; letter-spacing:0.02em; }
+      .charter-hero-sub { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.1rem; color:rgba(240,232,213,0.72); line-height:1.85; }
+      .charter-section { margin-bottom:2.5rem; }
+      .charter-section-title { font-family:'Alice',serif; font-size:1.2rem; color:var(--orichalcum-pale); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.6rem; }
+      .charter-body { font-size:0.88rem; color:rgba(240,232,213,0.78); line-height:1.8; font-family:'Atkinson Hyperlegible',sans-serif; }
+      .charter-portal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem; margin-top:0.9rem; }
+      .charter-portal-card { border-radius:14px; border:1px solid rgba(255,255,255,0.09); background:rgba(10,0,30,0.6); padding:1.2rem 1.4rem; position:relative; overflow:hidden; }
+      .charter-portal-bar { position:absolute; top:0; left:0; right:0; height:4px; border-radius:14px 14px 0 0; }
+      .charter-portal-season { font-size:1.4rem; margin-bottom:0.4rem; }
+      .charter-portal-label { font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orichalcum); opacity:0.7; margin-bottom:0.25rem; font-family:'Atkinson Hyperlegible',sans-serif; }
+      .charter-portal-name { font-family:'Alice',serif; font-size:0.95rem; color:var(--cream); margin-bottom:0.6rem; }
+      .charter-portal-body { font-size:0.8rem; color:rgba(240,232,213,0.65); line-height:1.65; font-family:'Atkinson Hyperlegible',sans-serif; }
+      .charter-codes-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.55rem; margin-top:0.75rem; }
+      .charter-code-item { display:flex; align-items:flex-start; gap:0.7rem; padding:0.7rem 0.85rem; border-radius:0.65rem; border:1px solid rgba(200,146,42,0.13); background:rgba(255,255,255,0.02); }
+      .charter-code-dot { width:7px; height:7px; border-radius:50%; background:var(--orichalcum); flex-shrink:0; margin-top:5px; }
+      .charter-code-text { font-size:0.82rem; color:rgba(240,232,213,0.75); font-family:'Atkinson Hyperlegible',sans-serif; line-height:1.55; }
+      .charter-pathway-grid { display:flex; flex-wrap:wrap; gap:0.55rem; margin-top:0.75rem; }
+      .charter-pathway-pill { padding:0.45rem 1rem; border-radius:2rem; border:1px solid rgba(200,146,42,0.25); background:rgba(200,146,42,0.05); font-size:0.78rem; color:var(--orichalcum-light); font-family:'Atkinson Hyperlegible',sans-serif; }
+      .charter-promise-row { display:flex; gap:0.85rem; align-items:flex-start; padding:0.85rem 1rem; border-radius:0.65rem; border:1px solid rgba(200,146,42,0.12); background:rgba(255,255,255,0.02); margin-bottom:0.55rem; }
+      .charter-promise-icon { font-size:1.1rem; flex-shrink:0; }
+      .charter-promise-text { font-size:0.84rem; color:rgba(240,232,213,0.75); line-height:1.65; font-family:'Atkinson Hyperlegible',sans-serif; }
+      .charter-vow-banner { max-width:700px; margin:0 auto 2.5rem; padding:1.8rem 2rem; border:1px solid rgba(200,146,42,0.28); border-radius:18px; background:rgba(200,146,42,0.04); text-align:center; position:relative; overflow:hidden; }
+      .charter-vow-banner::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse 70% 60% at 50% 0%,rgba(200,146,42,0.07) 0%,transparent 65%); pointer-events:none; }
+      .charter-vow-text { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.1rem; color:var(--orichalcum-pale); line-height:1.9; position:relative; z-index:1; }
+      @media(max-width:600px){.charter-portal-grid{grid-template-columns:1fr 1fr}.charter-codes-list{grid-template-columns:1fr}.charter-hero-title{font-size:1.5rem}}
+      .charter-offering-item {
+        font-size: 0.82rem;
+        color: rgba(240,232,213,0.75);
+        font-family: 'Atkinson Hyperlegible', sans-serif;
+        padding: 0.3rem 0 0.3rem 1rem;
+        border-left: 2px solid rgba(200,146,42,0.2);
+        line-height: 1.5;
+        position: relative;
+      }
+      .charter-offering-item::before {
+        content: '✦';
+        position: absolute;
+        left: -0.05rem;
+        font-size: 0.5rem;
+        color: var(--orichalcum);
+        opacity: 0.6;
+        top: 0.55rem;
+      }
+    </style>
+    <div style="max-width:900px;margin:0 auto">
+
+      <!-- Hero -->
+      <div class="charter-hero">
+        <div class="charter-hero-title">📜 Heartlight Exchanges Charter</div>
+        <p class="charter-hero-sub">A living vow for Atlas Island's seasonal co-creation economy</p>
+      </div>
+
+      <!-- Vow Banner -->
+      <div class="charter-vow-banner">
+        <div class="charter-vow-text">Heartlight Exchanges exist to harmonize the Ray frequencies of ALL through intentional co-creation. Beings across Earth and beyond may share wishes, requests, offerings, lessons, art, healing, and sacred skill crafted with care by Atlastizens in a mutual energetic exchange.</div>
+      </div>
+
+      <!-- The Four Portals -->
+      <div class="charter-section">
+        <div class="charter-section-title">🌍 The Four Portals of the Wheel</div>
+        <div class="charter-portal-grid">
+          <div class="charter-portal-card">
+            <div class="charter-portal-bar" style="background:linear-gradient(90deg,#3a6bb5,#3a6bb588,transparent)"></div>
+            <div class="charter-portal-season">❄️</div>
+            <div class="charter-portal-label">Winter Solstice</div>
+            <div class="charter-portal-name">Hearth of Wishes</div>
+            <div class="charter-portal-body">Wishes arrive as letters, voice notes, art, prayers, or story sparks. Heartlight Co-Creators feel resonance and prepare gently. Early matches form through consent and seasonal capacity.</div>
+          </div>
+          <div class="charter-portal-card">
+            <div class="charter-portal-bar" style="background:linear-gradient(90deg,#3a9b6f,#3a9b6f88,transparent)"></div>
+            <div class="charter-portal-season">🌱</div>
+            <div class="charter-portal-label">Spring Equinox</div>
+            <div class="charter-portal-name">Seed of Co-Creation</div>
+            <div class="charter-portal-body">Co-creation agreements land scope, exchange, seasons timeline. Plans begin; adaptability stays welcomed as growth unfolds. First drafts, sketches, session arcs, and prototypes take root.</div>
+          </div>
+          <div class="charter-portal-card">
+            <div class="charter-portal-bar" style="background:linear-gradient(90deg,#d4b830,#d4b83088,transparent)"></div>
+            <div class="charter-portal-season">🌞</div>
+            <div class="charter-portal-label">Summer Solstice</div>
+            <div class="charter-portal-name">Bloom of Form</div>
+            <div class="charter-portal-body">Crafting, refinement, practice, recording, editing, shaping. The offering gains its embodied form in the world. Delivery preparation and blessing polish arrive.</div>
+          </div>
+          <div class="charter-portal-card">
+            <div class="charter-portal-bar" style="background:linear-gradient(90deg,#c94040,#c9404088,transparent)"></div>
+            <div class="charter-portal-season">🍂</div>
+            <div class="charter-portal-label">Fall Equinox</div>
+            <div class="charter-portal-name">Heartlight Harvest</div>
+            <div class="charter-portal-body">Co-creations complete and exchange occurs. Gifts deliver, value circulates, gratitude lands. Closure, celebration, and storyfire witnessing close the cycle.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heartlight Co-Creators -->
+      <div class="charter-section">
+        <div class="charter-section-title">🦋 Heartlight Co-Creators</div>
+        <div class="charter-body">Heartlight Co-Creators are Atlastizens whose occupation is co-creating for ALL through reciprocity. Recipients may select a Co-Creator directly via profiles, and Co-Creators respond through resonance and capacity for that season.</div>
+      </div>
+
+      <!-- Codes of ALL -->
+      <div class="charter-section">
+        <div class="charter-section-title">💎 The 12 Codes of ALL</div>
+        <div class="charter-body" style="margin-bottom:1rem">The 12 Codes of ALL are the living values that Atlas Island and the Heartlight Exchange uphold. Each Code is held by a Ray frequency and carries its own mantra of practice.</div>
+        <div class="charter-codes-list">
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#c4407a"></div><div class="charter-code-text"><strong style="color:var(--cream)">Sovereignty</strong> · Magenta Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#c94040"></div><div class="charter-code-text"><strong style="color:var(--cream)">Consent</strong> · Red Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#d4732a"></div><div class="charter-code-text"><strong style="color:var(--cream)">Care</strong> · Orange Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#d4b830"></div><div class="charter-code-text"><strong style="color:var(--cream)">Truth</strong> · Yellow Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#3a9b6f"></div><div class="charter-code-text"><strong style="color:var(--cream)">Thrival</strong> · Green Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#2ab3c4"></div><div class="charter-code-text"><strong style="color:var(--cream)">Discernment and Repair</strong> · Turquoise Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#3a6bb5"></div><div class="charter-code-text"><strong style="color:var(--cream)">Sustainability</strong> · Blue Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#5a4a9e"></div><div class="charter-code-text"><strong style="color:var(--cream)">Mutual Respect</strong> · Indigo Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#8b4fb5"></div><div class="charter-code-text"><strong style="color:var(--cream)">Authentic Joy</strong> · Violet Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#c0c0d8"></div><div class="charter-code-text"><strong style="color:var(--cream)">Conscious Awareness</strong> · Omni Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#7a9e5a"></div><div class="charter-code-text"><strong style="color:var(--cream)">Sacred Service</strong> · Elemental Ray</div></div>
+          <div class="charter-code-item"><div class="charter-code-dot" style="background:#e8d4ff"></div><div class="charter-code-text"><strong style="color:var(--cream)">Co-Creation</strong> · ALL Ray</div></div>
+        </div>
+        <div style="margin-top:1.1rem">
+          <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('codes',document.querySelectorAll('nav button')[4]),320)" style="padding:0.5rem 1.3rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">💎 View All 12 Codes of ALL →</button>
+        </div>
+      </div>
+
+      <!-- Exchange Pathways -->
+      <div class="charter-section">
+        <div class="charter-section-title">🎁 Exchange Pathways</div>
+        <div class="charter-body" style="margin-bottom:1rem">Every exchange is an act of sacred reciprocity. Heartlight Exchanges flow through five pathways choose the one that feels most resonant for each co-creation.</div>
+        <div style="display:grid;gap:0.65rem;margin-top:0.75rem">
+          <div class="charter-promise-row">
+            <div class="charter-promise-icon">💱</div>
+            <div class="charter-promise-text"><strong style="color:var(--cream);display:block;margin-bottom:0.2rem">Currency Fixed Price</strong>A clear, agreed-upon offering in exchange for currency. Both beings know what is being exchanged before co-creation begins, held with transparency and care.</div>
+          </div>
+          <div class="charter-promise-row">
+            <div class="charter-promise-icon">🎚️</div>
+            <div class="charter-promise-text"><strong style="color:var(--cream);display:block;margin-bottom:0.2rem">Currency Sliding Scale</strong>A range of exchange is offered, honoring that different beings hold different access to currency. The Co-Creator sets the range; the receiver chooses with honesty and resonance.</div>
+          </div>
+          <div class="charter-promise-row">
+            <div class="charter-promise-icon">🤝</div>
+            <div class="charter-promise-text"><strong style="color:var(--cream);display:block;margin-bottom:0.2rem">Value Exchange Trade or Skill Swap</strong>One offering in return for another. Both beings bring their gifts and agree on the scope of what is exchanged. Energy flows in both directions with joy and equity.</div>
+          </div>
+          <div class="charter-promise-row">
+            <div class="charter-promise-icon">🎁</div>
+            <div class="charter-promise-text"><strong style="color:var(--cream);display:block;margin-bottom:0.2rem">Gift Exchange</strong>A Co-Creator offers their gift freely from their overflow, as an act of love and sacred service. This is clearly named as gifting never assumed, always chosen with sovereignty.</div>
+          </div>
+          <div class="charter-promise-row">
+            <div class="charter-promise-icon">🌱</div>
+            <div class="charter-promise-text"><strong style="color:var(--cream);display:block;margin-bottom:0.2rem">Scholarship Exchange</strong>Community-supported offerings that allow beings to receive who may not have access to other pathways. Scholarships may be offered by Co-Creators or funded through the collective generosity of the Exchange.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Offerings -->
+      <div class="charter-section">
+        <div class="charter-section-title">🌐 Offerings That Travel Worldwide</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:0.75rem">
+          <div>
+            <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.7rem">✨ Digital Gifts</div>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:0.4rem">
+              <li class="charter-offering-item">Audio blessings</li>
+              <li class="charter-offering-item">Sigils and sacred art</li>
+              <li class="charter-offering-item">Guided visualizations</li>
+              <li class="charter-offering-item">Ritual pages and scripts</li>
+              <li class="charter-offering-item">Oracle-style messages</li>
+              <li class="charter-offering-item">Mini courses and teachings</li>
+              <li class="charter-offering-item">Music and sound healing</li>
+              <li class="charter-offering-item">Mentorship sessions</li>
+              <li class="charter-offering-item">Community circles</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.7rem">🪄 Physical Gifts</div>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:0.4rem">
+              <li class="charter-offering-item">Handcrafted talismans</li>
+              <li class="charter-offering-item">Tea blends and apothecary</li>
+              <li class="charter-offering-item">Charms and sacred objects</li>
+              <li class="charter-offering-item">Scrolls and printed art</li>
+              <li class="charter-offering-item">Tiny wands</li>
+              <li class="charter-offering-item">Altar objects</li>
+              <li class="charter-offering-item">Woven and textile crafts</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accessibility -->
+      <div class="charter-section">
+        <div class="charter-section-title">🤍 Accessibility Promise</div>
+        <div class="charter-body">Offerings may be created in multiple formats whenever it supports the receiver: text, audio, captioned video, sensory-friendly pacing, simplified steps, multiple time-zone windows.</div>
+      </div>
+
+      <!-- Privacy -->
+      <div class="charter-section">
+        <div class="charter-section-title">🔒 Privacy Assurance</div>
+        <div class="charter-body" style="margin-bottom:1rem">The Privacy Assurance is sacred to the thrival and harmony of every co-creator in the Heartlight Exchange. Letters, personal stories, and creative details stay held within the sacred container shared by the receiver and their chosen Co-Creator. Consent governs every moment of sharing before, during, and after the exchange.</div>
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('privacy',document.querySelectorAll('nav button')[6]),320)" style="padding:0.5rem 1.3rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🔒 View Full Privacy Assurance →</button>
+      </div>
+
+      <!-- Stewardship -->
+      <div class="charter-section">
+        <div class="charter-section-title">✨ Stewardship</div>
+        <div class="charter-body">A small circle of Stewards holds the directory, Codes, scholarships, seasonal announcements, and gentle conflict resolution through care and clarity.</div>
+      </div>
+
+      <!-- Closing -->
+      <div style="text-align:center;padding:2rem 0 3rem;max-width:600px;margin:0 auto">
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.6);line-height:1.9;margin-bottom:1.8rem">Join the Heartlight Exchange to share your Core Energetic Signature. Let's make our dreams and wishes come true!</div>
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('submit',document.querySelectorAll('nav button')[2]),320)" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🌟 Create Your C.E.S. Profile</button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ADMIN / STEWARD VIEW -->
   <div id="view-admin" style="display:none">
     <div style="max-width:900px;margin:0 auto">
@@ -3148,7 +3456,7 @@ const RAYS = {
   Orange:   { color: '#d4732a', label: 'Orange Ray',   code: 'Creation',        num: '3' },
   Yellow:   { color: '#d4b830', label: 'Yellow Ray',   code: 'Sovereignty',     num: '4' },
   Green:    { color: '#3a9b6f', label: 'Green Ray',    code: 'Manifestation',   num: '5' },
-  'Cyan-Blue':{ color: '#2ab3c4', label: 'Cyan-Blue Ray', code: 'Expression',  num: '6' },
+  Turquoise: { color: '#2ab3c4', label: 'Turquoise Ray', code: 'Expression',  num: '6' },
   Blue:     { color: '#3a6bb5', label: 'Blue Ray',     code: 'Resonance',       num: '6' },
   Indigo:   { color: '#5a4a9e', label: 'Indigo Ray',   code: 'Thriving',        num: '7' },
   Violet:   { color: '#8b4fb5', label: 'Violet Ray',   code: 'Transformutation', num: '8' },
@@ -3164,7 +3472,7 @@ const CREATORS = [
     pronouns: 'she/her',
     title: 'Frequency Weaver & Sound Alchemist',
     location: 'Pacific Northwest · PST',
-    ray: 'Cyan-Blue',
+    ray: 'Turquoise',
     heartlight: 'I give voice to what the soul already knows. My sound is a bridge between the seen and the sacred.',
     offerings: ['Sound Healing', 'Vocal Activation', 'Guided Ritual', 'Community Circles'],
     exchanges: ['Sliding Scale', 'Trade', 'Gift'],
@@ -3439,7 +3747,7 @@ function closeModalOutside(e) {
 
 // ── VIEW SWITCHING (unified) ──
 function setView(name, btn) {
-  ['directory','seasonal','submit','wish','codes','privacy','admin'].forEach(v => {
+  ['directory','seasonal','submit','wish','codes','charter','privacy','admin'].forEach(v => {
     const el = document.getElementById('view-' + v);
     if (el) el.style.display = v === name ? 'block' : 'none';
   });
@@ -3621,7 +3929,7 @@ const ALL_RAYS = [
   { key:'Orange',    color:'#d4732a', label:'Orange',    code:'Creation',         emoji:'🟠' },
   { key:'Yellow',    color:'#d4b830', label:'Yellow',    code:'Sovereignty',      emoji:'🟡' },
   { key:'Green',     color:'#3a9b6f', label:'Green',     code:'Manifestation',    emoji:'🟢' },
-  { key:'Cyan-Blue', color:'#2ab3c4', label:'Cyan-Blue', code:'Expression',       emoji:'🩵' },
+  { key:'Turquoise', color:'#2ab3c4', label:'Turquoise', code:'Expression',       emoji:'🩵' },
   { key:'Blue',      color:'#3a6bb5', label:'Blue',      code:'Resonance',        emoji:'🔵' },
   { key:'Indigo',    color:'#5a4a9e', label:'Indigo',    code:'Thriving',         emoji:'🟣' },
   { key:'Violet',    color:'#8b4fb5', label:'Violet',    code:'Transformutation', emoji:'💜' },
@@ -3666,6 +3974,7 @@ let formState = {
   selectedAccessibility: [],
   customAccessibility: [],
   oathSigned: false,
+  oath2Signed: false,
 };
 
 // ── BUILD EMOJI PICKER ──
@@ -3806,6 +4115,7 @@ function toggleSeason(s, el) {
   formState.selectedSeasons[s] = !formState.selectedSeasons[s];
   el.classList.toggle('open');
   updatePreview();
+  updateSubmitBtn();
 }
 
 // ── OATH ──
@@ -3813,6 +4123,29 @@ function toggleOath() {
   formState.oathSigned = !formState.oathSigned;
   const box = document.getElementById('oathBox');
   if (box) box.classList.toggle('checked', formState.oathSigned);
+  updateSubmitBtn();
+}
+function toggleOath2() {
+  formState.oath2Signed = !formState.oath2Signed;
+  const box = document.getElementById('oathBox2');
+  if (box) box.classList.toggle('checked', formState.oath2Signed);
+  updateSubmitBtn();
+}
+function updateSubmitBtn() {
+  const btn = document.getElementById('submitBtn');
+  if (!btn) return;
+  const name = (document.getElementById('f_name')?.value || '').trim();
+  const cesVal = (document.getElementById('f_ces_number')?.value || '').trim();
+  const heartlight = (document.getElementById('f_heartlight')?.value || '').trim();
+  const timeline = document.getElementById('f_timeline')?.value || '';
+  const hasRay = formState.selectedRays.length > 0;
+  const hasOffering = formState.selectedOfferings.length > 0 || formState.customOfferings.length > 0;
+  const hasExchange = formState.selectedExchanges.length > 0;
+  const hasSeason = Object.values(formState.selectedSeasons).some(Boolean);
+  const quadRepeat = new RegExp('(\\d)\\1{3}').test(cesVal);
+  const cesOk = cesVal.length === 9 && !quadRepeat;
+  const ready = name && cesOk && heartlight && hasRay && hasOffering && hasExchange && hasSeason && timeline && formState.oathSigned && formState.oath2Signed;
+  btn.disabled = !ready;
 }
 
 // ── LIVE PREVIEW UPDATE ──
@@ -3876,6 +4209,19 @@ function updatePreview() {
   // Text fields
   const pName = document.getElementById('previewName');
   if (pName) pName.textContent = name || 'Your Name';
+
+  // Update avatar: initial if no photo and default emoji
+  if (!photoDataUrl) {
+    const phEl = document.getElementById('photoPlaceholder');
+    const pvPh = document.getElementById('previewAvatarPlaceholder');
+    const initial = name ? name.trim()[0].toUpperCase() : null;
+    const showInitial = initial && formState.emoji === '🌟';
+    const display = showInitial ? initial : formState.emoji;
+    const fsize = showInitial ? '1.8rem' : '1.8rem';
+    if (phEl) { phEl.textContent = display; phEl.style.fontSize = fsize; }
+    if (pvPh) { pvPh.textContent = showInitial ? initial : formState.emoji; pvPh.style.fontSize = '1.3rem'; }
+  }
+  updateSubmitBtn();
 
   const pTitle = document.getElementById('previewTitle');
   if (pTitle) pTitle.textContent = title || 'Creator Title';
@@ -3943,18 +4289,39 @@ function updatePreview() {
 }
 
 // ── SUBMIT ──
+function buildEmojiPicker() {
+  const row = document.getElementById('emojiPickerRow');
+  if (!row) return;
+  const emojis = [
+    '🌟','🌈','🦋','🔥','🌿','💫','🌸','🎶','🌊','⚡',
+    '🐦‍🔥','🌙','☀️','🍃','💎','🌺','🦅','🌻','🐝','✨',
+    '🌀','🪷','🕊️','🦄','🍄','🌱','🔮','🌙','🐉','🪐'
+  ];
+  row.innerHTML = emojis.map(e => {
+    const active = formState.emoji === e && formState.emoji !== '🌟' ? 'background:rgba(200,146,42,0.18);border-color:var(--orichalcum);' : '';
+    return `<button type="button" onclick="selectEmoji('${e}')" style="width:34px;height:34px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.18s;${active}" onmouseover="this.style.background='rgba(200,146,42,0.1)';this.style.borderColor='rgba(200,146,42,0.4)'" onmouseout="if(formState.emoji!=='${e}'){this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'}">${e}</button>`;
+  }).join('');
+}
+function selectEmoji(e) {
+  formState.emoji = e;
+  // Update placeholder and preview
+  const placeholder = document.getElementById('photoPlaceholder');
+  const previewAvatarPh = document.getElementById('previewAvatarPlaceholder');
+  const selectedDisplay = document.getElementById('selectedEmojiDisplay');
+  if (placeholder && !photoDataUrl) placeholder.textContent = e;
+  if (previewAvatarPh && !photoDataUrl) previewAvatarPh.textContent = e;
+  if (selectedDisplay) selectedDisplay.textContent = e + ' selected as avatar';
+  buildEmojiPicker(); // re-render to show active state
+}
 function submitCES() {
-  if (!formState.oathSigned) {
-    alert('✦ Please speak the Resonance Oath before offering your profile.');
-    return;
-  }
+  if (!formState.oathSigned || !formState.oath2Signed) return;
   const name = document.getElementById('f_name')?.value?.trim();
-  if (!name) {
-    alert('✦ Your name is needed to arrive in the field.');
-    return;
-  }
-  // Future: send to Vercel / backend
-  alert(`✦ Your C.E.S. Profile has been offered to the Exchange, ${name}.\n\nA steward will welcome you within one lunar cycle. All That Loves Allow Synchronicities. 🌈`);
+  if (!name) return;
+  submitCESProfile(formState);
+  const btn = document.getElementById('submitBtn');
+  const conf = document.getElementById('cesConfirmation');
+  if (btn) btn.style.display = 'none';
+  if (conf) conf.style.display = 'block';
 }
 
 // ── INIT FORM ──
@@ -5334,15 +5701,20 @@ function updateCESNumberPreview() {
   const status = document.getElementById('cesNumberStatus');
   if (!input || !status) return;
   const val = input.value;
+  const quadRepeat = new RegExp('(\d)\1{3}').test(val);
   if (val.length === 0) {
     status.textContent = '';
+  } else if (quadRepeat) {
+    status.style.color = '#e8a0a0';
+    status.textContent = '\u2726 A C.E.S. number may hold a digit no more than 3 times in a row';
   } else if (val.length < 9) {
     status.style.color = 'rgba(240,232,213,0.3)';
     status.textContent = (9 - val.length) + ' digit' + (9 - val.length === 1 ? '' : 's') + ' remaining';
   } else if (val.length === 9) {
     status.style.color = 'rgba(58,155,111,0.8)';
-    status.textContent = '✓ C.E.S. number complete';
+    status.textContent = '\u2713 C.E.S. number complete';
   }
+  updateSubmitBtn();
 }
 
 // cesNumber is captured directly inside submitCESProfile
