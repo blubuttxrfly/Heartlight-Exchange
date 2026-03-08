@@ -31,7 +31,7 @@
 
   /* ── FORCE DARK MODE ── */
   @media (prefers-color-scheme: light) {
-    body { background: linear-gradient(180deg, #e580ff 0%, #c840ff 20%, #b01eff 45%, #7a00c0 72%, #3d0070 88%, #1a0040 100%) !important; background-attachment: fixed !important; color: #f0e8d5 !important; }
+    body { background: linear-gradient(180deg, #e580ff 0%, #c840ff 20%, #b01eff 45%, #7a00c0 72%, #3d0070 88%, #1a0040 100%) !important; background-attachment: scroll !important; color: #f0e8d5 !important; }
     .ces-card, .modal, .form-section, .ces-preview-card { background: rgba(13,11,26,0.97) !important; }
     input, textarea, select { background: rgba(255,255,255,0.05) !important; color: #f0e8d5 !important; }
     .chip-opt, .exchange-toggle, .season-toggle, .ray-select-btn { background: rgba(255,255,255,0.04) !important; }
@@ -852,6 +852,91 @@
   .profile-modal-section { margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid rgba(255,255,255,0.07); }
   .profile-modal-label { font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.35rem;opacity:0.8; }
   .profile-modal-value { font-size:0.88rem;color:rgba(240,232,213,0.8);font-family:'Atkinson Hyperlegible',sans-serif;line-height:1.6; }
+
+
+  /* ── MOBILE RESPONSIVE ── */
+  @media (max-width: 640px) {
+
+    /* Background: tile the gradient so it doesn't stretch weirdly */
+    body, html {
+      background-size: 100% 400px !important;
+      background-repeat: repeat-y !important;
+    }
+
+    /* Admin settings grid → single column */
+    .ces-register-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Admin panel: prevent horizontal overflow */
+    #adminPanel {
+      overflow-x: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #view-admin {
+      overflow-x: hidden;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+
+    /* Admin tab buttons: allow wrapping + smaller text */
+    #adminPanel > div:first-child > div {
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .admin-tab-btn {
+      font-size: 0.65rem !important;
+      padding: 0.35rem 0.7rem !important;
+    }
+
+    /* Admin cards: full width */
+    .admin-queue-card, .admin-member-row {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Security log entries: stack */
+    #securityLog > div {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 0.3rem !important;
+    }
+
+    /* Authorized list rows */
+    .admin-member-row {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* Steward gate modal */
+    #stewardGateOverlay > div {
+      padding: 1.8rem 1.2rem !important;
+      margin: 0 0.8rem;
+    }
+
+    /* Field inputs: prevent overflow */
+    .field-input {
+      width: 100% !important;
+      box-sizing: border-box !important;
+      max-width: 100% !important;
+    }
+
+    /* Stats row: wrap */
+    #adminPanel .admin-stats {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .ces-register-grid {
+      grid-template-columns: 1fr !important;
+    }
+    .admin-tab-btn {
+      font-size: 0.6rem !important;
+      padding: 0.3rem 0.55rem !important;
+    }
+  }
 
 </style>
 </head>
@@ -2682,19 +2767,8 @@
     <div style="max-width:900px;margin:0 auto">
 
       <!-- Auth Gate -->
-      <div id="adminAuthGate">
-        <div style="max-width:380px;margin:4rem auto;text-align:center">
-          <div style="font-size:2rem;margin-bottom:0.8rem">🛡️</div>
-          <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:0.4rem">Steward Access</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:rgba(240,232,213,0.5);margin-bottom:1.8rem">Code Stewards hold the field with conscious awareness.</div>
-          <input type="password" id="adminPassInputInner" class="field-input" placeholder="Enter Steward passphrase…" style="width:100%;margin-bottom:0.8rem;text-align:center;letter-spacing:0.15em" onkeydown="if(event.key==='Enter')tryAdminLogin()">
-          <button onclick="tryAdminLogin()" style="width:100%;padding:0.75rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.08);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.16)'" onmouseout="this.style.background='rgba(200,146,42,0.08)'">Enter the Steward Field</button>
-          <div id="adminLoginErrorInner" style="margin-top:0.8rem;font-size:0.8rem;color:#e8a0a0;display:none;font-family:'Atkinson Hyperlegible',sans-serif"></div>
-        </div>
-      </div>
-
-      <!-- Admin Panel (shown after auth) -->
-      <div id="adminPanel" style="display:none">
+      <!-- Admin Panel -->
+      <div id="adminPanel" style="display:block">
 
         <!-- Header -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:0.8rem">
@@ -2740,39 +2814,25 @@
             <div class="admin-section-title">🔑 Authorized Steward C.E.S. Codes</div>
             <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem;line-height:1.7">Beings whose C.E.S. codes are registered here may access the Steward Field. Each code is held encrypted. The Steward passphrase is also required for entry.</div>
             <div id="authorizedList" style="margin-bottom:1rem"><!-- rendered --></div>
-            <div style="display:flex;gap:0.6rem;align-items:flex-end;flex-wrap:wrap">
-              <div style="flex:1;min-width:200px">
-                <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.6);margin-bottom:0.35rem">Add C.E.S. Code</div>
-                <input type="text" id="newCESInput" class="field-input" placeholder="9-digit C.E.S. number" maxlength="9" style="font-size:0.85rem" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateNewCESPreview()">
-                <div style="font-size:0.68rem;color:rgba(200,146,42,0.35);margin-top:0.3rem;font-family:'Atkinson Hyperlegible',sans-serif">Encrypted: <span id="newCESPreview" style="letter-spacing:0.08em"></span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;align-items:start" class="ces-register-grid">
+                <div>
+                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.6);margin-bottom:0.35rem">Add C.E.S. Code</div>
+                  <input type="text" id="newCESInput" class="field-input" placeholder="9-digit C.E.S. number" maxlength="9" style="font-size:0.85rem;width:100%;box-sizing:border-box" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateNewCESPreview()">
+                  <div style="display:none"><span id="newCESPreview"></span></div>
+                </div>
+                <div>
+                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.6);margin-bottom:0.35rem">Steward Name</div>
+                  <input type="text" id="newStewardName" class="field-input" placeholder="Name for this Steward" style="font-size:0.85rem;width:100%;box-sizing:border-box">
+                </div>
+                <div>
+                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.6);margin-bottom:0.35rem">Passphrase <span style="font-style:italic;text-transform:none;letter-spacing:0;font-size:0.58rem;color:rgba(200,146,42,0.4)">leave blank to auto-generate</span></div>
+                  <input type="text" id="newStewardPassphrase" class="field-input" placeholder="Auto-generated if empty" style="font-size:0.85rem;width:100%;box-sizing:border-box;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.1em">
+                </div>
               </div>
-              <div style="min-width:160px">
-                <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.6);margin-bottom:0.35rem">Steward Name</div>
-                <input type="text" id="newStewardName" class="field-input" placeholder="Name for this Steward" style="font-size:0.85rem">
+              <div style="margin-top:0.7rem">
+                <button onclick="addAuthorizedCES()" style="padding:0.55rem 1.4rem;border-radius:2rem;border:1px solid rgba(58,155,111,0.4);background:rgba(58,155,111,0.07);color:#7dd9a8;font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(58,155,111,0.18)'" onmouseout="this.style.background='rgba(58,155,111,0.07)'">+ Register</button>
               </div>
-              <div style="min-width:160px">
-                <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.6);margin-bottom:0.35rem">Passphrase <span style="font-style:italic;text-transform:none;letter-spacing:0;font-size:0.58rem;color:rgba(200,146,42,0.4)">leave blank to auto-generate</span></div>
-                <input type="text" id="newStewardPassphrase" class="field-input" placeholder="Auto-generated if empty" style="font-size:0.85rem;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.1em">
-              </div>
-              <button onclick="addAuthorizedCES()" style="padding:0.55rem 1.2rem;border-radius:2rem;border:1px solid rgba(58,155,111,0.4);background:rgba(58,155,111,0.07);color:#7dd9a8;font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;white-space:nowrap;margin-bottom:0.05rem" onmouseover="this.style.background='rgba(58,155,111,0.18)'" onmouseout="this.style.background='rgba(58,155,111,0.07)'">+ Register</button>
-            </div>
 
-            <!-- Passphrase editor — inline with steward management -->
-            <div style="margin-top:1.4rem;padding:1rem 1.1rem;border-radius:0.85rem;border:1px solid rgba(200,146,42,0.12);background:rgba(200,146,42,0.03)">
-              <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,146,42,0.55);margin-bottom:0.75rem">🔐 Steward Field Passphrase</div>
-              <div style="display:flex;gap:0.6rem;align-items:flex-end;flex-wrap:wrap">
-                <div style="flex:1;min-width:160px">
-                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,232,213,0.3);margin-bottom:0.3rem">New Passphrase</div>
-                  <input type="password" id="newPassphraseInput" class="field-input" placeholder="Enter new passphrase…" style="font-size:0.83rem">
-                </div>
-                <div style="min-width:140px">
-                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,232,213,0.3);margin-bottom:0.3rem">Confirm</div>
-                  <input type="password" id="confirmPassphraseInput" class="field-input" placeholder="Confirm passphrase…" style="font-size:0.83rem">
-                </div>
-                <button onclick="updatePassphrase()" style="padding:0.5rem 1rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.3);background:rgba(200,146,42,0.06);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.72rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;white-space:nowrap;margin-bottom:0.02rem" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.06)'">Update</button>
-              </div>
-              <div id="passphraseMsg" style="margin-top:0.5rem;font-size:0.75rem;display:none;font-family:'Atkinson Hyperlegible',sans-serif"></div>
-            </div>
           </div>
 
           <!-- Lockout Log -->
@@ -4557,10 +4617,20 @@ let adminAuthed = false;
 // tryAdminLogin defined below in CES auth system
 function adminLogout() {
   adminAuthed = false;
-  document.getElementById('adminAuthGate').style.display = 'block';
-  document.getElementById('adminPanel').style.display = 'none';
+  adminActiveCES = null;
   const input = document.getElementById('adminPassInput');
   if (input) input.value = '';
+  // Return to last view before admin, or default to directory
+  const returnTo = sessionStorage.getItem('preAdminView') || 'directory';
+  setView(returnTo, null);
+  // Re-activate the matching nav button
+  const navBtns = document.querySelectorAll('nav button');
+  navBtns.forEach(b => {
+    b.classList.remove('active');
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes("'" + returnTo + "'")) {
+      b.classList.add('active');
+    }
+  });
 }
 
 // setAdminTab defined below in CES auth system
@@ -4898,12 +4968,12 @@ function tryAdminLogin() {
     adminActiveCES = gateVerifiedCES;
     closeStewardGate();
     resetGateToStep1();
+    // Remember which view we were on before entering admin
+    const currentView = Array.from(document.querySelectorAll('[id^="view-"]'))
+      .find(el => el.style.display === 'block');
+    sessionStorage.setItem('preAdminView', currentView ? currentView.id.replace('view-', '') : 'directory');
     // Switch to admin view
-    const allViews = document.querySelectorAll('[id^="view-"]');
-    allViews.forEach(v => v.style.display = 'none');
-    const adminView = document.getElementById('view-admin');
-    if (adminView) adminView.style.display = 'block';
-    document.getElementById('adminAuthGate').style.display = 'none';
+    setView('admin', null);
     document.getElementById('adminPanel').style.display = 'block';
     renderAdminStats();
     renderPendingList();
@@ -4983,7 +5053,9 @@ function renderAuthorizedList() {
     return;
   }
   list.innerHTML = authorized.map((entry, i) => `
-    <div class="admin-member-row" style="flex-direction:column;align-items:stretch;gap:0.5rem;padding:0.75rem 1rem">
+    <div class="admin-member-row" id="steward-card-${i}" style="flex-direction:column;align-items:stretch;gap:0.5rem;padding:0.75rem 1rem">
+
+      <!-- Name row + Revoke -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem">
         <div class="admin-member-info" style="margin:0">
           <div class="admin-avatar" style="width:36px;height:36px;font-size:0.9rem">${(entry.name||'?')[0].toUpperCase()}</div>
@@ -4994,13 +5066,119 @@ function renderAuthorizedList() {
         </div>
         <button onclick="revokeCES(${i})" style="padding:0.28rem 0.7rem;border-radius:2rem;border:1px solid rgba(201,64,64,0.35);background:transparent;color:#e8a0a0;font-size:0.65rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;flex-shrink:0" onmouseover="this.style.background='rgba(201,64,64,0.12)'" onmouseout="this.style.background='transparent'">Revoke</button>
       </div>
+
+      <!-- Passphrase row: reveal + edit button -->
       <div style="display:flex;align-items:center;gap:0.6rem;padding:0.4rem 0.6rem;border-radius:0.5rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)">
         <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(200,146,42,0.45);min-width:56px">Passphrase</div>
         <div id="pp_${i}" style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.78rem;letter-spacing:0.14em;color:rgba(240,232,213,0.6);flex:1">••••••</div>
-        <button onclick="togglePassphrase(${i},'${entry.passphrase||''}')" style="background:none;border:none;color:rgba(200,146,42,0.4);font-size:0.65rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s;padding:0.1rem 0.3rem" onmouseover="this.style.color='rgba(200,146,42,0.8)'" onmouseout="this.style.color='rgba(200,146,42,0.4)'">Reveal</button>
+        <button onclick="togglePassphrase(${i},'${entry.passphrase||''}')" style="background:none;border:none;color:rgba(200,146,42,0.4);font-size:0.62rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.2s;padding:0.1rem 0.3rem;flex-shrink:0" onmouseover="this.style.color='rgba(200,146,42,0.8)'" onmouseout="this.style.color='rgba(200,146,42,0.4)'">Reveal</button>
+        <button onclick="openEditPassphrase(${i})" id="editBtn_${i}" style="background:none;border:1px solid rgba(200,146,42,0.25);border-radius:1rem;color:rgba(200,146,42,0.55);font-size:0.6rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;padding:0.18rem 0.55rem;flex-shrink:0" onmouseover="this.style.borderColor='rgba(200,146,42,0.6)';this.style.color='var(--orichalcum)'" onmouseout="this.style.borderColor='rgba(200,146,42,0.25)';this.style.color='rgba(200,146,42,0.55)'">Edit</button>
       </div>
+
+      <!-- Inline edit passphrase panel (hidden by default) -->
+      <div id="editPass_${i}" style="display:none;padding:0.7rem 0.8rem;border-radius:0.6rem;background:rgba(200,146,42,0.04);border:1px solid rgba(200,146,42,0.15)">
+        <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.5);margin-bottom:0.55rem">Edit Passphrase — ${entry.name}</div>
+        <div style="display:flex;gap:0.5rem;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:130px">
+            <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(240,232,213,0.3);margin-bottom:0.28rem">New Passphrase</div>
+            <input type="password" id="newPass_${i}" class="field-input" placeholder="Enter new passphrase…" style="font-size:0.82rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')saveEditPassphrase(${i})">
+          </div>
+          <div style="min-width:120px">
+            <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(240,232,213,0.3);margin-bottom:0.28rem">Confirm</div>
+            <input type="password" id="confirmPass_${i}" class="field-input" placeholder="Confirm passphrase…" style="font-size:0.82rem;width:100%;box-sizing:border-box" onkeydown="if(event.key==='Enter')saveEditPassphrase(${i})">
+          </div>
+          <div style="display:flex;gap:0.4rem;flex-shrink:0;padding-bottom:0.02rem">
+            <button onclick="saveEditPassphrase(${i})" style="padding:0.45rem 0.9rem;border-radius:2rem;border:1px solid rgba(58,155,111,0.4);background:rgba(58,155,111,0.07);color:#7dd9a8;font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.7rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.background='rgba(58,155,111,0.18)'" onmouseout="this.style.background='rgba(58,155,111,0.07)'">Save</button>
+            <button onclick="closeEditPassphrase(${i})" style="padding:0.45rem 0.9rem;border-radius:2rem;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(240,232,213,0.3);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.7rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.color='rgba(240,232,213,0.6)'" onmouseout="this.style.color='rgba(240,232,213,0.3)'">Cancel</button>
+          </div>
+        </div>
+        <div id="editPassMsg_${i}" style="margin-top:0.45rem;font-size:0.72rem;display:none;font-family:'Atkinson Hyperlegible',sans-serif"></div>
+      </div>
+
     </div>
   `).join('');
+}
+
+function openEditPassphrase(i) {
+  const panel = document.getElementById('editPass_' + i);
+  const btn   = document.getElementById('editBtn_' + i);
+  if (!panel) return;
+  // Close any other open editors first
+  document.querySelectorAll('[id^="editPass_"]').forEach(el => {
+    if (el.id !== 'editPass_' + i) { el.style.display = 'none'; }
+  });
+  const isOpen = panel.style.display === 'block';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    setTimeout(() => {
+      const inp = document.getElementById('newPass_' + i);
+      if (inp) inp.focus();
+    }, 60);
+  }
+  // Clear fields when closing
+  if (isOpen) {
+    const f1 = document.getElementById('newPass_' + i);
+    const f2 = document.getElementById('confirmPass_' + i);
+    const msg = document.getElementById('editPassMsg_' + i);
+    if (f1) f1.value = '';
+    if (f2) f2.value = '';
+    if (msg) msg.style.display = 'none';
+  }
+}
+
+function closeEditPassphrase(i) {
+  const panel = document.getElementById('editPass_' + i);
+  if (panel) panel.style.display = 'none';
+  const f1 = document.getElementById('newPass_' + i);
+  const f2 = document.getElementById('confirmPass_' + i);
+  const msg = document.getElementById('editPassMsg_' + i);
+  if (f1) f1.value = '';
+  if (f2) f2.value = '';
+  if (msg) msg.style.display = 'none';
+}
+
+function saveEditPassphrase(i) {
+  const f1  = document.getElementById('newPass_' + i);
+  const f2  = document.getElementById('confirmPass_' + i);
+  const msg = document.getElementById('editPassMsg_' + i);
+  if (!f1 || !f2 || !msg) return;
+
+  const showMsg = (text, color) => {
+    msg.style.display = 'block';
+    msg.style.color = color;
+    msg.textContent = text;
+  };
+
+  if (!f1.value.trim()) { showMsg('Please enter a new passphrase.', '#e8a0a0'); return; }
+  if (f1.value !== f2.value) { showMsg('Passphrases do not match.', '#e8a0a0'); return; }
+  if (f1.value.trim().length < 4) { showMsg('Passphrase must be at least 4 characters.', '#e8a0a0'); return; }
+
+  const authorized = getStorage('authorizedCES', []);
+  if (!authorized[i]) { showMsg('Steward not found.', '#e8a0a0'); return; }
+
+  authorized[i].passphrase = f1.value.trim();
+  setStorage('authorizedCES', authorized);
+
+  // Log the passphrase update
+  const log = getStorage('securityLog', []);
+  log.unshift({
+    id: 'passupdate_' + Date.now(),
+    cesEncrypted: authorized[i].cesEncrypted,
+    stewardName: authorized[i].name,
+    timestamp: new Date().toISOString(),
+    type: 'passupdate',
+    message: 'Passphrase updated for ' + authorized[i].name + ' by active Steward.'
+  });
+  setStorage('securityLog', log);
+
+  showMsg('✓ Passphrase updated for ' + authorized[i].name + '.', '#7dd9a8');
+
+  // Reset reveal state and re-render after short delay
+  _ppVisible = {};
+  setTimeout(() => {
+    closeEditPassphrase(i);
+    renderAuthorizedList();
+  }, 1400);
 }
 
 function renderSecurityLog() {
@@ -5147,20 +5325,7 @@ function updateNewCESPreview() {
   preview.textContent = input.value.length === 9 ? cesEncrypt(input.value) : '';
 }
 
-function updatePassphrase() {
-  const newPass = document.getElementById('newPassphraseInput');
-  const confirm = document.getElementById('confirmPassphraseInput');
-  const msg = document.getElementById('passphraseMsg');
-  if (!newPass || !confirm || !msg) return;
-  if (!newPass.value) { msg.style.display='block'; msg.style.color='#e8a0a0'; msg.textContent='Please enter a new passphrase.'; return; }
-  if (newPass.value !== confirm.value) { msg.style.display='block'; msg.style.color='#e8a0a0'; msg.textContent='Passphrases do not match.'; return; }
-  if (newPass.value.length < 6) { msg.style.display='block'; msg.style.color='#e8a0a0'; msg.textContent='Passphrase must be at least 6 characters.'; return; }
-  setStorage('stewardPass', newPass.value);
-  newPass.value = '';
-  confirm.value = '';
-  msg.style.display='block'; msg.style.color='#7dd9a8'; msg.textContent='✓ Passphrase updated. All Stewards will use the new passphrase on next entry.';
-  setTimeout(() => { msg.style.display='none'; }, 4000);
-}
+
 
 // ── SEED the demo Steward on first load ──
 // ── CES NUMBER FIELD LIVE FEEDBACK ──
