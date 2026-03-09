@@ -5401,6 +5401,37 @@ function tryAdminLogin() {
   }
 };
 
+// ── PRIMARY STEWARD OVERRIDE (clears lockout with master passphrase) ──
+function attemptPrimaryOverride() {
+  const input = document.getElementById('overridePassInput');
+  const err = document.getElementById('overrideError');
+  if (!input) return;
+  const val = input.value;
+  // Must match the original master passphrase (never per-steward override)
+  if (val === STEWARD_PASS) {
+    setStorage('gateLockout', null);
+    localStorage.removeItem('ai_gateLockout');
+    gateFailAttempts = 0;
+    input.value = '';
+    if (err) err.style.display = 'none';
+    resetGateToStep1();
+  } else {
+    input.value = '';
+    if (err) { err.textContent = 'Passphrase not recognized.'; err.style.display = 'block'; }
+  }
+}
+
+// ── URL EMERGENCY RESET: add ?stewardReset to URL to clear lockout ──
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('stewardReset')) {
+    localStorage.removeItem('ai_gateLockout');
+    // Clean URL without reload
+    const clean = window.location.pathname + window.location.hash;
+    window.history.replaceState({}, '', clean);
+  }
+})();
+
 let adminActiveCES = null;
 
 // ── SETTINGS TAB ──
@@ -5882,7 +5913,15 @@ function signOutUser() {
       <div id="gateLockedMsg" style="display:none">
         <div style="font-size:1.5rem;margin-bottom:0.8rem">🔒</div>
         <div style="font-family:'Alice',serif;font-size:1rem;color:#e8a0a0;margin-bottom:0.6rem">Access Suspended</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.82rem;color:rgba(240,232,213,0.45);line-height:1.7">Three failed attempts have been logged. This event has been sent to the admin system. Please reach out to a Code Steward directly.</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.82rem;color:rgba(240,232,213,0.45);line-height:1.7;margin-bottom:1.2rem">Three failed attempts have been logged. This event has been sent to the admin system. Please reach out to a Code Steward directly.</div>
+        <!-- Primary Steward Override -->
+        <div id="primaryOverrideSection" style="display:none;border-top:1px solid rgba(200,146,42,0.12);padding-top:1rem;margin-top:0.5rem">
+          <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,146,42,0.5);margin-bottom:0.5rem">Primary Steward Override</div>
+          <input type="password" id="overridePassInput" class="field-input" placeholder="Master passphrase…" style="width:100%;margin-bottom:0.7rem;text-align:center;letter-spacing:0.18em;font-size:0.85rem" onkeydown="if(event.key==='Enter')attemptPrimaryOverride()">
+          <button onclick="attemptPrimaryOverride()" style="width:100%;padding:0.55rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.25);background:rgba(200,146,42,0.05);color:var(--orichalcum);font-family:'Alice',serif;font-size:0.82rem;cursor:pointer;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.12)'" onmouseout="this.style.background='rgba(200,146,42,0.05)'">Clear Lockout & Re-enter</button>
+          <div id="overrideError" style="margin-top:0.55rem;font-size:0.72rem;color:#e8a0a0;display:none;font-family:'Atkinson Hyperlegible',sans-serif"></div>
+        </div>
+        <button onclick="document.getElementById('primaryOverrideSection').style.display=document.getElementById('primaryOverrideSection').style.display==='none'?'block':'none'" style="background:none;border:none;color:rgba(240,232,213,0.18);font-size:0.62rem;cursor:pointer;margin-top:0.9rem;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;display:block;width:100%;text-align:center" onmouseover="this.style.color='rgba(240,232,213,0.4)'" onmouseout="this.style.color='rgba(240,232,213,0.18)'">Primary Steward? Restore access ↓</button>
       </div>
 
       <div id="adminLoginError" style="margin-top:0.75rem;font-size:0.78rem;color:#e8a0a0;display:none;font-family:'Atkinson Hyperlegible',sans-serif"></div>
