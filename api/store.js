@@ -1,12 +1,16 @@
 // api/store.js — Heartlight Exchange storage endpoint
 // Uses @upstash/redis (replacement for deprecated @vercel/kv)
 
-import { Redis } from '@upstash/redis';
+const { Redis } = require('@upstash/redis');
 
-const redis = new Redis({
-  url:   process.env.KV_REST_API_URL,
-  token: process.env.KV_REST_API_TOKEN,
-});
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const redis = redisUrl && redisToken
+  ? new Redis({
+      url: redisUrl,
+      token: redisToken,
+    })
+  : null;
 
 const PREFIX = 'hle_';
 
@@ -33,12 +37,15 @@ function getDefaultStewards() {
   }];
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+  if (!redis) {
+    return res.status(500).json({ error: 'Upstash Redis credentials are not configured.' });
+  }
 
   // ── GET ─────────────────────────────────────────────────────
   if (req.method === 'GET') {
@@ -87,4 +94,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
-}
+};

@@ -5696,10 +5696,11 @@ function selectEmoji(e) {
   buildEmojiPicker();
   updatePreview();
 }
-function submitCES() {
+async function submitCES() {
   if (!formState.oathSigned || !formState.oath2Signed) return;
   const name = document.getElementById('f_name')?.value?.trim();
   if (!name) return;
+  await hydrateStorageFromRemote();
   const result = submitCESProfile();
   const btn = document.getElementById('submitBtn');
   const conf = document.getElementById('cesConfirmation');
@@ -7068,14 +7069,249 @@ buildWishForm = function() {
 
 const _sp = ['aGVhcnRs','aWdodA==']; const STEWARD_PASS = atob(_sp.join(''));
 const STORAGE_PREFIX = 'ai_';
+const STORAGE_QUEUE_KEYS = new Set(['pending', 'approved', 'returned']);
+const REMOTE_STORAGE_KEYS = ['pending', 'approved', 'returned', 'authorizedCES', 'securityLog', 'gateLockout', 'stewardPass'];
+const REMOTE_STORAGE_ENDPOINT = '/api/store';
+const LOCAL_DEMO_HOSTS = new Set(['localhost', '127.0.0.1']);
+const storageCache = Object.create(null);
+const storageWriteQueue = new Map();
+let storageBackend = 'unknown';
+let storageHydrationPromise = null;
+
+function cloneStorageValue(value) {
+  if (value === null || value === undefined) return value;
+  try { return JSON.parse(JSON.stringify(value)); }
+  catch(e) { return value; }
+}
+
+function stripDemoProfiles(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(profile => !['demo1', 'demo2'].includes(profile && profile.id));
+}
+
+function normalizeStorageValue(key, value) {
+  if (value === null || value === undefined) return null;
+  if (STORAGE_QUEUE_KEYS.has(key)) return stripDemoProfiles(Array.isArray(value) ? value : []);
+  return value;
+}
+
+function readLocalStorageValue(key) {
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    if (raw === null) return undefined;
+    return normalizeStorageValue(key, JSON.parse(raw));
+  } catch(e) {
+    return undefined;
+  }
+}
+
+function writeLocalStorageValue(key, value) {
+  const normalized = normalizeStorageValue(key, value);
+  storageCache[key] = normalized;
+  try {
+    if (normalized === null || normalized === undefined) {
+      localStorage.removeItem(STORAGE_PREFIX + key);
+    } else {
+      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(normalized));
+    }
+  } catch(e) {}
+  return normalized;
+}
+
+function hasStorageValue(key) {
+  return Object.prototype.hasOwnProperty.call(storageCache, key);
+}
+
+function hasMeaningfulStorageValue(value) {
+  if (Array.isArray(value)) return value.length > 0;
+  if (value && typeof value === 'object') return Object.keys(value).length > 0;
+  return value !== null && value !== undefined && value !== '';
+}
+
+function shouldSeedLocalDemoData() {
+  return LOCAL_DEMO_HOSTS.has(window.location.hostname);
+}
 
 function getStorage(key, fallback=[]) {
-  try { return JSON.parse(localStorage.getItem(STORAGE_PREFIX+key)) || fallback; }
-  catch(e) { return fallback; }
+  if (!hasStorageValue(key)) {
+    const localValue = readLocalStorageValue(key);
+    if (localValue !== undefined) storageCache[key] = localValue;
+  }
+  const value = hasStorageValue(key) ? storageCache[key] : undefined;
+  return value === null || value === undefined ? fallback : cloneStorageValue(value);
 }
+
+function persistStorageToRemote(key, value) {
+  if (storageBackend === 'unavailable' || !REMOTE_STORAGE_KEYS.includes(key)) {
+    return Promise.resolve();
+  }
+  const normalized = normalizeStorageValue(key, value);
+  const prior = storageWriteQueue.get(key) || Promise.resolve();
+  const next = prior
+    .catch(() => {})
+    .then(async () => {
+      const response = await fetch(REMOTE_STORAGE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, value: normalized }),
+      });
+      if (!response.ok) {
+        throw new Error('Storage write failed with status ' + response.status);
+      }
+      storageBackend = 'remote';
+    });
+
+  next.catch(error => {
+    if (storageBackend === 'unknown') storageBackend = 'unavailable';
+    console.warn('Remote storage write failed for "' + key + '".', error);
+  });
+  storageWriteQueue.set(key, next);
+  return next;
+}
+
 function setStorage(key, val) {
-  try { localStorage.setItem(STORAGE_PREFIX+key, JSON.stringify(val)); } catch(e) {}
+  const normalized = writeLocalStorageValue(key, val);
+  void persistStorageToRemote(key, normalized);
 }
+
+REMOTE_STORAGE_KEYS.forEach(key => {
+  const localValue = readLocalStorageValue(key);
+  if (localValue !== undefined) storageCache[key] = localValue;
+});
+
+async function fetchRemoteStorageValue(key) {
+  const response = await fetch(`${REMOTE_STORAGE_ENDPOINT}?key=${encodeURIComponent(key)}`, {
+    cache: 'no-store',
+  });
+  if (!response.ok) {
+    throw new Error('Storage read failed with status ' + response.status);
+  }
+  const data = await response.json();
+  storageBackend = 'remote';
+  return normalizeStorageValue(key, data ? data.value : null);
+}
+
+function getDemoPendingProfiles() {
+  return [
+    {
+      id: 'demo1',
+      name: 'Isara Lune',
+      photo: null,
+      primaryRay: 'Indigo Ray',
+      rays: ['Indigo', 'Violet'],
+      heartlight: 'I tend the inner garden so others may bloom.',
+      offerings: ['Astrology', 'Dream Work', 'Natal Charts'],
+      exchangePathways: ['Gift Exchange', 'Gratitude Weave'],
+      submittedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      status: 'pending'
+    },
+    {
+      id: 'demo2',
+      name: 'Cael Ember',
+      photo: null,
+      primaryRay: 'Orange Ray',
+      rays: ['Orange'],
+      heartlight: 'Movement is my medicine and my message.',
+      offerings: ['Somatic Practice', 'Breathwork', 'Movement Ritual'],
+      exchangePathways: ['Barter', 'Time Exchange'],
+      submittedAt: new Date(Date.now() - 86400000).toISOString(),
+      status: 'pending'
+    }
+  ];
+}
+
+function initializeProfileStorageDefaults() {
+  const authorized = getStorage('authorizedCES', []);
+  if (authorized.length === 0) {
+    setStorage('authorizedCES', [
+      {
+        cesPlain: atob('MTIzNDU2Nzg5'),
+        cesEncrypted: cesEncrypt(atob('MTIzNDU2Nzg5')),
+        name: 'Atlas Morphoenix',
+        passphrase: STEWARD_PASS,
+        registeredAt: new Date().toISOString()
+      }
+    ]);
+  }
+
+  if (!shouldSeedLocalDemoData()) return;
+  const pending = getStorage('pending', []);
+  if (pending.length === 0) {
+    setStorage('pending', getDemoPendingProfiles());
+  }
+}
+
+function syncCurrentUserWithStoredProfile() {
+  if (typeof getCurrentUser !== 'function' || typeof setCurrentUser !== 'function') return;
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+  const allProfiles = ['pending', 'approved', 'returned'].flatMap(key => getStorage(key, []));
+  const matchedProfile = allProfiles.find(profile =>
+    profile.id === currentUser.id ||
+    (currentUser.cesNumber && profile.cesNumber === currentUser.cesNumber)
+  );
+  if (matchedProfile) setCurrentUser(matchedProfile);
+}
+
+function rerenderStorageBoundViews() {
+  if (typeof renderProfileCorner === 'function') renderProfileCorner();
+  if (typeof renderDirectory === 'function') renderDirectory();
+  if (typeof renderAdminStats === 'function') renderAdminStats();
+  if (typeof renderPendingList === 'function') renderPendingList();
+  if (typeof renderApprovedList === 'function') renderApprovedList();
+  if (typeof renderReturnedList === 'function') renderReturnedList();
+  if (typeof renderAuthorizedList === 'function') renderAuthorizedList();
+  if (typeof renderSecurityLog === 'function') renderSecurityLog();
+}
+
+async function hydrateStorageFromRemote() {
+  if (storageHydrationPromise) return storageHydrationPromise;
+  storageHydrationPromise = (async () => {
+    const results = await Promise.allSettled(
+      REMOTE_STORAGE_KEYS.map(async key => ({ key, value: await fetchRemoteStorageValue(key) }))
+    );
+    const successfulReads = results.filter(result => result.status === 'fulfilled');
+    if (successfulReads.length === 0) {
+      storageBackend = 'unavailable';
+      initializeProfileStorageDefaults();
+      syncCurrentUserWithStoredProfile();
+      rerenderStorageBoundViews();
+      return false;
+    }
+
+    successfulReads.forEach(result => {
+      const { key, value } = result.value;
+      const localValue = hasStorageValue(key) ? storageCache[key] : readLocalStorageValue(key);
+      if (hasMeaningfulStorageValue(value)) {
+        writeLocalStorageValue(key, value);
+        return;
+      }
+      if (hasMeaningfulStorageValue(localValue)) {
+        const normalizedLocal = writeLocalStorageValue(key, localValue);
+        void persistStorageToRemote(key, normalizedLocal);
+        return;
+      }
+      writeLocalStorageValue(key, value);
+    });
+
+    initializeProfileStorageDefaults();
+    syncCurrentUserWithStoredProfile();
+    rerenderStorageBoundViews();
+    return true;
+  })().catch(error => {
+    storageBackend = 'unavailable';
+    console.warn('Falling back to local profile storage.', error);
+    initializeProfileStorageDefaults();
+    syncCurrentUserWithStoredProfile();
+    rerenderStorageBoundViews();
+    return false;
+  });
+  return storageHydrationPromise;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  void hydrateStorageFromRemote();
+});
 
 // ── Current logged-in user (demo: stored in sessionStorage) ──
 function getCurrentUser() {
@@ -7446,16 +7682,6 @@ function submitCESProfile() {
 // Find the CES form submit and wire it
 document.addEventListener('DOMContentLoaded', function() {
   renderProfileCorner();
-  // ── footer phrase interaction (not indexed inline) ──
-  // Demo: add some sample pending submissions for testing
-  const pending = getStorage('pending', []);
-  if (pending.length === 0) {
-    const samples = [
-      { id:'demo1', name:'Isara Lune', photo:null, primaryRay:'Indigo Ray', rays:['Indigo','Violet'], heartlight:'I tend the inner garden so others may bloom.', offerings:['Astrology','Dream Work','Natal Charts'], exchangePathways:['Gift Exchange','Gratitude Weave'], submittedAt: new Date(Date.now()-86400000*2).toISOString(), status:'pending' },
-      { id:'demo2', name:'Cael Ember', photo:null, primaryRay:'Orange Ray', rays:['Orange'], heartlight:'Movement is my medicine and my message.', offerings:['Somatic Practice','Breathwork','Movement Ritual'], exchangePathways:['Barter','Time Exchange'], submittedAt: new Date(Date.now()-86400000).toISOString(), status:'pending' },
-    ];
-    setStorage('pending', samples);
-  }
 });
 
 // ── ADMIN SYSTEM ──
@@ -7842,7 +8068,6 @@ function attemptPrimaryOverride() {
   // Must match the original master passphrase (never per-steward override)
   if (val === STEWARD_PASS) {
     setStorage('gateLockout', null);
-    localStorage.removeItem('ai_gateLockout');
     gateFailAttempts = 0;
     input.value = '';
     if (err) err.style.display = 'none';
@@ -7857,7 +8082,7 @@ function attemptPrimaryOverride() {
 (function() {
   const params = new URLSearchParams(window.location.search);
   if (params.has('stewardReset')) {
-    localStorage.removeItem('ai_gateLockout');
+    setStorage('gateLockout', null);
     // Clean URL without reload
     const clean = window.location.pathname + window.location.hash;
     window.history.replaceState({}, '', clean);
@@ -8227,27 +8452,6 @@ function assignGeneratedCESNumber() {
 
 // cesNumber is captured directly inside submitCESProfile
 
-document.addEventListener('DOMContentLoaded', function() {
-  renderProfileCorner();
-  // ── footer phrase interaction (not indexed inline) ──
-  // Seed demo data
-  const pending = getStorage('pending', []);
-  if (pending.length === 0) {
-    setStorage('pending', [
-      { id:'demo1', name:'Isara Lune', photo:null, primaryRay:'Indigo Ray', rays:['Indigo','Violet'], heartlight:'I tend the inner garden so others may bloom.', offerings:['Astrology','Dream Work','Natal Charts'], exchangePathways:['Gift Exchange','Gratitude Weave'], submittedAt: new Date(Date.now()-86400000*2).toISOString(), status:'pending' },
-      { id:'demo2', name:'Cael Ember', photo:null, primaryRay:'Orange Ray', rays:['Orange'], heartlight:'Movement is my medicine and my message.', offerings:['Somatic Practice','Breathwork','Movement Ritual'], exchangePathways:['Barter','Time Exchange'], submittedAt: new Date(Date.now()-86400000).toISOString(), status:'pending' },
-    ]);
-  }
-  // Seed a default Steward CES code if none registered
-  const authorized = getStorage('authorizedCES', []);
-  if (authorized.length === 0) {
-    // Default Steward seed (encoded)
-    setStorage('authorizedCES', [
-      { cesPlain: atob('MTIzNDU2Nzg5'), cesEncrypted: cesEncrypt(atob('MTIzNDU2Nzg5')), name: 'Atlas Morphoenix', registeredAt: new Date().toISOString() }
-    ]);
-  }
-});
-
 // ── BEING SIGN-IN SYSTEM ──
 
 function openSignIn() {
@@ -8272,7 +8476,8 @@ function closeSignIn() {
   if (err) err.style.display = 'none';
 }
 
-function submitSignIn() {
+async function submitSignIn() {
+  await hydrateStorageFromRemote();
   const inp = document.getElementById('signInCESInput');
   const pass = document.getElementById('signInPassInput');
   const err = document.getElementById('signInCESError');
