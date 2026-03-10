@@ -11,6 +11,7 @@ const ALLOWED_KEYS = [
   'pending',
   'approved',
   'returned',
+  'connections',
   'authorizedCES',
   'securityLog',
   'gateLockout',
@@ -20,7 +21,7 @@ const ALLOWED_KEYS = [
 function getDefaultStewards() {
   const cesPlain = Buffer.from('MTIzNDU2Nzg5', 'base64').toString();
   const cesEncrypted = '-' + cesPlain.split('').reverse().join('');
-  const passphrase = Buffer.from('aGVhcnRsaWdodA==', 'base64').toString();
+  const passphrase = Buffer.from('YXRsYXNnYXRl', 'base64').toString();
   return [{
     cesPlain,
     cesEncrypted,

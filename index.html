@@ -126,7 +126,7 @@
   /* ── HEADER ── */
   header {
     position: relative;
-    padding: 3rem 0 2rem;
+    padding: 3rem 0 0.85rem;
     text-align: center;
     border-bottom: 1px solid rgba(255,255,255,0.15);
   }
@@ -147,7 +147,7 @@
     color: var(--orichalcum-pale);
     line-height: 1.1;
     letter-spacing: 0.02em;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.9rem;
   }
 
   .site-subtitle {
@@ -155,14 +155,14 @@
     font-size: 1.15rem;
     font-style: italic;
     color: var(--muted);
-    margin-bottom: 2rem;
+    margin-bottom: 0.42rem;
   }
 
   /* ── DODECAGOUGE SIGIL ── */
   .sigil-wrap {
     display: flex;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
   }
   .dodecahedron-svg {
     width: 80px;
@@ -181,7 +181,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0;
-    padding: 1.1rem 0 0;
+    padding: 0.65rem 0 0;
     border-bottom: 1px solid rgba(255,255,255,0.08);
     margin-bottom: 2.5rem;
   }
@@ -831,6 +831,101 @@
     line-height: 1.65;
     color: rgba(240,232,213,0.78);
   }
+  .share-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.7rem;
+  }
+  .share-selector-card {
+    position: relative;
+    border: 1px solid rgba(200,146,42,0.18);
+    border-radius: 0.9rem;
+    background: rgba(255,255,255,0.03);
+    min-height: 100%;
+  }
+  .share-selector-card input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .share-selector-card label {
+    display: block;
+    padding: 0.9rem 1rem;
+    min-height: 100%;
+    cursor: pointer;
+  }
+  .share-selector-card input:checked + label {
+    border-radius: 0.9rem;
+    background: rgba(200,146,42,0.1);
+    box-shadow: 0 0 0 1px rgba(200,146,42,0.22) inset;
+  }
+  .share-selector-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin-bottom: 0.45rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--orichalcum);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+  }
+  .share-selector-value {
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: rgba(240,232,213,0.82);
+    word-break: break-word;
+  }
+  .connection-request-list {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 0.75rem;
+  }
+  .connection-request-card {
+    border: 1px solid rgba(200,146,42,0.18);
+    border-radius: 1rem;
+    padding: 1rem 1.05rem;
+    background: rgba(255,255,255,0.03);
+  }
+  .connection-request-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+  }
+  .connection-request-title {
+    font-family: 'Alice', serif;
+    font-size: 0.98rem;
+    color: var(--cream);
+    margin-bottom: 0.18rem;
+  }
+  .connection-request-sub {
+    font-size: 0.72rem;
+    line-height: 1.55;
+    color: rgba(240,232,213,0.58);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+  }
+  .connection-request-time {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(200,146,42,0.52);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    white-space: nowrap;
+  }
+  .connection-request-message {
+    padding: 0.8rem 0.9rem;
+    border-radius: 0.85rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: rgba(240,232,213,0.8);
+    margin-bottom: 0.85rem;
+  }
   .portfolio-form-stack {
     display: grid;
     gap: 0.7rem;
@@ -1324,7 +1419,7 @@
     <div class="nav-primary">
       <button id="navBtnDirectory" class="active nav-btn-primary" onclick="setView('directory', this)">✦ Directory</button>
       <button id="navBtnCharter" class="nav-btn-primary" onclick="setView('charter', this)">📜 Charter</button>
-      <button id="navBtnWish" class="nav-btn-primary" onclick="setView('wish', this)">🪙 Wish Well</button>
+      <button id="navBtnWish" class="nav-btn-primary" onclick="setView('wish', this)">🪙 Wishing Well</button>
     </div>
     <div class="nav-secondary">
       <button id="navBtnCodes" onclick="setView('codes', this)">💎 Codes of ALL</button>
@@ -1387,7 +1482,7 @@
     </div>
 
     <div class="section-heading fade-up stagger-2">Heartlight Co-Creator Directory</div>
-    <p class="section-sub fade-up stagger-3">Only approved C.E.S. profiles live here now, with direct connection paths for swift co-creator outreach.</p>
+    <p class="section-sub fade-up stagger-3">Only approved Core Energetic Signatures live here now, with direct connection paths for swift co-creator outreach.</p>
 
     <div class="directory-grid" id="directoryGrid">
       <!-- Cards rendered by JS -->
@@ -1873,10 +1968,10 @@
       }
     </style>
 
-    <div class="section-heading" style="text-align:center">Create Your C.E.S. Profile</div>
+    <div class="section-heading" style="text-align:center">Create Your Core Energetic Signature</div>
     <p class="section-sub" style="text-align:center;max-width:720px;margin:0 auto 1.2rem">Your Core Energetic Signature is how your frequency resonates in the field</p>
     <div style="max-width:680px;margin:0 auto 2rem;text-align:center">
-      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.72);line-height:1.9">Each being carries a unique Core Energetic Signature that allows for them to co-create in a way that is authentic to them, and allows for all of us to share in a way that feels resonant for our being. The Core Energetic Signature (C.E.S.) Profile holds space for your frequency to connect, create, and share.</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.72);line-height:1.9">Each being carries a unique Core Energetic Signature that allows for them to co-create in a way that is authentic to them, and allows for all of us to share in a way that feels resonant for our being. The Core Energetic Signature (C.E.S.) holds space for your frequency to connect, create, and share.</div>
     </div>
 
     <div class="ces-form-wrap">
@@ -1931,7 +2026,7 @@
             </div>
           </div>
           <div>
-            <label class="field-label">Profile Photo</label>
+            <label class="field-label">Signature Photo</label>
             <div id="photoUploadArea" style="margin-top:0.4rem">
               <div style="display:flex;align-items:center;gap:1.2rem;flex-wrap:wrap;margin-bottom:0.9rem">
                 <div id="photoPreviewCircle" style="width:72px;height:72px;border-radius:50%;border:2px solid rgba(200,146,42,0.35);background:rgba(40,30,60,0.7);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;cursor:pointer" onclick="document.getElementById('photoFileInput').click()" title="Upload photo">
@@ -1946,8 +2041,8 @@
                 </div>
               </div>
               <div>
-                <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.55);margin-bottom:0.45rem">Or choose an emoji</div>
-                <div style="display:flex;flex-wrap:wrap;gap:0.35rem" id="emojiPickerRow"></div>
+                <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.55);margin-bottom:0.45rem">OR TYPE YOUR AVATAR SYMBOLS/INITIALS</div>
+                <input class="field-input" type="text" id="f_avatar_mark" placeholder="e.g. ✦, RAY, 🌿" oninput="updateAvatarMark(this.value)" style="max-width:220px">
                 <div id="selectedEmojiDisplay" style="margin-top:0.5rem;font-size:0.72rem;color:rgba(200,146,42,0.6);font-family:'Atkinson Hyperlegible',sans-serif"></div>
               </div>
             </div>
@@ -1964,7 +2059,7 @@
         <!-- SECTION 3: RAY RESONANCE -->
         <div class="form-section">
           <div class="form-section-title">🌈 Ray Resonance</div>
-          <div class="form-section-hint">Select up to 3 Rays. The first you select becomes your Primary Ray and shapes your profile's living color field.</div>
+          <div class="form-section-hint">Select up to 3 Rays. The first you select becomes your Primary Ray and shapes your Core Energetic Signature's living color field.</div>
           <div class="ray-select-grid" id="raySelectGrid">
             <!-- rendered by JS -->
           </div>
@@ -2084,9 +2179,18 @@
               <input class="field-input" type="text" id="f_contact_whatsapp" placeholder="+1 555 555 5555" oninput="updatePreview()">
             </div>
           </div>
+          <div style="margin-top:1rem;padding:0.95rem 1rem;border-radius:0.9rem;border:1px solid rgba(200,146,42,0.16);background:rgba(255,255,255,0.03)">
+            <label style="display:flex;align-items:flex-start;gap:0.7rem;cursor:pointer">
+              <input type="checkbox" id="f_contact_public" onchange="updatePreview()" style="margin-top:0.2rem;accent-color:#c8922a">
+              <span>
+                <span style="display:block;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.25rem">Public On Directory</span>
+                <span style="display:block;font-size:0.82rem;line-height:1.65;color:rgba(240,232,213,0.75)">Turn this on to make your saved socials and contact paths visible on your public Directory card and signature modal. Leave it off to keep them private until you share them through a direct co-creator connection.</span>
+              </span>
+            </label>
+          </div>
           <div style="margin-top:1rem">
             <label class="field-label">Photo & Video Portfolio</label>
-            <div class="form-section-hint" style="margin-bottom:0.6rem">Add hosted media URLs to showcase your work in the Directory and on your profile.</div>
+            <div class="form-section-hint" style="margin-bottom:0.6rem">Add hosted media URLs to showcase your work in the Directory and on your Core Energetic Signature.</div>
             <div id="portfolioItemsList" class="portfolio-form-stack"></div>
             <div style="display:flex;gap:0.55rem;flex-wrap:wrap;margin-top:0.85rem">
               <button type="button" class="chip-add-btn" onclick="addPortfolioItem('image')">+ Add Photo</button>
@@ -2113,16 +2217,16 @@
           <div class="oath-check-row" onclick="toggleOath2()" style="margin-top:0.75rem">
             <div class="oath-checkbox" id="oathBox2">✓</div>
             <div class="oath-check-label">
-              I speak this vow and offer my C.E.S. Profile in full resonance with the Heartlight Exchange Charter.
+              I speak this vow and offer my Core Energetic Signature in full resonance with the Heartlight Exchange Charter.
               <button onclick="event.stopPropagation();window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('charter',document.getElementById('navBtnCharter')),320)" class="oath-link-btn">View Charter →</button>
             </div>
           </div>
         </div>
 
-        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>✦ Offer My C.E.S. Profile to the Exchange</button>
+        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>✦ Offer My Core Energetic Signature to the Exchange</button>
         <div id="cesConfirmation" style="display:none;text-align:center;padding:2rem 1rem;animation:fadeIn 0.6s ease">
           <div style="font-size:2rem;margin-bottom:1rem">🌈✨</div>
-          <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your C.E.S. Profile has been offered to the Exchange.</div>
+          <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your Core Energetic Signature has been offered to the Exchange.</div>
           <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(240,232,213,0.82);line-height:1.85;max-width:480px;margin:0 auto">A steward will welcome you and confirm your place in the Directory within one lunar cycle.</div>
           <div style="margin-top:1.2rem;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,146,42,0.6);font-family:'Atkinson Hyperlegible',sans-serif">All That Loves Allow Synchronicities 🏝️</div>
         </div>
@@ -2130,7 +2234,7 @@
 
       <!-- RIGHT: LIVE PREVIEW -->
       <div class="ces-preview-sticky">
-        <div class="preview-label">✦ Live Profile Preview</div>
+        <div class="preview-label">✦ Live Core Energetic Signature Preview</div>
         <div class="ces-preview-card" id="previewCard">
           <div class="preview-ray-bar" id="previewRayBar"></div>
           <div class="preview-bg-glow" id="previewGlow"></div>
@@ -2201,10 +2305,10 @@
 
   <!-- JOIN CTA -->
   <div class="join-cta fade-up" id="joinCta">
-    <h2>Your frequency is needed here</h2>
-    <p>Every Atlastizen carries a sacred gift. The Exchange grows as each new co-creator arrives — by resonance, invitation, and the call of the Heartlight.</p>
+    <h2>Your frequency is felt here.</h2>
+    <p>We all carry a core energetic signature that is felt when we co-create together. Share your frequency today.</p>
     <button class="join-btn" onclick="setView('submit', document.getElementById('navBtnSubmit'))">
-      🌟 Share Your C.E.S. Profile
+      Share Your Core Energetic Signature
     </button>
   </div>
 
@@ -2583,13 +2687,13 @@
     </style>
 
     <div style="max-width:900px;margin:0 auto">
-      <div class="section-heading">🪙 The Wish Well</div>
+      <div class="section-heading">🪙 The Wishing Well</div>
       <p class="section-sub">Cast a wish into the well, then explore the field of active wishes below.</p>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 1.2rem;border:1px solid rgba(42,179,196,0.2);border-radius:14px;background:rgba(42,179,196,0.05);margin-bottom:2rem">
         <div>
           <div style="font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;color:#7dd8e4;margin-bottom:0.35rem">For Co-Creator Beings</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.98rem;color:rgba(240,232,213,0.8);line-height:1.7">The Wish Field lives just below, woven directly into the Wish Well so beings can cast wishes and answer them in one place.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.98rem;color:rgba(240,232,213,0.8);line-height:1.7">The Wish Field lives just below, woven directly into the Wishing Well so beings can cast wishes and answer them in one place.</div>
         </div>
         <button onclick="document.getElementById('wishFieldSection').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:0.7rem 1.45rem;border-radius:999px;border:1px solid rgba(42,179,196,0.45);background:rgba(42,179,196,0.1);color:#7dd8e4;font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.25s;white-space:nowrap" onmouseover="this.style.background='rgba(42,179,196,0.18)'" onmouseout="this.style.background='rgba(42,179,196,0.1)'">✨ Explore The Wish Field</button>
       </div>
@@ -2600,19 +2704,19 @@
 
           <!-- SECTION: WHO IS WISHING -->
           <div class="form-section">
-            <div class="form-section-title">✨ Wishing Through Your C.E.S. Profile</div>
-            <div class="form-section-hint">An active Co-Creator C.E.S. profile is required to cast and grant wishes in the Wish Well</div>
+            <div class="form-section-title">✨ Wishing Through Your Core Energetic Signature</div>
+            <div class="form-section-hint">An active Co-Creator Core Energetic Signature is required to cast and grant wishes in the Wishing Well</div>
             <div id="wishProfileStatusCard" style="margin-bottom:0.95rem;padding:0.95rem 1rem;border-radius:0.85rem;border:1px solid rgba(200,146,42,0.16);background:rgba(255,255,255,0.03)">
               <!-- rendered by JS -->
             </div>
             <div class="field-grid-2" style="margin-bottom:0.9rem">
               <div>
                 <label class="field-label">Active C.E.S. Name / Pronouns</label>
-                <input class="field-input" type="text" id="w_name" placeholder="Sign into your C.E.S. profile" readonly>
+                <input class="field-input" type="text" id="w_name" placeholder="Sign into your Core Energetic Signature" readonly>
               </div>
               <div>
                 <label class="field-label">Active C.E.S. Location · Time Zone</label>
-                <input class="field-input" type="text" id="w_location" placeholder="Your C.E.S. profile location will appear here" readonly>
+                <input class="field-input" type="text" id="w_location" placeholder="Your Core Energetic Signature location will appear here" readonly>
               </div>
             </div>
           </div>
@@ -2623,7 +2727,7 @@
             <div class="form-section-hint">Write your wish as a letter, a prayer, a story spark, or a voice from the heart</div>
 
             <div style="margin-bottom:1rem">
-              <label class="field-label">Wish Well Season</label>
+              <label class="field-label">Wishing Well Season</label>
               <select class="field-input" id="w_portal" onchange="updateWishPreview()" style="background:rgba(15,12,25,0.9)">
                 <option value="">Select your portal of entry…</option>
                 <option>❄️ Winter Solstice — Hearth of Wishes</option>
@@ -3173,10 +3277,10 @@
     <div class="wish-field-wrap" id="wishFieldSection">
       <div class="wish-field-hero">
         <div class="wish-field-hero-inner">
-          <div class="wish-field-eyebrow">✨ Inside The Wish Well</div>
+          <div class="wish-field-eyebrow">✨ Inside The Wishing Well</div>
           <div class="wish-field-title">The Wish Field</div>
           <div class="wish-field-sub">Let's grant our wishes. ✨</div>
-          <div class="wish-field-copy">This is the active constellation of wishes offered through the Wish Well. Filter by wish type, heart theme, and ray resonance to find the calls that match your gifts. Roles can welcome many beings at once, so one wish may gather a whole circle of co-creators.</div>
+          <div class="wish-field-copy">This is the active constellation of wishes offered through the Wishing Well. Filter by wish type, heart theme, and ray resonance to find the calls that match your gifts. Roles can welcome many beings at once, so one wish may gather a whole circle of co-creators.</div>
           <div class="wish-field-stats">
             <div class="wish-field-stat">
               <div class="wish-field-stat-label">Awaiting Wishes</div>
@@ -3411,7 +3515,7 @@
     <div class="my-wishes-wrap">
       <div class="my-wishes-hero">
         <div class="my-wishes-title">✨ Your Wishes</div>
-        <div class="my-wishes-sub">Track the wishes cast by your local C.E.S. profile. Wishes stay in the field while they are awaiting to be granted, then move into the granted column once you choose the resonance that fulfills them.</div>
+        <div class="my-wishes-sub">Track the wishes cast by your local Core Energetic Signature. Wishes stay in the field while they are awaiting to be granted, then move into the granted column once you choose the resonance that fulfills them.</div>
         <div class="my-wishes-stats">
           <div class="my-wishes-stat">
             <div class="my-wishes-stat-label">Total Wishes</div>
@@ -3838,7 +3942,7 @@
         <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(240,232,213,0.6);line-height:1.9;margin-bottom:1.8rem">
           Atlas Island treats privacy as dignity and sovereignty. In the Heartlight Exchange, what is shared in love is protected in love, and what is created in trust remains in trust until both beings choose how it lives in the world.
         </div>
-        <button onclick="setView('wish', document.getElementById('navBtnWish'))" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🪙 Enter the Wish Well</button>
+        <button onclick="setView('wish', document.getElementById('navBtnWish'))" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🪙 Enter the Wishing Well</button>
       </div>
 
     </div>
@@ -4056,17 +4160,17 @@
 
       <div class="charter-section">
         <div class="charter-section-title">✦ How The Exchange Flows</div>
-        <div class="charter-body">Heartlight Exchange moves through a simple living rhythm: beings join through a C.E.S. Co-Creator Profile, cast and answer wishes through the Wish Well, and then complete co-creations through resonance, agreement, and granting.</div>
+        <div class="charter-body">Heartlight Exchange moves through a simple living rhythm: beings join through a Core Energetic Signature, cast and answer wishes through the Wishing Well, and then complete co-creations through resonance, agreement, and granting.</div>
         <div class="charter-flow-grid">
           <div class="charter-flow-card">
-            <div class="charter-flow-step">1. Create C.E.S. Profile</div>
+            <div class="charter-flow-step">1. Create Core Energetic Signature</div>
             <div class="charter-flow-title">Join As A Co-Creator</div>
-            <div class="charter-flow-copy">Every being enters through a Core Energetic Signature profile. Your C.E.S. profile holds your resonance, offerings, exchange pathways, and seasonal capacity inside the Heartlight Exchange.</div>
+            <div class="charter-flow-copy">Every being enters through a Core Energetic Signature. Your signature holds your resonance, offerings, exchange pathways, and seasonal capacity inside the Heartlight Exchange.</div>
           </div>
           <div class="charter-flow-card">
-            <div class="charter-flow-step">2. Enter The Wish Well</div>
+            <div class="charter-flow-step">2. Enter The Wishing Well</div>
             <div class="charter-flow-title">Cast And Answer Wishes</div>
-            <div class="charter-flow-copy">Wishes are cast through an active C.E.S. Co-Creator profile. The same Wish Well lets beings answer wishes, feel resonance, and step forward for the roles they are called to fulfill.</div>
+            <div class="charter-flow-copy">Wishes are cast through an active Core Energetic Signature. The same Wishing Well lets beings answer wishes, feel resonance, and step forward for the roles they are called to fulfill.</div>
           </div>
           <div class="charter-flow-card">
             <div class="charter-flow-step">3. Grant Through Co-Creation</div>
@@ -4140,7 +4244,7 @@
       <!-- Heartlight Co-Creators -->
       <div class="charter-section">
         <div class="charter-section-title">🦋 Heartlight Co-Creators</div>
-        <div class="charter-body">Heartlight Co-Creators are Atlastizens whose occupation is co-creating for ALL through reciprocity. Recipients may select a Co-Creator directly via profiles, and Co-Creators respond through resonance and capacity for that season.</div>
+        <div class="charter-body">Heartlight Co-Creators are Atlastizens whose occupation is co-creating for ALL through reciprocity. Recipients may select a Co-Creator directly via Core Energetic Signatures, and Co-Creators respond through resonance and capacity for that season.</div>
       </div>
 
       <!-- Exchange Pathways -->
@@ -4237,7 +4341,7 @@
       <!-- Closing -->
       <div style="text-align:center;padding:2rem 0 3rem;max-width:600px;margin:0 auto">
         <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.6);line-height:1.9;margin-bottom:1.8rem">Join the Heartlight Exchange to share your Core Energetic Signature. Let's make our dreams and wishes come true!</div>
-        <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('submit',document.getElementById('navBtnSubmit')),320)" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🌟 Create Your C.E.S. Profile</button>
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('submit',document.getElementById('navBtnSubmit')),320)" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">Create Your Core Energetic Signature</button>
       </div>
 
       <div class="charter-hex-modal-overlay" id="charterHexModalOverlay" onclick="closeCharterHexModalOutside(event)">
@@ -4282,7 +4386,7 @@
 
         <!-- Tab: Pending -->
         <div id="adminTabContentPending">
-          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.88rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">Review each C.E.S. Profile submission with care and resonance. Accept to welcome them into the Heartlight Directory, or return with a note to invite refinement.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.88rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">Review each Core Energetic Signature submission with care and resonance. Accept to welcome them into the Heartlight Directory, or return with a note to invite refinement.</div>
           <div id="pendingList"><!-- rendered --></div>
         </div>
 
@@ -4302,7 +4406,7 @@
           <!-- Authorized Stewards -->
           <div style="margin-bottom:2rem">
             <div class="admin-section-title">🔑 Authorized Steward C.E.S. Codes</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem;line-height:1.7">Beings whose C.E.S. codes are registered here may access the Steward Field. Each code is held encrypted. The Steward passphrase is also required for entry.</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem;line-height:1.7">Beings whose C.E.S. codes are registered here may access the Steward Field. Each code is held encrypted. A steward-specific passphrase is required for entry. The master passphrase only restores access after lockout.</div>
             <div id="authorizedList" style="margin-bottom:1rem"><!-- rendered --></div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;align-items:start" class="ces-register-grid">
                 <div>
@@ -4620,7 +4724,7 @@
         <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.6);line-height:1.9;margin-bottom:1.8rem">
           These Codes are lived values. They shape every wish, every offering, every agreement, and every exchange on Atlas Island. To enter the Heartlight Exchange is to carry them forward.
         </div>
-        <button onclick="setView('submit', document.getElementById('navBtnSubmit'))" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🌟 Share Your C.E.S. Profile</button>
+        <button onclick="setView('submit', document.getElementById('navBtnSubmit'))" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">Share Your Core Energetic Signature</button>
       </div>
 
     </div>
@@ -4949,6 +5053,138 @@ async function copyContactValue(value, label) {
   }
 }
 
+function getProfileConnectionMatch(profile = {}) {
+  return {
+    id: String(profile.id || ''),
+    cesNumber: String(profile.cesNumber || ''),
+  };
+}
+
+function matchesConnectionSide(connection = {}, profile = {}, side = 'to') {
+  const match = getProfileConnectionMatch(profile);
+  const sideId = String(connection[`${side}ProfileId`] || '');
+  const sideCES = String(connection[`${side}CES`] || '');
+  return (match.id && sideId === match.id) || (match.cesNumber && sideCES === match.cesNumber);
+}
+
+function getAllConnections() {
+  return getStorage('connections', []);
+}
+
+function getIncomingConnections(profile = {}) {
+  return getAllConnections().filter(entry => matchesConnectionSide(entry, profile, 'to'));
+}
+
+function getOutgoingConnections(profile = {}) {
+  return getAllConnections().filter(entry => matchesConnectionSide(entry, profile, 'from'));
+}
+
+function formatConnectionTimestamp(value) {
+  if (!value) return '';
+  try {
+    return new Date(value).toLocaleString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  } catch (error) {
+    return '';
+  }
+}
+
+function getSelectedSharedContactMethods() {
+  const selectedKeys = CONTACT_FIELD_CONFIG
+    .map(field => field.key)
+    .filter(key => document.getElementById(`share_contact_${key}`)?.checked);
+  const currentUser = normalizeCreatorRecord(getCurrentUser() || {});
+  return selectedKeys.reduce((acc, key) => {
+    const value = currentUser.contactMethods[key];
+    if (value) acc[key] = value;
+    return acc;
+  }, {});
+}
+
+function renderContactShareSelector(contactMethods = {}) {
+  const items = getContactMethodItems(contactMethods);
+  if (!items.length) {
+    return `<div class="contact-form-note">Add at least one contact path to your own Core Energetic Signature before sharing it in a co-creator connection.</div>`;
+  }
+  return `<div class="share-selector-grid">${items.map((item, index) => `
+    <div class="share-selector-card">
+      <input type="checkbox" id="share_contact_${item.key}" ${index === 0 ? 'checked' : ''}>
+      <label for="share_contact_${item.key}">
+        <div class="share-selector-label">
+          <span>${escapeHtml(item.label)}</span>
+          <span>${index === 0 ? 'Default' : 'Optional'}</span>
+        </div>
+        <div class="share-selector-value">${escapeHtml(item.display)}</div>
+      </label>
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderConnectionRequestCards(items = [], mode = 'incoming') {
+  if (!items.length) {
+    return `<div class="my-wishes-empty">${mode === 'incoming'
+      ? 'No co-creator connections have been shared with your Core Energetic Signature yet.'
+      : 'You have not shared any co-creator connection details out from your Core Energetic Signature yet.'}</div>`;
+  }
+  return `<div class="connection-request-list">${items.map(entry => {
+    const title = mode === 'incoming'
+      ? `${escapeHtml(entry.fromName || 'A co-creator')} wants to connect`
+      : `You shared a connection with ${escapeHtml(entry.toName || 'a co-creator')}`;
+    const sub = mode === 'incoming'
+      ? [entry.fromRay, entry.fromCES ? `C.E.S. ${entry.fromCES}` : ''].filter(Boolean).join(' · ')
+      : [entry.toRay, entry.toCES ? `C.E.S. ${entry.toCES}` : ''].filter(Boolean).join(' · ');
+    return `
+      <div class="connection-request-card">
+        <div class="connection-request-meta">
+          <div>
+            <div class="connection-request-title">${title}</div>
+            <div class="connection-request-sub">${escapeHtml(sub || 'Heartlight Co-Creator')}</div>
+          </div>
+          <div class="connection-request-time">${escapeHtml(formatConnectionTimestamp(entry.createdAt) || '')}</div>
+        </div>
+        ${entry.scope ? `<div class="portfolio-link-line" style="margin-bottom:0.45rem">Co-Creation Intent: ${escapeHtml(entry.scope)}</div>` : ''}
+        ${entry.replyPreference ? `<div class="portfolio-link-line" style="margin-bottom:0.45rem">Preferred Reply: ${escapeHtml(entry.replyPreference)}</div>` : ''}
+        <div class="connection-request-message">${escapeHtml(entry.message || 'A first note was shared without extra text.')}</div>
+        <div class="profile-modal-label" style="margin-bottom:0.45rem">${mode === 'incoming' ? 'Shared Contact Paths' : 'Contact Paths You Shared'}</div>
+        ${renderContactMethodGrid(entry.sharedContactMethods || {}, {
+          emptyHtml: '<div class="contact-form-note">No contact methods were attached to this connection.</div>'
+        })}
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function renderProfileConnectionsSection(profile = {}) {
+  const incoming = getIncomingConnections(profile)
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+  const outgoing = getOutgoingConnections(profile)
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+  return `
+    <div class="profile-modal-section">
+      <div class="profile-modal-label">Co-Creator Connections</div>
+      <div class="profile-modal-value" style="margin-bottom:0.9rem">Contact details shared from one Core Energetic Signature to another live here privately once another co-creator sends them to you.</div>
+      <div class="my-wishes-stats" style="margin-bottom:1rem">
+        <div class="my-wishes-stat">
+          <div class="my-wishes-stat-label">Incoming</div>
+          <div class="my-wishes-stat-value">${incoming.length}</div>
+        </div>
+        <div class="my-wishes-stat">
+          <div class="my-wishes-stat-label">Outgoing</div>
+          <div class="my-wishes-stat-value">${outgoing.length}</div>
+        </div>
+      </div>
+      <div class="profile-modal-label" style="margin-bottom:0.45rem">Shared With You</div>
+      ${renderConnectionRequestCards(incoming, 'incoming')}
+      <div class="profile-modal-label" style="margin:1rem 0 0.45rem">Shared By You</div>
+      ${renderConnectionRequestCards(outgoing, 'outgoing')}
+    </div>
+  `;
+}
+
 function getSeasonBadge(seasons = {}) {
   const firstOpen = Object.entries(seasons).find(([, open]) => open);
   return firstOpen ? SEASON_EMOJI[firstOpen[0]] : '✦';
@@ -5001,6 +5237,7 @@ function normalizeCreatorRecord(profile = {}) {
   const passphrase = String(profile.passphrase || '').trim();
   const legacyContactText = profile.contactMethod || profile.contact || '';
   const contactMethods = normalizeContactMethods(profile.contactMethods, legacyContactText);
+  const publicContactVisibility = !!(profile.publicContactVisibility || profile.contactVisibility === 'public');
   return {
     ...profile,
     id: profile.id,
@@ -5008,7 +5245,7 @@ function normalizeCreatorRecord(profile = {}) {
     pronouns: profile.pronouns || '',
     title: profile.title || '',
     location: profile.location || '',
-    emoji: profile.emoji || '🌟',
+    emoji: typeof profile.emoji === 'string' ? profile.emoji : '',
     photo: profile.photo || null,
     ray: rayKey,
     primaryRay: profile.primaryRay || (rayKey ? `${rayKey} Ray` : ''),
@@ -5025,6 +5262,7 @@ function normalizeCreatorRecord(profile = {}) {
     portfolioLink: profile.portfolioLink || profile.portfolio || '',
     portfolioItems: normalizePortfolioItems(profile.portfolioItems || profile.mediaPortfolio),
     contactMethods,
+    publicContactVisibility,
     contactMethod: hasAnyContactMethods(contactMethods)
       ? getContactMethodItems(contactMethods).map(item => `${item.label}: ${item.display}`).join(' · ')
       : legacyContactText,
@@ -5122,13 +5360,13 @@ function renderDirectory() {
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty-state">No approved C.E.S. co-creators are in this resonance field yet.<br>Offer a profile to the Exchange or approve one locally to begin testing connections.</div>';
+    grid.innerHTML = '<div class="empty-state">No approved Core Energetic Signatures are in this resonance field yet.<br>Offer your Core Energetic Signature to the Exchange or approve one locally to begin testing connections.</div>';
     return;
   }
 
   grid.innerHTML = filtered.map((c, i) => {
     const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRay || 'Ray', code: '' };
-    const contactItems = getContactMethodItems(c.contactMethods);
+    const publicContactItems = c.publicContactVisibility ? getContactMethodItems(c.contactMethods) : [];
     const avatarContent = c.photo
       ? `<img src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}">`
       : escapeHtml(getAvatarLabel(c));
@@ -5145,7 +5383,7 @@ function renderDirectory() {
         </div>
         <div class="card-identity">
           <div class="card-name">${escapeHtml(c.name)}</div>
-          <div class="card-title">${escapeHtml(c.title || 'C.E.S. Co-Creator')}</div>
+          <div class="card-title">${escapeHtml(c.title || 'Co-Creator')}</div>
           <div class="card-location">📍 ${escapeHtml(c.location || 'Location shared upon resonance')}</div>
         </div>
       </div>
@@ -5156,19 +5394,18 @@ function renderDirectory() {
       <div style="margin-top:0.7rem">${renderWishAvailabilityBadge(c.wishAvailability)}</div>
       ${c.cesNumber ? `<div style="font-size:0.6rem;letter-spacing:0.12em;color:rgba(200,146,42,0.35);font-family:'Atkinson Hyperlegible',sans-serif;margin-top:0.2rem;padding:0 0.1rem">C.E.S. ${escapeHtml(c.cesNumber)}</div>` : ''}
       <div class="heartlight-statement">"${escapeHtml(c.heartlight)}"</div>
-      <div class="contact-path-chip-row">${renderContactPathChips(c.contactMethods)}</div>
       <div class="offerings">
         ${c.offerings.map(o => `<span class="offering-tag">${escapeHtml(o)}</span>`).join('')}
       </div>
       ${portfolioStrip}
       <div class="exchange-row">
         <div>
-          <div class="exchange-label" style="margin-bottom:0.3rem">Connect through</div>
-          <div class="exchange-styles">${contactItems.length
-            ? contactItems.map(item => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(item.label)}</span>`).join('')
-            : c.exchanges.map(e => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(e)}</span>`).join('')}</div>
+          <div class="exchange-label" style="margin-bottom:0.3rem">${publicContactItems.length ? 'Public contact on Directory' : 'Connection privacy'}</div>
+          <div class="exchange-styles">${publicContactItems.length
+            ? publicContactItems.map(item => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(item.label)}</span>`).join('')
+            : '<span class="offering-tag" style="font-size:0.65rem">Shared only through C.E.S. connection</span>'}</div>
         </div>
-        <button class="view-profile-btn">Open Profile →</button>
+        <button class="view-profile-btn">Open Core Energetic Signature →</button>
       </div>
     </div>`;
   }).join('');
@@ -5252,11 +5489,13 @@ function openModal(id) {
     </div>` : ''}
 
     ${(c.portfolioLink || hasAnyContactMethods(c.contactMethods) || c.contactMethod) ? `<div class="modal-section">
-      <div class="modal-section-label">🔗 Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
+      <div class="modal-section-label">🔗 ${c.publicContactVisibility ? 'Public Contact On Directory' : 'Connection Privacy'}</div>
       ${renderPortfolioLinkLine(c)}
-      ${renderContactMethodGrid(c.contactMethods, {
-        emptyHtml: c.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(c.contactMethod)}</div>` : ''
-      })}
+      ${c.publicContactVisibility
+        ? renderContactMethodGrid(c.contactMethods, {
+            emptyHtml: '<div class="contact-form-note">No public contact paths are turned on right now.</div>'
+          })
+        : '<div class="contact-form-note">Preferred contact details stay private until one Core Energetic Signature shares them with another through the co-creator connection flow.</div>'}
     </div>` : ''}
 
     <button class="connect-btn" style="border-color:${ray.color};color:${ray.color};background:linear-gradient(135deg,${ray.color}18,${ray.color}08)"
@@ -5339,25 +5578,51 @@ function openAgreement(creatorId) {
   const c = getCreatorById(creatorId);
   if (!c) return;
   const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRayKey || 'Ray' };
-  const directConnect = renderContactMethodGrid(c.contactMethods, {
-    emptyHtml: c.contactMethod
-      ? `<div class="portfolio-link-line">Contact: ${escapeHtml(c.contactMethod)}</div>`
-      : '<div class="contact-form-note">This co-creator has not published a direct channel yet. For now, use the profile and portfolio as your orientation.</div>'
-  });
+  const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
 
   document.getElementById('agreementRayBar').style.background =
     `linear-gradient(90deg, ${ray.color}, #3a9b6f, transparent)`;
+
+  if (!currentUser) {
+    document.getElementById('agreementContent').innerHTML = `
+      <div style="padding-top:0.5rem">
+        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ C.E.S. Sign-In Required</div>
+        <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
+        <div class="contact-form-note" style="margin-bottom:1rem">Preferred contact details are only shared between signed-in Core Energetic Signatures. Sign into your signature first, then choose which channels you want to share in the connection.</div>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <button class="contact-action-btn" type="button" onclick="closeAgreement();openSignIn()">Sign In</button>
+          <button class="contact-action-btn subtle" type="button" onclick="closeAgreement();setView('submit', document.getElementById('navBtnSubmit'))">Open Core Energetic Signature</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('agreementOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+
+  if ((currentUser.id && c.id === currentUser.id) || (currentUser.cesNumber && c.cesNumber && currentUser.cesNumber === c.cesNumber)) {
+    document.getElementById('agreementContent').innerHTML = `
+      <div style="padding-top:0.5rem">
+        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ Your Core Energetic Signature</div>
+        <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">This is your own Core Energetic Signature</div>
+        <div class="contact-form-note">Private contact sharing happens when one co-creator reaches another. Open your Core Energetic Signature if you want to edit which channels are available to share.</div>
+      </div>
+    `;
+    document.getElementById('agreementOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
 
   document.getElementById('agreementContent').innerHTML = `
     <div style="padding-top:0.5rem">
       <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ Co-Creator Connection</div>
       <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:var(--muted);margin-bottom:1.8rem">Share who you are, what you want to co-create, and then move directly into the contact path they prefer.</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:var(--muted);margin-bottom:1.8rem">Share your first note, then choose exactly which contact paths from your own Core Energetic Signature you want this co-creator to receive.</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
         <div>
           <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your Name</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none" placeholder="Your name / pronouns" type="text" id="connection_name">
+          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none" placeholder="Your name / pronouns" type="text" id="connection_name" value="${escapeHtml([currentUser.name, currentUser.pronouns].filter(Boolean).join(' · '))}">
         </div>
         <div>
           <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Co-Creator</div>
@@ -5372,8 +5637,8 @@ function openAgreement(creatorId) {
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
         <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your Email</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" id="connection_email" placeholder="you@example.com">
+          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your C.E.S.</div>
+          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" value="${escapeHtml(currentUser.cesNumber || '')}" readonly>
         </div>
         <div>
           <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Preferred Reply Channel</div>
@@ -5387,8 +5652,8 @@ function openAgreement(creatorId) {
       </div>
 
       <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Preferred Contact Paths Shared by ${escapeHtml(c.name.split(' ')[0])}</div>
-        ${directConnect}
+        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Choose Which of Your Contact Paths to Share</div>
+        ${renderContactShareSelector(currentUser.contactMethods)}
       </div>
 
       <div class="contact-form-note" id="connectionResponseNote" style="display:none;margin-bottom:1.2rem"></div>
@@ -5415,19 +5680,50 @@ function closeAgreementOutside(e) {
 function submitAgreement(creatorId) {
   const creator = getCreatorById(creatorId);
   if (!creator) return;
+  const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
   const senderName = document.getElementById('connection_name')?.value?.trim();
-  const senderEmail = document.getElementById('connection_email')?.value?.trim();
+  const scope = document.getElementById('connection_scope')?.value?.trim();
+  const replyPreference = document.getElementById('connection_reply')?.value?.trim();
   const message = document.getElementById('connection_message')?.value?.trim();
   const response = document.getElementById('connectionResponseNote');
+  if (!currentUser) {
+    alert('✦ Sign into your Core Energetic Signature before sharing private contact details.');
+    return;
+  }
+  const sharedContactMethods = getSelectedSharedContactMethods();
   if (!senderName || !message) {
     alert('✦ Please share your name and first message before preparing the connection.');
     return;
   }
+  if (!hasAnyContactMethods(sharedContactMethods)) {
+    alert('✦ Choose at least one saved contact path from your Core Energetic Signature to share.');
+    return;
+  }
+  const connections = getStorage('connections', []);
+  const entry = {
+    id: `connection_${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    fromProfileId: currentUser.id,
+    fromCES: currentUser.cesNumber || '',
+    fromName: senderName,
+    fromRay: currentUser.primaryRay || '',
+    toProfileId: creator.id,
+    toCES: creator.cesNumber || '',
+    toName: creator.name || '',
+    toRay: creator.primaryRay || '',
+    scope,
+    replyPreference,
+    message,
+    sharedContactMethods,
+  };
+  connections.push(entry);
+  setStorage('connections', connections);
   if (response) {
     response.style.display = 'block';
-    response.innerHTML = `Your intro for ${escapeHtml(creator.name.split(' ')[0])} is ready. This local prototype does not send the message yet, so use one of the direct contact paths above now.${senderEmail ? ` Your email ${escapeHtml(senderEmail)} is included in your draft.` : ''}`;
+    response.innerHTML = `Your connection has been shared with ${escapeHtml(creator.name.split(' ')[0])}. The contact paths you selected are now available privately on their Core Energetic Signature, and this connection will also appear in your own private inbox.`;
     response.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+  if (typeof renderProfileCorner === 'function') renderProfileCorner();
 }
 
 
@@ -5474,7 +5770,7 @@ function createEmptyPortfolioItem(type = 'image') {
 
 function createDefaultFormState() {
   return {
-    emoji: '🌟',
+    emoji: '',
     selectedRays: [],
     selectedOfferings: [],
     customOfferings: [],
@@ -5495,17 +5791,25 @@ function createDefaultFormState() {
 
 let formState = createDefaultFormState();
 
-// ── BUILD EMOJI PICKER ──
-function buildEmojiPicker() {
-  const g = document.getElementById('emojiGrid');
-  if (!g) return;
-  g.innerHTML = AVATAR_EMOJIS.map(e =>
-    `<div class="emoji-opt ${formState.emoji===e?'selected':''}" onclick="selectEmoji('${e}')">${e}</div>`
-  ).join('');
+function normalizeAvatarMark(value = '') {
+  return Array.from(String(value).replace(/\s+/gu, '')).slice(0, 3).join('');
 }
 
-function selectEmoji(e) {
-  formState.emoji = e;
+// ── BUILD AVATAR MARK INPUT ──
+function buildEmojiPicker() {
+  formState.emoji = normalizeAvatarMark(formState.emoji || '');
+  const input = document.getElementById('f_avatar_mark');
+  if (input && input.value !== formState.emoji) input.value = formState.emoji;
+  const selectedDisplay = document.getElementById('selectedEmojiDisplay');
+  if (selectedDisplay) {
+    selectedDisplay.textContent = formState.emoji
+      ? `${formState.emoji} will appear when no photo is uploaded.`
+      : 'Leave this blank to use your initial, or enter up to 3 letters, symbols, or emoji.';
+  }
+}
+
+function updateAvatarMark(value) {
+  formState.emoji = normalizeAvatarMark(value);
   buildEmojiPicker();
   updatePreview();
 }
@@ -5813,16 +6117,17 @@ function updatePreview() {
   const pName = document.getElementById('previewName');
   if (pName) pName.textContent = name || 'Your Name';
 
-  // Update avatar: initial if no photo and default emoji
+  // Update avatar: prefer typed avatar mark, otherwise fall back to initial
   if (!activePhoto) {
     const phEl = document.getElementById('photoPlaceholder');
     const pvPh = document.getElementById('previewAvatarPlaceholder');
     const initial = name ? name.trim()[0].toUpperCase() : null;
-    const showInitial = initial && formState.emoji === '🌟';
-    const display = showInitial ? initial : formState.emoji;
-    const fsize = showInitial ? '1.8rem' : '1.8rem';
+    const avatarMark = normalizeAvatarMark(formState.emoji || '');
+    const showInitial = initial && !avatarMark;
+    const display = showInitial ? initial : (avatarMark || '✦');
+    const fsize = '1.8rem';
     if (phEl) { phEl.textContent = display; phEl.style.fontSize = fsize; }
-    if (pvPh) { pvPh.textContent = showInitial ? initial : formState.emoji; pvPh.style.fontSize = '1.3rem'; }
+    if (pvPh) { pvPh.textContent = display; pvPh.style.fontSize = '1.3rem'; }
   }
   updateSubmitBtn();
 
@@ -5911,36 +6216,6 @@ function updatePreview() {
 }
 
 // ── SUBMIT ──
-function buildEmojiPicker() {
-  const row = document.getElementById('emojiPickerRow');
-  if (!row) return;
-  const emojis = [
-    '🌟','🌈','🦋','🔥','🌿','💫','🌸','🎶','🌊','⚡',
-    '🐦‍🔥','🌙','☀️','🍃','💎','🌺','🦅','🌻','🐝','✨',
-    '🌀','🪷','🕊️','🦄','🍄','🌱','🔮','🌙','🐉','🪐'
-  ];
-  row.innerHTML = emojis.map(e => {
-    const active = formState.emoji === e ? 'background:rgba(200,146,42,0.18);border-color:var(--orichalcum);' : '';
-    return `<button type="button" onclick="selectEmoji('${e}')" style="width:34px;height:34px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all 0.18s;${active}" onmouseover="this.style.background='rgba(200,146,42,0.1)';this.style.borderColor='rgba(200,146,42,0.4)'" onmouseout="if(formState.emoji!=='${e}'){this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.08)'}">${e}</button>`;
-  }).join('');
-  const selectedDisplay = document.getElementById('selectedEmojiDisplay');
-  if (selectedDisplay) {
-    selectedDisplay.textContent = `${formState.emoji} selected as avatar`;
-  }
-}
-function selectEmoji(e) {
-  formState.emoji = e;
-  // Update placeholder and preview
-  const placeholder = document.getElementById('photoPlaceholder');
-  const previewAvatarPh = document.getElementById('previewAvatarPlaceholder');
-  const selectedDisplay = document.getElementById('selectedEmojiDisplay');
-  const activePhoto = photoDataUrl || formState.photoData;
-  if (placeholder && !activePhoto) placeholder.textContent = e;
-  if (previewAvatarPh && !activePhoto) previewAvatarPh.textContent = e;
-  if (selectedDisplay) selectedDisplay.textContent = e + ' selected as avatar';
-  buildEmojiPicker();
-  updatePreview();
-}
 async function submitCES() {
   if (!formState.oathSigned || !formState.oath2Signed) return;
   const name = document.getElementById('f_name')?.value?.trim();
@@ -5955,11 +6230,11 @@ async function submitCES() {
     const wasEdit = !result?.isNew;
     conf.innerHTML = wasApproved
       ? `<div style="font-size:2rem;margin-bottom:1rem">🎞✨</div>
-         <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your C.E.S. Profile is now updated in the Directory.</div>
+         <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your Core Energetic Signature is now updated in the Directory.</div>
          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(240,232,213,0.82);line-height:1.85;max-width:480px;margin:0 auto">Your refreshed photo and video portfolio is already visible to the field.</div>
          <div style="margin-top:1.2rem;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,146,42,0.6);font-family:'Atkinson Hyperlegible',sans-serif">All That Loves Allow Synchronicities 🏝️</div>`
       : `<div style="font-size:2rem;margin-bottom:1rem">🌈✨</div>
-         <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">${wasEdit ? 'Your updated C.E.S. Profile has been returned to the Stewards.' : 'Your C.E.S. Profile has been offered to the Exchange.'}</div>
+         <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">${wasEdit ? 'Your updated Core Energetic Signature has been returned to the Stewards.' : 'Your Core Energetic Signature has been offered to the Exchange.'}</div>
          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:rgba(240,232,213,0.82);line-height:1.85;max-width:480px;margin:0 auto">${wasEdit ? 'Your refinements and portfolio updates are now in review.' : 'A steward will welcome you and confirm your place in the Directory within one lunar cycle.'}</div>
          <div style="margin-top:1.2rem;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(200,146,42,0.6);font-family:'Atkinson Hyperlegible',sans-serif">All That Loves Allow Synchronicities 🏝️</div>`;
     conf.style.display = 'block';
@@ -6458,8 +6733,8 @@ function renderProfileWishesSection() {
   const granted = wishes.filter(entry => entry.status === 'granted');
   return `
     <div class="profile-modal-section">
-      <div class="profile-modal-label">Wish Well</div>
-      <div class="profile-modal-value" style="margin-bottom:0.9rem">Wishes cast through your C.E.S. Profile now live here.</div>
+      <div class="profile-modal-label">Wishing Well</div>
+      <div class="profile-modal-value" style="margin-bottom:0.9rem">Wishes cast through your Core Energetic Signature now live here.</div>
       <div class="my-wishes-stats" style="margin-bottom:1rem">
         <div class="my-wishes-stat">
           <div class="my-wishes-stat-label">Total Wishes</div>
@@ -6476,10 +6751,10 @@ function renderProfileWishesSection() {
       </div>
       ${wishes.length
         ? renderMyWishesColumnsHtml(awaiting, granted, { fromProfile: true, awaitingId: 'profileWishesAwaitingList', grantedId: 'profileWishesGrantedList' })
-        : `<div class="my-wishes-empty">You have not cast a wish yet. Visit the Wish Well to drop one into the field.</div>`
+        : `<div class="my-wishes-empty">You have not cast a wish yet. Visit the Wishing Well to drop one into the field.</div>`
       }
       <div style="margin-top:1rem">
-        <button class="my-wish-btn primary" onclick="closeProfileModal();setTimeout(()=>setView('wish', document.getElementById('navBtnWish')), 80)">🪙 Enter The Wish Well</button>
+        <button class="my-wish-btn primary" onclick="closeProfileModal();setTimeout(()=>setView('wish', document.getElementById('navBtnWish')), 80)">🪙 Enter The Wishing Well</button>
       </div>
     </div>
   `;
@@ -6499,7 +6774,7 @@ function renderMyWishes() {
     if (totalEl) totalEl.textContent = '0';
     if (awaitingEl) awaitingEl.textContent = '0';
     if (grantedEl) grantedEl.textContent = '0';
-    content.innerHTML = `<div class="my-wishes-empty">Sign into your local C.E.S. profile to track the wishes you have cast into the Wish Well.</div>`;
+    content.innerHTML = `<div class="my-wishes-empty">Sign into your local Core Energetic Signature to track the wishes you have cast into the Wishing Well.</div>`;
     return;
   }
 
@@ -6512,7 +6787,7 @@ function renderMyWishes() {
   if (grantedEl) grantedEl.textContent = String(granted.length);
 
   if (!wishes.length) {
-    content.innerHTML = `<div class="my-wishes-empty">Your local C.E.S. profile has not cast a wish yet. Visit the Wish Well to drop one into the field.</div>`;
+    content.innerHTML = `<div class="my-wishes-empty">Your local Core Energetic Signature has not cast a wish yet. Visit the Wishing Well to drop one into the field.</div>`;
     return;
   }
 
@@ -6723,16 +6998,16 @@ function renderWishProfileStatus() {
   if (user) {
     statusCard.innerHTML = `
       <div style="font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--orichalcum);margin-bottom:0.35rem">Active Wish Holder</div>
-      <div style="font-family:'Alice',serif;font-size:1rem;color:var(--cream);margin-bottom:0.2rem">${escapeHtml(user.name || 'C.E.S. Co-Creator')}</div>
-      <div style="font-size:0.8rem;color:rgba(240,232,213,0.68);line-height:1.55">${escapeHtml([user.pronouns, user.location].filter(Boolean).join(' · ') || 'Your C.E.S. profile is connected to this wish.')}</div>
+      <div style="font-family:'Alice',serif;font-size:1rem;color:var(--cream);margin-bottom:0.2rem">${escapeHtml(user.name || 'Co-Creator')}</div>
+      <div style="font-size:0.8rem;color:rgba(240,232,213,0.68);line-height:1.55">${escapeHtml([user.pronouns, user.location].filter(Boolean).join(' · ') || 'Your Core Energetic Signature is connected to this wish.')}</div>
       ${user.cesNumber ? `<div style="margin-top:0.45rem;font-size:0.64rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(200,146,42,0.55)">C.E.S. ${escapeHtml(user.cesNumber)}</div>` : ''}
     `;
   } else {
     statusCard.innerHTML = `
-      <div style="font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--orichalcum);margin-bottom:0.35rem">C.E.S. Profile Required</div>
-      <div style="font-size:0.82rem;color:rgba(240,232,213,0.7);line-height:1.65;margin-bottom:0.75rem">To cast a wish into the Wish Well, first create or sign into your Co-Creator C.E.S. profile. Wishes and granted wishes stay tied to that local profile.</div>
+      <div style="font-size:0.66rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--orichalcum);margin-bottom:0.35rem">Core Energetic Signature Required</div>
+      <div style="font-size:0.82rem;color:rgba(240,232,213,0.7);line-height:1.65;margin-bottom:0.75rem">To cast a wish into the Wishing Well, first create or sign into your Co-Creator Core Energetic Signature. Wishes and granted wishes stay tied to that local signature.</div>
       <div style="display:flex;gap:0.55rem;flex-wrap:wrap">
-        <button onclick="setView('submit',document.getElementById('navBtnSubmit'))" style="padding:0.45rem 0.9rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.08);color:var(--orichalcum);font-size:0.72rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif">Create C.E.S. Profile</button>
+        <button onclick="setView('submit',document.getElementById('navBtnSubmit'))" style="padding:0.45rem 0.9rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.08);color:var(--orichalcum);font-size:0.72rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif">Create Core Energetic Signature</button>
         <button onclick="openSignIn()" style="padding:0.45rem 0.9rem;border-radius:2rem;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.03);color:rgba(240,232,213,0.8);font-size:0.72rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif">Sign In</button>
       </div>
     `;
@@ -6814,7 +7089,7 @@ function updateWishPreview() {
 function submitWish() {
   const user = getCurrentUser();
   if (!user) {
-    alert('✦ A signed-in Co-Creator C.E.S. profile is required to cast a wish into the Wish Well.');
+    alert('✦ A signed-in Co-Creator Core Energetic Signature is required to cast a wish into the Wishing Well.');
     return;
   }
   const name = [user.name, user.pronouns].filter(Boolean).join(' · ') || user.name || 'Co-Creator';
@@ -6824,7 +7099,7 @@ function submitWish() {
   saveWishSubmission(submission);
   renderWishField();
   renderMyWishes();
-  alert(`✦ Your wish has been cast into the Wish Well, ${name}.\n\nIt is now awaiting to be granted and can be tracked from your C.E.S. Profile. All That Loves Allow Synchronicities. 🕯️🌈`);
+  alert(`✦ Your wish has been cast into the Wishing Well, ${name}.\n\nIt is now awaiting to be granted and can be tracked from your Core Energetic Signature. All That Loves Allow Synchronicities. 🕯️🌈`);
   openProfileModal();
 }
 
@@ -7313,9 +7588,24 @@ buildWishForm = function() {
 // ══════════════════════════════════════════════════════
 
 const _sp = ['aGVhcnRs','aWdodA==']; const STEWARD_PASS = atob(_sp.join(''));
+const DEFAULT_STEWARD_CES = atob('MTIzNDU2Nzg5');
+const DEFAULT_STEWARD_PROFILE_PASS = atob('YXRsYXNnYXRl');
+function isReservedStewardOverride(value) {
+  return String(value || '') === STEWARD_PASS;
+}
+
+function createDefaultStewardEntry() {
+  return {
+    cesPlain: DEFAULT_STEWARD_CES,
+    cesEncrypted: cesEncrypt(DEFAULT_STEWARD_CES),
+    name: 'Atlas Morphoenix',
+    passphrase: DEFAULT_STEWARD_PROFILE_PASS,
+    registeredAt: new Date().toISOString()
+  };
+}
 const STORAGE_PREFIX = 'ai_';
 const STORAGE_QUEUE_KEYS = new Set(['pending', 'approved', 'returned']);
-const REMOTE_STORAGE_KEYS = ['pending', 'approved', 'returned', 'authorizedCES', 'securityLog', 'gateLockout', 'stewardPass'];
+const REMOTE_STORAGE_KEYS = ['pending', 'approved', 'returned', 'connections', 'authorizedCES', 'securityLog', 'gateLockout', 'stewardPass'];
 const REMOTE_STORAGE_ENDPOINT = '/api/store';
 const LOCAL_DEMO_HOSTS = new Set(['localhost', '127.0.0.1']);
 const storageCache = Object.create(null);
@@ -7468,15 +7758,29 @@ function getDemoPendingProfiles() {
 function initializeProfileStorageDefaults() {
   const authorized = getStorage('authorizedCES', []);
   if (authorized.length === 0) {
-    setStorage('authorizedCES', [
-      {
-        cesPlain: atob('MTIzNDU2Nzg5'),
-        cesEncrypted: cesEncrypt(atob('MTIzNDU2Nzg5')),
-        name: 'Atlas Morphoenix',
-        passphrase: STEWARD_PASS,
-        registeredAt: new Date().toISOString()
-      }
-    ]);
+    setStorage('authorizedCES', [createDefaultStewardEntry()]);
+    return;
+  }
+
+  let changed = false;
+  const migrated = authorized.map(entry => {
+    if (
+      entry &&
+      entry.cesPlain === DEFAULT_STEWARD_CES &&
+      entry.name === 'Atlas Morphoenix' &&
+      String(entry.passphrase || '') === STEWARD_PASS
+    ) {
+      changed = true;
+      return {
+        ...entry,
+        passphrase: DEFAULT_STEWARD_PROFILE_PASS
+      };
+    }
+    return entry;
+  });
+
+  if (changed) {
+    setStorage('authorizedCES', migrated);
   }
 }
 
@@ -7597,7 +7901,7 @@ function renderProfileCorner() {
     corner.innerHTML = `
       <button class="profile-avatar-btn" onclick="openProfileModal()">
         ${avatarHtml}
-        <span class="profile-btn-label">My Profile</span>
+        <span class="profile-btn-label">My Core Energetic Signature</span>
       </button>
       <button class="join-corner-btn" style="margin-left:0.4rem;opacity:0.55;font-size:0.65rem" onclick="signOutUser()">Sign Out</button>`;
   } else {
@@ -7637,15 +7941,15 @@ function syncPhotoPreview(photoUrl) {
   }
   if (placeholder) {
     placeholder.style.display = photoUrl ? 'none' : 'block';
-    if (!photoUrl) placeholder.textContent = formState.emoji || '🌟';
+    if (!photoUrl) placeholder.textContent = normalizeAvatarMark(formState.emoji || '') || '✦';
   }
-  if (nameEl) nameEl.textContent = photoUrl ? '✓ Current profile photo' : '';
+  if (nameEl) nameEl.textContent = photoUrl ? '✓ Current signature photo' : '';
 }
 
 function populateCESFormFromProfile(profile) {
   const data = normalizeCreatorRecord(profile);
   formState = createDefaultFormState();
-  formState.emoji = data.emoji || '🌟';
+  formState.emoji = normalizeAvatarMark(data.emoji || '');
   formState.selectedRays = data.rays.slice(0, 3);
   formState.selectedOfferings = [...data.offerings];
   formState.customOfferings = data.offerings.filter(item => !OFFERING_PRESETS.includes(item));
@@ -7678,10 +7982,17 @@ function populateCESFormFromProfile(profile) {
     f_contact_discord: data.contactMethods.discord || '',
     f_contact_signal: data.contactMethods.signal || '',
     f_contact_whatsapp: data.contactMethods.whatsapp || '',
+    f_contact_public: data.publicContactVisibility ? 'checked' : '',
+    f_avatar_mark: normalizeAvatarMark(data.emoji || ''),
   };
   Object.entries(fieldMap).forEach(([id, value]) => {
     const input = document.getElementById(id);
-    if (input) input.value = value || '';
+    if (!input) return;
+    if (input.type === 'checkbox') {
+      input.checked = !!value;
+      return;
+    }
+    input.value = value || '';
   });
 
   syncPhotoPreview(data.photo || null);
@@ -7804,15 +8115,17 @@ function openProfileModal() {
       ${portfolioGallery}
     </div>` : ''}
     ${(submission.portfolioLink || hasAnyContactMethods(submission.contactMethods) || submission.contactMethod) ? `<div class="profile-modal-section">
-      <div class="profile-modal-label">Connect</div>
+      <div class="profile-modal-label">Your Shared Contact Paths</div>
       ${renderPortfolioLinkLine(submission)}
+      <div class="portfolio-link-line" style="margin-bottom:0.55rem">Directory visibility: ${submission.publicContactVisibility ? 'Public on Directory' : 'Private until shared through a co-creator connection'}</div>
       ${renderContactMethodGrid(submission.contactMethods, {
         emptyHtml: submission.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(submission.contactMethod)}</div>` : ''
       })}
     </div>` : ''}
+    ${renderProfileConnectionsSection(submission)}
     ${renderProfileWishesSection()}
     <div style="margin-top:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
-      <button onclick="openProfileEditor()" style="padding:0.5rem 1.2rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.35);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s">✏️ Edit Profile</button>
+      <button onclick="openProfileEditor()" style="padding:0.5rem 1.2rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.35);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s">✏️ Edit Core Energetic Signature</button>
       <button onclick="signOutUser()" style="padding:0.5rem 1.2rem;border-radius:2rem;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(240,232,213,0.45);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s">Sign Out</button>
     </div>
   `;
@@ -7875,7 +8188,7 @@ function submitCESProfile() {
     title: (document.getElementById('f_title')?.value || '').trim(),
     location: (document.getElementById('f_location')?.value || '').trim(),
     photo: photoDataUrl || formState.photoData || existingProfile?.photo || null,
-    emoji: formState.emoji || existingProfile?.emoji || '🌟',
+    emoji: normalizeAvatarMark(formState.emoji || ''),
     ray: rays[0] || '',
     primaryRay: rays[0] ? `${rays[0]} Ray` : '',
     rays,
@@ -7895,6 +8208,7 @@ function submitCESProfile() {
     portfolioItems,
     mediaPortfolio: portfolioItems,
     contactMethods,
+    publicContactVisibility: !!document.getElementById('f_contact_public')?.checked,
     contactMethod: contactSummary,
     contact: contactSummary,
     cesNumber: cesNumber || existingProfile?.cesNumber || null,
@@ -8251,14 +8565,30 @@ function tryAdminLogin() {
   const warn = document.getElementById('gateAttemptsWarn');
   if (!passInput) return;
 
-  // Use Steward's personal passphrase if available, otherwise fall back to global
   const authorized = getStorage('authorizedCES', []);
   const stewardEntry = authorized.find(e => e.cesPlain === gateVerifiedCES);
-  const currentPass = (stewardEntry && stewardEntry.passphrase)
-    ? stewardEntry.passphrase
-    : (getStorage('stewardPass', null) || STEWARD_PASS);
+  const enteredPass = passInput.value.trim();
+  const currentPass = String(stewardEntry && stewardEntry.passphrase ? stewardEntry.passphrase : '').trim();
 
-  if (passInput.value === currentPass) {
+  if (!stewardEntry) {
+    showGateError('This Steward profile could not be found.');
+    return;
+  }
+
+  if (!currentPass) {
+    showGateError('No passphrase is set for this Steward profile. Contact the Primary Steward.');
+    return;
+  }
+
+  if (isReservedStewardOverride(enteredPass) && enteredPass !== currentPass) {
+    showGateError('The master passphrase only clears a lockout after access is suspended.');
+    passInput.value = '';
+    if (warn) warn.style.display = 'none';
+    passInput.focus();
+    return;
+  }
+
+  if (enteredPass === currentPass) {
     // SUCCESS
     gateFailAttempts = 0;
     adminAuthed = true;
@@ -8479,6 +8809,10 @@ function saveEditPassphrase(i) {
   if (!f1.value.trim()) { showMsg('Please enter a new passphrase.', '#e8a0a0'); return; }
   if (f1.value !== f2.value) { showMsg('Passphrases do not match.', '#e8a0a0'); return; }
   if (f1.value.trim().length < 4) { showMsg('Passphrase must be at least 4 characters.', '#e8a0a0'); return; }
+  if (isReservedStewardOverride(f1.value.trim())) {
+    showMsg('That passphrase is reserved for lockout recovery only.', '#e8a0a0');
+    return;
+  }
 
   const authorized = getStorage('authorizedCES', []);
   if (!authorized[i]) { showMsg('Steward not found.', '#e8a0a0'); return; }
@@ -8581,16 +8915,20 @@ function addAuthorizedCES() {
   if (!cesInput || !nameInput) return;
   const cesVal = cesInput.value.trim();
   const nameVal = nameInput.value.trim();
-  const ppVal = (pcInput && ppInput.value.trim()) ? ppInput.value.trim() : generatePassphrase();
+  const ppVal = (ppInput && ppInput.value.trim()) ? ppInput.value.trim() : generatePassphrase();
   if (cesVal.length !== 9) { alert('Please enter a valid 9-digit C.E.S. code.'); return; }
   if (!nameVal) { alert('Please enter a name for this Steward.'); return; }
+  if (isReservedStewardOverride(ppVal)) {
+    alert('That passphrase is reserved for lockout recovery only. Please choose a different steward passphrase.');
+    return;
+  }
   const authorized = getStorage('authorizedCES', []);
   if (authorized.some(e => e.cesPlain === cesVal)) { alert('This C.E.S. code is already registered.'); return; }
-  authorized.push({ cesPlain: cesVal, cesEncrypted: cesEncrypt(cesVal), name: nameVal, passphrase: pcVal, registeredAt: new Date().toISOString() });
+  authorized.push({ cesPlain: cesVal, cesEncrypted: cesEncrypt(cesVal), name: nameVal, passphrase: ppVal, registeredAt: new Date().toISOString() });
   setStorage('authorizedCES', authorized);
   cesInput.value = '';
   nameInput.value = '';
-  if (pcInput) ppInput.value = '';
+  if (ppInput) ppInput.value = '';
   const preview = document.getElementById('newCESPreview');
   if (preview) preview.textContent = '';
   _ppVisible = {};
@@ -8764,7 +9102,7 @@ async function submitSignIn() {
         return;
       }
       if ((found.passphrase || '').trim() !== passphrase) {
-        err.textContent = 'That passphrase does not match this C.E.S. profile.';
+        err.textContent = 'That passphrase does not match this Core Energetic Signature.';
         err.style.display = 'block';
         err.style.color = '#e8a0a0';
         return;
@@ -8777,7 +9115,7 @@ async function submitSignIn() {
     setView('directory', document.querySelector('nav button'));
   } else {
     // Not found — offer to create a profile
-    err.textContent = 'No profile found with this C.E.S. number. Would you like to create one?';
+    err.textContent = 'No Core Energetic Signature found with this C.E.S. number. Would you like to create one?';
     err.style.display = 'block';
     err.style.color = 'rgba(232,184,75,0.8)';
     // Change button text to guide them
@@ -8828,7 +9166,7 @@ function signOutUser() {
       <button onclick="submitSignIn()" style="width:100%;padding:0.85rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05));color:var(--orichalcum-light);font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;margin-bottom:1rem" onmouseover="this.style.background='linear-gradient(135deg,rgba(200,146,42,0.24),rgba(200,146,42,0.1))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05))'">✦ Enter the Exchange</button>
 
       <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.72rem;color:rgba(240,232,213,0.3);line-height:1.6">
-        New here? <button onclick="closeSignIn();setView('submit',document.getElementById('navBtnSubmit'))" style="background:none;border:none;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">Create your C.E.S. Profile</button>
+        New here? <button onclick="closeSignIn();setView('submit',document.getElementById('navBtnSubmit'))" style="background:none;border:none;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">Create your Core Energetic Signature</button>
       </div>
     </div>
   </div>
