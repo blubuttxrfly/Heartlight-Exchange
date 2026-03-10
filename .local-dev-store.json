@@ -1,0 +1,11 @@
+{
+  "authorizedCES": [
+    {
+      "cesPlain": "123456789",
+      "cesEncrypted": "-987654321",
+      "name": "Atlas Morphoenix",
+      "passphrase": "heartlight",
+      "registeredAt": "2026-03-10T22:10:23.963Z"
+    }
+  ]
+}

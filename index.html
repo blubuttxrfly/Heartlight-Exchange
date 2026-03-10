@@ -740,6 +740,97 @@
   .portfolio-link-line a:hover {
     border-bottom-color: var(--orichalcum);
   }
+  .contact-method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.7rem;
+  }
+  .contact-method-card {
+    border: 1px solid rgba(200,146,42,0.16);
+    border-radius: 0.9rem;
+    padding: 0.85rem 0.9rem;
+    background: rgba(255,255,255,0.03);
+  }
+  .contact-method-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .contact-method-label {
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orichalcum);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+  }
+  .contact-method-value {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: rgba(240,232,213,0.8);
+    word-break: break-word;
+  }
+  .contact-method-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+  .contact-action-btn {
+    padding: 0.28rem 0.62rem;
+    border-radius: 999px;
+    border: 1px solid rgba(200,146,42,0.28);
+    background: rgba(200,146,42,0.08);
+    color: var(--orichalcum-light);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .contact-action-btn:hover {
+    background: rgba(200,146,42,0.16);
+    border-color: rgba(200,146,42,0.5);
+  }
+  .contact-action-btn.subtle {
+    background: transparent;
+    color: rgba(240,232,213,0.68);
+    border-color: rgba(255,255,255,0.12);
+  }
+  .contact-action-btn.subtle:hover {
+    color: var(--cream);
+    border-color: rgba(255,255,255,0.24);
+    background: rgba(255,255,255,0.04);
+  }
+  .contact-path-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.65rem;
+  }
+  .contact-path-chip {
+    padding: 0.25rem 0.58rem;
+    border-radius: 999px;
+    border: 1px solid rgba(200,146,42,0.24);
+    background: rgba(200,146,42,0.06);
+    color: var(--orichalcum-light);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+  }
+  .contact-form-note {
+    padding: 0.85rem 1rem;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(42,179,196,0.2);
+    background: rgba(42,179,196,0.06);
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: rgba(240,232,213,0.78);
+  }
   .portfolio-form-stack {
     display: grid;
     gap: 0.7rem;
@@ -1295,8 +1386,8 @@
       </div>
     </div>
 
-    <div class="section-heading fade-up stagger-2">Heartlight Co-Creators</div>
-    <p class="section-sub fade-up stagger-3">Each profile carries a Core Energetic Signature — feel into the resonance before connecting</p>
+    <div class="section-heading fade-up stagger-2">Heartlight Co-Creator Directory</div>
+    <p class="section-sub fade-up stagger-3">Only approved C.E.S. profiles live here now, with direct connection paths for swift co-creator outreach.</p>
 
     <div class="directory-grid" id="directoryGrid">
       <!-- Cards rendered by JS -->
@@ -1958,15 +2049,39 @@
         <!-- SECTION 10: PORTFOLIO & CONTACT -->
         <div class="form-section">
           <div class="form-section-title">🔗 Portfolio, Media & Contact</div>
-          <div class="form-section-hint">Where co-creators can witness your work, explore your photos and videos, and reach you</div>
+          <div class="form-section-hint">Where co-creators can witness your work and reach you through the channels you actually want to use.</div>
           <div class="field-grid-2">
             <div>
               <label class="field-label">Portfolio / Website</label>
               <input class="field-input" type="text" id="f_portfolio" placeholder="yoursite.com or instagram.com/…" oninput="updatePreview()">
             </div>
             <div>
-              <label class="field-label">Contact Method</label>
-              <input class="field-input" type="text" id="f_contact" placeholder="email, Discord handle, etc." oninput="updatePreview()">
+              <label class="field-label">Instagram</label>
+              <input class="field-input" type="text" id="f_contact_instagram" placeholder="@yourhandle or instagram.com/…" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="field-grid-2" style="margin-top:1rem">
+            <div>
+              <label class="field-label">Email</label>
+              <input class="field-input" type="email" id="f_contact_email" placeholder="you@example.com" oninput="updatePreview()">
+            </div>
+            <div>
+              <label class="field-label">Phone Number</label>
+              <input class="field-input" type="text" id="f_contact_phone" placeholder="+1 555 555 5555" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="field-grid-3" style="margin-top:1rem">
+            <div>
+              <label class="field-label">Discord</label>
+              <input class="field-input" type="text" id="f_contact_discord" placeholder="username" oninput="updatePreview()">
+            </div>
+            <div>
+              <label class="field-label">Signal</label>
+              <input class="field-input" type="text" id="f_contact_signal" placeholder="+1 555 555 5555" oninput="updatePreview()">
+            </div>
+            <div>
+              <label class="field-label">WhatsApp</label>
+              <input class="field-input" type="text" id="f_contact_whatsapp" placeholder="+1 555 555 5555" oninput="updatePreview()">
             </div>
           </div>
           <div style="margin-top:1rem">
@@ -2067,6 +2182,13 @@
               <div class="preview-micro-label">Portfolio</div>
               <div class="portfolio-preview-grid" id="previewPortfolio">
                 <div class="portfolio-empty-note">Add photo or video links to preview your portfolio here.</div>
+              </div>
+            </div>
+
+            <div style="margin-top:0.95rem">
+              <div class="preview-micro-label">Connection Paths</div>
+              <div class="preview-exchange-row" id="previewContactMethods">
+                <span class="preview-chip" style="opacity:0.4;font-style:italic">No contact channels shared yet</span>
               </div>
             </div>
 
@@ -4696,6 +4818,137 @@ function asArray(value) {
   return [];
 }
 
+const CONTACT_FIELD_CONFIG = [
+  { key: 'instagram', label: 'Instagram', icon: '◎' },
+  { key: 'email', label: 'Email', icon: '✉' },
+  { key: 'phone', label: 'Phone', icon: '☎' },
+  { key: 'discord', label: 'Discord', icon: '◈' },
+  { key: 'signal', label: 'Signal', icon: '◌' },
+  { key: 'whatsapp', label: 'WhatsApp', icon: '◍' },
+];
+
+function createEmptyContactMethods() {
+  return {
+    instagram: '',
+    email: '',
+    phone: '',
+    discord: '',
+    signal: '',
+    whatsapp: '',
+  };
+}
+
+function hasAnyContactMethods(contactMethods = {}) {
+  return Object.values(contactMethods || {}).some(value => String(value || '').trim());
+}
+
+function guessLegacyContactMethods(legacyValue) {
+  const methods = createEmptyContactMethods();
+  const text = String(legacyValue || '').trim();
+  if (!text) return methods;
+  if (/instagram\.com|^@[\w.]+$/i.test(text)) methods.instagram = text;
+  else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) methods.email = text;
+  else if (/discord/i.test(text) || /#[0-9]{4}$/.test(text)) methods.discord = text.replace(/^discord[:\s-]*/i, '').trim();
+  else if (/signal/i.test(text)) methods.signal = text.replace(/^signal[:\s-]*/i, '').trim();
+  else if (/whatsapp/i.test(text)) methods.whatsapp = text.replace(/^whatsapp[:\s-]*/i, '').trim();
+  else if (/[0-9]{7,}/.test(text)) methods.phone = text;
+  return methods;
+}
+
+function normalizeContactMethods(value, legacyValue = '') {
+  const base = createEmptyContactMethods();
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    Object.keys(base).forEach(key => {
+      base[key] = String(value[key] || '').trim();
+    });
+  }
+  if (!hasAnyContactMethods(base) && legacyValue) {
+    return guessLegacyContactMethods(legacyValue);
+  }
+  return base;
+}
+
+function sanitizePhoneNumber(value, preservePlus = false) {
+  const raw = String(value || '').trim();
+  const digits = raw.replace(/\D/g, '');
+  if (!digits) return '';
+  if (preservePlus && raw.startsWith('+')) return `+${digits}`;
+  return digits;
+}
+
+function getContactMethodItems(contactMethods = {}) {
+  return CONTACT_FIELD_CONFIG.map(field => {
+    const raw = String(contactMethods[field.key] || '').trim();
+    if (!raw) return null;
+
+    if (field.key === 'instagram') {
+      const href = /instagram\.com/i.test(raw)
+        ? normalizeExternalUrl(raw)
+        : normalizeExternalUrl(`https://instagram.com/${raw.replace(/^@/, '')}`);
+      const handle = raw.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/$/, '').replace(/^@/, '').split('/')[0];
+      return { ...field, display: `@${handle || raw.replace(/^@/, '')}`, href, copyValue: raw, actionLabel: 'Open' };
+    }
+    if (field.key === 'email') {
+      return { ...field, display: raw, href: `mailto:${raw}`, copyValue: raw, actionLabel: 'Email' };
+    }
+    if (field.key === 'phone') {
+      const tel = sanitizePhoneNumber(raw, true);
+      return { ...field, display: raw, href: tel ? `tel:${tel}` : '', copyValue: raw, actionLabel: 'Call' };
+    }
+    if (field.key === 'signal') {
+      const signalNumber = sanitizePhoneNumber(raw, true);
+      const href = signalNumber ? `https://signal.me/#p/${encodeURIComponent(signalNumber)}` : '';
+      return { ...field, display: raw, href, copyValue: raw, actionLabel: href ? 'Open' : 'Copy' };
+    }
+    if (field.key === 'whatsapp') {
+      const waNumber = sanitizePhoneNumber(raw, false);
+      const href = waNumber ? `https://wa.me/${waNumber}` : '';
+      return { ...field, display: raw, href, copyValue: raw, actionLabel: href ? 'Open' : 'Copy' };
+    }
+
+    return { ...field, display: raw, href: '', copyValue: raw, actionLabel: 'Copy' };
+  }).filter(Boolean);
+}
+
+function renderContactMethodGrid(contactMethods = {}, options = {}) {
+  const items = getContactMethodItems(contactMethods);
+  if (!items.length) return options.emptyHtml || '';
+  return `<div class="contact-method-grid">${items.map(item => {
+    const anchorAttrs = item.href && /^https?:/i.test(item.href)
+      ? ' target="_blank" rel="noreferrer noopener"'
+      : '';
+    return `
+      <div class="contact-method-card">
+        <div class="contact-method-head">
+          <div class="contact-method-label">${escapeHtml(item.icon)} ${escapeHtml(item.label)}</div>
+          <div class="contact-method-actions">
+            ${item.href ? `<a class="contact-action-btn" href="${escapeHtml(item.href)}"${anchorAttrs}>${escapeHtml(item.actionLabel)}</a>` : ''}
+            <button type="button" class="contact-action-btn subtle" onclick="copyContactValue('${escapeJsString(item.copyValue)}', '${escapeJsString(item.label)}')">Copy</button>
+          </div>
+        </div>
+        <div class="contact-method-value">${escapeHtml(item.display)}</div>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+function renderContactPathChips(contactMethods = {}) {
+  const items = getContactMethodItems(contactMethods);
+  if (!items.length) return '<span class="preview-chip" style="opacity:0.4;font-style:italic">No contact channels shared yet</span>';
+  return items.map(item => `<span class="contact-path-chip">${escapeHtml(item.label)}</span>`).join('');
+}
+
+async function copyContactValue(value, label) {
+  const text = String(value || '').trim();
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    alert(`✦ ${label} copied so you can connect swiftly.`);
+  } catch (error) {
+    alert(`${label}: ${text}`);
+  }
+}
+
 function getSeasonBadge(seasons = {}) {
   const firstOpen = Object.entries(seasons).find(([, open]) => open);
   return firstOpen ? SEASON_EMOJI[firstOpen[0]] : '✦';
@@ -4746,6 +4999,8 @@ function normalizeCreatorRecord(profile = {}) {
   const seasons = normalizeSeasons(profile);
   const wishAvailability = normalizeWishAvailability(profile.wishAvailability || profile.directoryWishStatus || profile.wishStatus);
   const passphrase = String(profile.passphrase || '').trim();
+  const legacyContactText = profile.contactMethod || profile.contact || '';
+  const contactMethods = normalizeContactMethods(profile.contactMethods, legacyContactText);
   return {
     ...profile,
     id: profile.id,
@@ -4769,7 +5024,10 @@ function normalizeCreatorRecord(profile = {}) {
     consent: profile.consent || '',
     portfolioLink: profile.portfolioLink || profile.portfolio || '',
     portfolioItems: normalizePortfolioItems(profile.portfolioItems || profile.mediaPortfolio),
-    contactMethod: profile.contactMethod || profile.contact || '',
+    contactMethods,
+    contactMethod: hasAnyContactMethods(contactMethods)
+      ? getContactMethodItems(contactMethods).map(item => `${item.label}: ${item.display}`).join(' · ')
+      : legacyContactText,
     season_current: profile.season_current || getSeasonBadge(seasons),
     cesNumber: profile.cesNumber || null,
     passphrase,
@@ -4780,7 +5038,9 @@ function normalizeCreatorRecord(profile = {}) {
 
 function getDirectoryProfiles() {
   const approved = typeof getStorage === 'function' ? getStorage('approved', []) : [];
-  return [...CREATORS, ...approved].map(normalizeCreatorRecord);
+  return approved
+    .map(normalizeCreatorRecord)
+    .filter(profile => String(profile.cesNumber || '').trim().length === 9);
 }
 
 function getCreatorById(id) {
@@ -4862,12 +5122,13 @@ function renderDirectory() {
   });
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty-state">No co-creators found for this resonance field yet.<br>The frequency is open — be the first to arrive.</div>';
+    grid.innerHTML = '<div class="empty-state">No approved C.E.S. co-creators are in this resonance field yet.<br>Offer a profile to the Exchange or approve one locally to begin testing connections.</div>';
     return;
   }
 
   grid.innerHTML = filtered.map((c, i) => {
     const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRay || 'Ray', code: '' };
+    const contactItems = getContactMethodItems(c.contactMethods);
     const avatarContent = c.photo
       ? `<img src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}">`
       : escapeHtml(getAvatarLabel(c));
@@ -4895,16 +5156,19 @@ function renderDirectory() {
       <div style="margin-top:0.7rem">${renderWishAvailabilityBadge(c.wishAvailability)}</div>
       ${c.cesNumber ? `<div style="font-size:0.6rem;letter-spacing:0.12em;color:rgba(200,146,42,0.35);font-family:'Atkinson Hyperlegible',sans-serif;margin-top:0.2rem;padding:0 0.1rem">C.E.S. ${escapeHtml(c.cesNumber)}</div>` : ''}
       <div class="heartlight-statement">"${escapeHtml(c.heartlight)}"</div>
+      <div class="contact-path-chip-row">${renderContactPathChips(c.contactMethods)}</div>
       <div class="offerings">
         ${c.offerings.map(o => `<span class="offering-tag">${escapeHtml(o)}</span>`).join('')}
       </div>
       ${portfolioStrip}
       <div class="exchange-row">
         <div>
-          <div class="exchange-label" style="margin-bottom:0.3rem">Exchange styles</div>
-          <div class="exchange-styles">${c.exchanges.map(e => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(e)}</span>`).join('')}</div>
+          <div class="exchange-label" style="margin-bottom:0.3rem">Connect through</div>
+          <div class="exchange-styles">${contactItems.length
+            ? contactItems.map(item => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(item.label)}</span>`).join('')
+            : c.exchanges.map(e => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(e)}</span>`).join('')}</div>
         </div>
-        <button class="view-profile-btn">View C.E.S. →</button>
+        <button class="view-profile-btn">Open Profile →</button>
       </div>
     </div>`;
   }).join('');
@@ -4987,15 +5251,17 @@ function openModal(id) {
       ${portfolioGallery}
     </div>` : ''}
 
-    ${(c.portfolioLink || c.contactMethod) ? `<div class="modal-section">
-      <div class="modal-section-label">🔗 Connect</div>
+    ${(c.portfolioLink || hasAnyContactMethods(c.contactMethods) || c.contactMethod) ? `<div class="modal-section">
+      <div class="modal-section-label">🔗 Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
       ${renderPortfolioLinkLine(c)}
-      ${c.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(c.contactMethod)}</div>` : ''}
+      ${renderContactMethodGrid(c.contactMethods, {
+        emptyHtml: c.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(c.contactMethod)}</div>` : ''
+      })}
     </div>` : ''}
 
     <button class="connect-btn" style="border-color:${ray.color};color:${ray.color};background:linear-gradient(135deg,${ray.color}18,${ray.color}08)"
       onclick="openAgreement('${escapeJsString(c.id)}')">
-      ✦ Begin Exchange Agreement with ${escapeHtml(c.name.split(' ')[0])}
+      ✦ Connect with ${escapeHtml(c.name.split(' ')[0])}
     </button>
   `;
 
@@ -5068,25 +5334,30 @@ function handlePhotoUpload(e) {
   reader.readAsDataURL(file);
 }
 
-// ── EXCHANGE AGREEMENT MODAL ──
+// ── CONNECTION MODAL ──
 function openAgreement(creatorId) {
   const c = getCreatorById(creatorId);
   if (!c) return;
   const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRayKey || 'Ray' };
+  const directConnect = renderContactMethodGrid(c.contactMethods, {
+    emptyHtml: c.contactMethod
+      ? `<div class="portfolio-link-line">Contact: ${escapeHtml(c.contactMethod)}</div>`
+      : '<div class="contact-form-note">This co-creator has not published a direct channel yet. For now, use the profile and portfolio as your orientation.</div>'
+  });
 
   document.getElementById('agreementRayBar').style.background =
     `linear-gradient(90deg, ${ray.color}, #3a9b6f, transparent)`;
 
   document.getElementById('agreementContent').innerHTML = `
     <div style="padding-top:0.5rem">
-      <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">📜 Seasonal Co-Creation Agreement</div>
-      <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Begin with ${escapeHtml(c.name.split(' ')[0])}</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:var(--muted);margin-bottom:1.8rem">This agreement is a living vow between two beings. Fill it with truth, care, and Heartlight.</div>
+      <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ Co-Creator Connection</div>
+      <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:var(--muted);margin-bottom:1.8rem">Share who you are, what you want to co-create, and then move directly into the contact path they prefer.</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
         <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Wish-Holder (You)</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none" placeholder="Your name" type="text" id="agr_receiver">
+          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your Name</div>
+          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none" placeholder="Your name / pronouns" type="text" id="connection_name">
         </div>
         <div>
           <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Co-Creator</div>
@@ -5095,83 +5366,37 @@ function openAgreement(creatorId) {
       </div>
 
       <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">🌀 Portal Timeline</div>
-        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
-          ${['❄️ Winter Wish → 🌱 Spring Seed → 🌞 Summer Bloom → 🍂 Fall Harvest','🌱 Spring Seed → 🌞 Summer Bloom → 🍂 Fall Harvest','🌞 Summer Bloom → 🍂 Fall Harvest','🍂 Single Season Exchange'].map(t =>
-            `<label style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.75rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.2);background:rgba(255,255,255,0.03);cursor:pointer;font-size:0.75rem;color:var(--cream)">
-              <input type="radio" name="agr_timeline" value="${t}" style="accent-color:${ray.color}"> ${t}
-            </label>`
-          ).join('')}
-        </div>
-      </div>
-
-      <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✨ Scope — What is Being Co-Created?</div>
-        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.18);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none;resize:vertical;min-height:70px" placeholder="Describe the wish or offering being co-created…" id="agr_scope"></textarea>
+        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">What Do You Want to Co-Create?</div>
+        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.18);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none;resize:vertical;min-height:70px" placeholder="Share the collaboration, offering, or invitation you feel called to begin." id="connection_scope"></textarea>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
         <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Format</div>
-          <select style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" id="agr_format">
-            <option value="">Select…</option>
-            <option>Digital</option>
-            <option>Physical</option>
-            <option>Digital & Physical</option>
-          </select>
+          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your Email</div>
+          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" id="connection_email" placeholder="you@example.com">
         </div>
         <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Exchange Pathway</div>
-          <select style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" id="agr_exchange">
-            <option value="">Select…</option>
-            ${c.exchanges.map(e => `<option>${escapeHtml(e)}</option>`).join('')}
-          </select>
+          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Preferred Reply Channel</div>
+          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" id="connection_reply" placeholder="Email, Instagram, Discord, Signal…">
         </div>
-      </div>
-
-      <div style="margin-bottom:0.75rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.5rem">🌱 Milestones</div>
-        <div style="display:grid;gap:0.5rem">
-          <div style="display:flex;align-items:center;gap:0.6rem">
-            <span style="font-size:1rem;flex-shrink:0">🌱</span>
-            <input style="flex:1;padding:0.5rem 0.8rem;background:rgba(255,255,255,0.04);border:1px solid rgba(58,155,111,0.25);border-radius:0.5rem;color:var(--cream);font-size:0.82rem;outline:none" placeholder="Spring Seed deliverable…" id="agr_spring">
-          </div>
-          <div style="display:flex;align-items:center;gap:0.6rem">
-            <span style="font-size:1rem;flex-shrink:0">🌞</span>
-            <input style="flex:1;padding:0.5rem 0.8rem;background:rgba(255,255,255,0.04);border:1px solid rgba(212,184,48,0.25);border-radius:0.5rem;color:var(--cream);font-size:0.82rem;outline:none" placeholder="Summer Bloom deliverable…" id="agr_summer">
-          </div>
-          <div style="display:flex;align-items:center;gap:0.6rem">
-            <span style="font-size:1rem;flex-shrink:0">🍂</span>
-            <input style="flex:1;padding:0.5rem 0.8rem;background:rgba(255,255,255,0.04);border:1px solid rgba(196,64,122,0.25);border-radius:0.5rem;color:var(--cream);font-size:0.82rem;outline:none" placeholder="Fall Harvest deliverable…" id="agr_fall">
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:0.75rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">🌊 Boundaries & Consent Notes</div>
-        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.15);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.82rem;outline:none;resize:vertical;min-height:55px" placeholder="Any boundaries, needs, or consent agreements both beings carry into this exchange…" id="agr_consent"></textarea>
       </div>
 
       <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">🌀 Adaptability Clause</div>
-        <div style="padding:0.75rem 1rem;background:rgba(200,146,42,0.04);border:1px solid rgba(200,146,42,0.15);border-radius:0.5rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.88rem;color:rgba(240,232,213,0.7);line-height:1.7">
-          Both beings honor that co-creation is a living process. Timelines, scope, and form may evolve with the natural growth of the work. Changes are welcomed through clear, kind communication and mutual consent.
-        </div>
+        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">First Message into the Field</div>
+        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.15);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.82rem;outline:none;resize:vertical;min-height:90px" placeholder="Write the note you want to send so the connection starts with clarity and care." id="connection_message"></textarea>
       </div>
 
-      <div style="margin-bottom:1.4rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">💛 Closing Blessing (Optional)</div>
-        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.15);border-radius:0.5rem;color:var(--cream);font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;outline:none;resize:vertical;min-height:50px" placeholder="Speak a blessing, intention, or gratitude into this agreement…" id="agr_blessing"></textarea>
+      <div style="margin-bottom:1.2rem">
+        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Preferred Contact Paths Shared by ${escapeHtml(c.name.split(' ')[0])}</div>
+        ${directConnect}
       </div>
 
-      <div style="padding:1rem 1.2rem;border:1px solid rgba(58,155,111,0.2);border-radius:0.75rem;background:rgba(58,155,111,0.04);margin-bottom:1.2rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:rgba(240,232,213,0.75);line-height:1.8">"This agreement is held in the spirit of sacred co-creation, mutual thriving, and the Codes of Heartlight. Energy flows in joy and reciprocity. We honor this exchange as a living ceremony."</div>
-      </div>
+      <div class="contact-form-note" id="connectionResponseNote" style="display:none;margin-bottom:1.2rem"></div>
 
-      <button onclick="submitAgreement('${escapeJsString(c.name)}')" style="width:100%;padding:0.9rem;border-radius:3rem;border:1px solid ${ray.color};background:linear-gradient(135deg,${ray.color}14,${ray.color}06);color:${ray.color};font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s"
+      <button onclick="submitAgreement('${escapeJsString(c.id)}')" style="width:100%;padding:0.9rem;border-radius:3rem;border:1px solid ${ray.color};background:linear-gradient(135deg,${ray.color}14,${ray.color}06);color:${ray.color};font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s"
         onmouseover="this.style.background='linear-gradient(135deg,${ray.color}28,${ray.color}10)'"
         onmouseout="this.style.background='linear-gradient(135deg,${ray.color}14,${ray.color}06)'">
-        ✦ Send Agreement to ${escapeHtml(c.name.split(' ')[0])}
+        ✦ Prepare Connection with ${escapeHtml(c.name.split(' ')[0])}
       </button>
     </div>
   `;
@@ -5187,14 +5412,22 @@ function closeAgreement() {
 function closeAgreementOutside(e) {
   if (e.target === document.getElementById('agreementOverlay')) closeAgreement();
 }
-function submitAgreement(name) {
-  const receiver = document.getElementById('agr_receiver')?.value?.trim();
-  if (!receiver) { alert('✦ Please share your name to enter this agreement.'); return; }
-  closeAgreement();
-  closeModal();
-  setTimeout(() => {
-    alert(`✦ Your Exchange Agreement has been sent to ${name}.\n\nThey will receive your intention and respond through resonance and capacity. The Heartlines carry your wish forward. 🌈`);
-  }, 300);
+function submitAgreement(creatorId) {
+  const creator = getCreatorById(creatorId);
+  if (!creator) return;
+  const senderName = document.getElementById('connection_name')?.value?.trim();
+  const senderEmail = document.getElementById('connection_email')?.value?.trim();
+  const message = document.getElementById('connection_message')?.value?.trim();
+  const response = document.getElementById('connectionResponseNote');
+  if (!senderName || !message) {
+    alert('✦ Please share your name and first message before preparing the connection.');
+    return;
+  }
+  if (response) {
+    response.style.display = 'block';
+    response.innerHTML = `Your intro for ${escapeHtml(creator.name.split(' ')[0])} is ready. This local prototype does not send the message yet, so use one of the direct contact paths above now.${senderEmail ? ` Your email ${escapeHtml(senderEmail)} is included in your draft.` : ''}`;
+    response.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 
@@ -5662,6 +5895,18 @@ function updatePreview() {
     pPortfolio.innerHTML = renderPortfolioGallery(formState.portfolioItems, {
       emptyHtml: '<div class="portfolio-empty-note">Add photo or video links to preview your portfolio here.</div>'
     }) || '<div class="portfolio-empty-note">Add photo or video links to preview your portfolio here.</div>';
+  }
+
+  const previewContacts = document.getElementById('previewContactMethods');
+  if (previewContacts) {
+    previewContacts.innerHTML = renderContactPathChips({
+      instagram: document.getElementById('f_contact_instagram')?.value || '',
+      email: document.getElementById('f_contact_email')?.value || '',
+      phone: document.getElementById('f_contact_phone')?.value || '',
+      discord: document.getElementById('f_contact_discord')?.value || '',
+      signal: document.getElementById('f_contact_signal')?.value || '',
+      whatsapp: document.getElementById('f_contact_whatsapp')?.value || '',
+    });
   }
 }
 
@@ -7233,12 +7478,6 @@ function initializeProfileStorageDefaults() {
       }
     ]);
   }
-
-  if (!shouldSeedLocalDemoData()) return;
-  const pending = getStorage('pending', []);
-  if (pending.length === 0) {
-    setStorage('pending', getDemoPendingProfiles());
-  }
 }
 
 function syncCurrentUserWithStoredProfile() {
@@ -7433,7 +7672,12 @@ function populateCESFormFromProfile(profile) {
     f_timeline: data.timeline,
     f_consent: data.consent,
     f_portfolio: data.portfolioLink || '',
-    f_contact: data.contactMethod || '',
+    f_contact_instagram: data.contactMethods.instagram || '',
+    f_contact_email: data.contactMethods.email || '',
+    f_contact_phone: data.contactMethods.phone || '',
+    f_contact_discord: data.contactMethods.discord || '',
+    f_contact_signal: data.contactMethods.signal || '',
+    f_contact_whatsapp: data.contactMethods.whatsapp || '',
   };
   Object.entries(fieldMap).forEach(([id, value]) => {
     const input = document.getElementById(id);
@@ -7559,10 +7803,12 @@ function openProfileModal() {
       <div class="profile-modal-label">Portfolio Gallery</div>
       ${portfolioGallery}
     </div>` : ''}
-    ${(submission.portfolioLink || submission.contactMethod) ? `<div class="profile-modal-section">
+    ${(submission.portfolioLink || hasAnyContactMethods(submission.contactMethods) || submission.contactMethod) ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Connect</div>
       ${renderPortfolioLinkLine(submission)}
-      ${submission.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(submission.contactMethod)}</div>` : ''}
+      ${renderContactMethodGrid(submission.contactMethods, {
+        emptyHtml: submission.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(submission.contactMethod)}</div>` : ''
+      })}
     </div>` : ''}
     ${renderProfileWishesSection()}
     <div style="margin-top:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
@@ -7612,6 +7858,15 @@ function submitCESProfile() {
   const seasons = { ...formState.selectedSeasons };
   const rays = [...formState.selectedRays];
   const portfolioItems = normalizePortfolioItems(formState.portfolioItems);
+  const contactMethods = {
+    instagram: (document.getElementById('f_contact_instagram')?.value || '').trim(),
+    email: (document.getElementById('f_contact_email')?.value || '').trim(),
+    phone: (document.getElementById('f_contact_phone')?.value || '').trim(),
+    discord: (document.getElementById('f_contact_discord')?.value || '').trim(),
+    signal: (document.getElementById('f_contact_signal')?.value || '').trim(),
+    whatsapp: (document.getElementById('f_contact_whatsapp')?.value || '').trim(),
+  };
+  const contactSummary = getContactMethodItems(contactMethods).map(item => `${item.label}: ${item.display}`).join(' · ');
   const profile = {
     ...(existingProfile || {}),
     id: existingProfile?.id || `ces_${Date.now()}`,
@@ -7639,8 +7894,9 @@ function submitCESProfile() {
     portfolio: (document.getElementById('f_portfolio')?.value || '').trim(),
     portfolioItems,
     mediaPortfolio: portfolioItems,
-    contactMethod: (document.getElementById('f_contact')?.value || '').trim(),
-    contact: (document.getElementById('f_contact')?.value || '').trim(),
+    contactMethods,
+    contactMethod: contactSummary,
+    contact: contactSummary,
     cesNumber: cesNumber || existingProfile?.cesNumber || null,
     passphrase: passphrase || existingProfile?.passphrase || '',
     wishAvailability: normalizeWishAvailability(formState.wishAvailability || existingProfile?.wishAvailability || existingProfile?.directoryWishStatus),
