@@ -313,6 +313,14 @@ function normalizeExternalUrl(value) {
   }
 }
 
+const ATLAS_DISCORD_COMMUNITY_URL = 'https://discord.gg/BK3kbTsw5W';
+
+function getDiscordIconMarkup(className = 'profile-community-icon') {
+  return `<svg class="${className}" viewBox="0 0 127.14 96.36" aria-hidden="true" focusable="false">
+    <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83A97.68 97.68 0 0 0 49 6.83 72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21h.02a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.18 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2.05a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.67 2.05a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.17A105.25 105.25 0 0 0 126.6 80.2c2.64-27.29-4.5-51.02-18.9-72.13ZM42.45 65.69C35.62 65.69 30 59.5 30 51.9s5.52-13.79 12.45-13.79 12.57 6.19 12.45 13.79c0 7.6-5.52 13.79-12.45 13.79Zm42.24 0c-6.83 0-12.45-6.19-12.45-13.79S77.76 38.11 84.69 38.11s12.57 6.19 12.45 13.79c0 7.6-5.52 13.79-12.45 13.79Z"/>
+  </svg>`;
+}
+
 function normalizePortfolioMediaUrl(value) {
   const raw = String(value ?? '').trim();
   if (!raw) return '';
@@ -550,6 +558,15 @@ function getContactMethodItems(contactMethods = {}) {
       if (tel) actions.push({ label: 'Message', href: `sms:${tel}` });
       return { ...field, display: raw, copyValue: raw, actions };
     }
+    if (field.key === 'discord') {
+      const href = /discord(?:app)?\.(?:gg|com)\//i.test(raw) ? normalizeExternalUrl(raw) : '';
+      return {
+        ...field,
+        display: raw,
+        copyValue: raw,
+        actions: href ? [{ label: 'Open', href }] : [],
+      };
+    }
     if (field.key === 'signal') {
       const signalNumber = sanitizePhoneNumber(raw, true);
       const href = signalNumber ? `https://signal.me/#p/${encodeURIComponent(signalNumber)}` : '';
@@ -585,6 +602,46 @@ function getPublicContactVisibilitySummary(contactMethods = {}, contactVisibilit
   return labels.length ? labels.join(', ') : 'Private until shared through a co-creator connection';
 }
 
+function renderContactMethodLabel(item = {}) {
+  const iconMarkup = item.key === 'discord'
+    ? getDiscordIconMarkup('contact-label-icon discord')
+    : `<span class="contact-label-icon">${escapeHtml(item.icon || '')}</span>`;
+  return `${iconMarkup}<span>${escapeHtml(item.label || '')}</span>`;
+}
+
+function renderProfileCommunityLinks(profile = {}, options = {}) {
+  const portfolioUrl = normalizeExternalUrl(profile.portfolioLink);
+  const links = [];
+
+  if (portfolioUrl) {
+    links.push({
+      label: options.profileLabel || 'Visit Profile',
+      href: portfolioUrl,
+      iconMarkup: '<span class="profile-community-icon-text">↗</span>',
+    });
+  }
+
+  if (options.includeCommunity !== false) {
+    links.push({
+      label: options.communityLabel || 'Join Community',
+      href: ATLAS_DISCORD_COMMUNITY_URL,
+      iconMarkup: getDiscordIconMarkup('profile-community-icon'),
+    });
+  }
+
+  if (!links.length) return '';
+
+  const className = options.className || 'profile-community-links';
+  const stopPropagation = options.stopPropagation ? ' onclick="event.stopPropagation()"' : '';
+
+  return `<div class="${className}">${links.map(link => `
+    <a class="profile-community-link" href="${escapeHtml(link.href)}" target="_blank" rel="noreferrer noopener"${stopPropagation}>
+      ${link.iconMarkup}
+      <span>${escapeHtml(link.label)}</span>
+    </a>
+  `).join('')}</div>`;
+}
+
 function renderContactMethodGrid(contactMethods = {}, options = {}) {
   const items = getContactMethodItems(contactMethods);
   if (!items.length) return options.emptyHtml || '';
@@ -595,11 +652,12 @@ function renderContactMethodGrid(contactMethods = {}, options = {}) {
         : '';
       return `<a class="contact-action-btn" href="${escapeHtml(action.href)}"${anchorAttrs}>${escapeHtml(action.label)}</a>`;
     }).join('');
+    const actionClassName = item.key === 'phone' ? 'contact-method-actions stacked' : 'contact-method-actions';
     return `
       <div class="contact-method-card">
         <div class="contact-method-head">
-          <div class="contact-method-label">${escapeHtml(item.icon)} ${escapeHtml(item.label)}</div>
-          <div class="contact-method-actions">
+          <div class="contact-method-label">${renderContactMethodLabel(item)}</div>
+          <div class="${actionClassName}">
             ${actionButtons}
             <button type="button" class="contact-action-btn subtle" onclick="copyContactValue('${escapeJsString(item.copyValue)}', '${escapeJsString(item.label)}')">Copy</button>
           </div>
@@ -1052,6 +1110,12 @@ function renderDirectory() {
         ${c.offerings.map(o => `<span class="offering-tag">${escapeHtml(o)}</span>`).join('')}
       </div>
       ${portfolioStrip}
+      ${renderProfileCommunityLinks(c, {
+        className: 'profile-community-links directory-card-links',
+        profileLabel: 'Visit Profile',
+        communityLabel: 'Join Community',
+        stopPropagation: true,
+      })}
       <div class="exchange-row">
         <div>
           <div class="exchange-label" style="margin-bottom:0.3rem">${publicContactItems.length ? 'Public contact on Directory 🔗' : 'Connection privacy 🔗'}</div>
@@ -1059,7 +1123,9 @@ function renderDirectory() {
             ? publicContactItems.map(item => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(item.label)}</span>`).join('')
             : '<span class="offering-tag" style="font-size:0.65rem">Shared only through C.E.S. connection</span>'}</div>
         </div>
-        <button class="view-profile-btn">Open Core Energetic Signature →</button>
+        <div class="directory-card-actions">
+          <button class="view-profile-btn" type="button">Open Core Energetic Signature →</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1148,6 +1214,14 @@ function openModal(id) {
       <div class="modal-section-label">🎞 Portfolio Gallery</div>
       ${portfolioGallery}
     </div>` : ''}
+
+    <div class="modal-section">
+      <div class="modal-section-label">Profile & Community Links ↗</div>
+      ${renderProfileCommunityLinks(c, {
+        profileLabel: 'Visit Profile',
+        communityLabel: 'Join Community',
+      })}
+    </div>
 
     ${(c.portfolioLink || hasAnyContactMethods(c.contactMethods) || c.contactMethod) ? `<div class="modal-section">
       <div class="modal-section-label">${publicContactItems.length ? 'Public Contact On Directory' : 'Connection Privacy'} 🔗</div>
@@ -3988,6 +4062,13 @@ function openProfileModal() {
       <div class="profile-modal-label">Portfolio Gallery</div>
       ${portfolioGallery}
     </div>` : ''}
+    <div class="profile-modal-section">
+      <div class="profile-modal-label">Profile & Community Links</div>
+      ${renderProfileCommunityLinks(submission, {
+        profileLabel: 'Visit Profile',
+        communityLabel: 'Join Community',
+      })}
+    </div>
     ${(submission.portfolioLink || hasAnyContactMethods(submission.contactMethods) || submission.contactMethod) ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Your Shared Contact Paths</div>
       ${renderPortfolioLinkLine(submission)}
