@@ -1,6 +1,6 @@
 {
   "name": "Heartlight Exchange",
-  "short_name": "Heartlight",
+  "short_name": "Heartlight Exchange",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#16002d",
