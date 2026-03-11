@@ -73,6 +73,8 @@
     min-height: 100vh;
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
+    position: relative;
+    isolation: isolate;
   }
 
   /* ── MOBILE OVERRIDES ── */
@@ -125,6 +127,15 @@
     }
   }
 
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: var(--page-gradient);
+    pointer-events: none;
+    z-index: -2;
+  }
+
   /* ── COSMIC BACKGROUND ── */
   body::before {
     content: '';
@@ -135,7 +146,7 @@
       radial-gradient(ellipse 50% 30% at 85% 15%, rgba(200,146,42,0.12) 0%, transparent 50%),
       radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%);
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
   }
 
   /* ── STAR FIELD ── */
@@ -1321,20 +1332,21 @@
   /* ── MOBILE RESPONSIVE ── */
   @media (max-width: 640px) {
 
-    /* Keep the desktop atmosphere on mobile without flattening the stars */
+    /* Keep the desktop atmosphere on mobile without stretching the gradient */
     html {
       min-height: 100%;
       background: #06050f;
     }
     body {
       min-height: 100vh;
+      background: transparent !important;
+      background-attachment: scroll !important;
+    }
+    body::after {
       background:
         radial-gradient(circle at 18% 12%, rgba(255,255,255,0.08) 0%, transparent 24%),
         radial-gradient(circle at 82% 16%, rgba(200,146,42,0.16) 0%, transparent 28%),
-        var(--page-gradient) !important;
-      background-size: cover !important;
-      background-repeat: no-repeat !important;
-      background-attachment: fixed !important;
+        var(--page-gradient);
     }
 
     /* Admin settings grid → single column */
@@ -2373,16 +2385,6 @@
 
     </div>
   </div>
-
-  <!-- JOIN CTA -->
-  <div class="join-cta fade-up" id="joinCta" style="display:none">
-    <h2>Your frequency is felt here.</h2>
-    <p>We all carry a core energetic signature that is felt when we co-create together. Share your frequency today.</p>
-    <button class="join-btn" onclick="setView('submit', document.getElementById('navBtnSubmit'))">
-      Share Your Core Energetic Signature
-    </button>
-  </div>
-
 
   <!-- WISH PORTAL VIEW -->
   <div id="view-wish" style="display:none">
@@ -4034,8 +4036,8 @@
   <!-- HEARTLIGHT EXCHANGES CHARTER VIEW -->
   <div id="view-charter">
     <style>
-      .charter-hero { text-align:center; padding:1rem 0 2.5rem; max-width:680px; margin:0 auto; }
-      .charter-hero-title { font-family:'Alice',serif; font-size:2rem; color:var(--orichalcum-pale); margin-bottom:0.5rem; letter-spacing:0.02em; }
+      .charter-hero { text-align:center; padding:0.15rem 0 1.7rem; max-width:680px; margin:0 auto; }
+      .charter-hero-title { font-family:'Alice',serif; font-size:2rem; color:var(--orichalcum-pale); margin-bottom:0.3rem; letter-spacing:0.02em; }
       .charter-hero-sub { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1.1rem; color:rgba(240,232,213,0.72); line-height:1.85; }
       .charter-section { margin-bottom:2.5rem; }
       .charter-section-title { font-family:'Alice',serif; font-size:1.2rem; color:var(--orichalcum-pale); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.6rem; }
@@ -4203,6 +4205,7 @@
         .charter-hex-modal-close { top:8%; right:10%; }
       }
       @media(max-width:600px){
+        .charter-hero{padding:0 0 1.35rem}
         .charter-hero-title{font-size:1.5rem}
         .charter-hive-copy{font-size:0.92rem}
         .charter-hive{margin-top:0.75rem}
@@ -4236,7 +4239,7 @@
 
       <!-- Hero -->
       <div class="charter-hero">
-        <div class="charter-hero-title">📜 Heartlight Exchange Charter</div>
+        <div class="charter-hero-title">Heartlight Exchange Charter</div>
         <p class="charter-hero-sub">A living vow for Atlas Island's seasonal co-creation economy</p>
       </div>
 
