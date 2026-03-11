@@ -73,6 +73,8 @@ interface AgreementRecord {
   coCreatorCES: string;
   coCreatorName: string;
   roles: AgreementRole[];
+  portalStartPhase: string;
+  portalEndPhase: string;
   portalTimeline: string;
   scope: string;
   format: string;
@@ -508,7 +510,47 @@ function normalizeAgreementRoles(value: unknown): AgreementRole[] {
   return normalized.length ? normalized : [{ label: '', beings: '' }];
 }
 
+const AGREEMENT_PORTAL_PHASES = [
+  'Spring Seed',
+  'Summer Bloom',
+  'Fall Harvest',
+  'Winter Rest',
+];
+
+function getAgreementPortalPhaseIndex(value = ''): number {
+  const index = AGREEMENT_PORTAL_PHASES.indexOf(String(value || '').trim());
+  return index >= 0 ? index : 0;
+}
+
+function inferAgreementPortalPhases(record: PartialRecord = {}): { portalStartPhase: string; portalEndPhase: string } {
+  const explicitStart = String(record.portalStartPhase || '').trim();
+  const explicitEnd = String(record.portalEndPhase || '').trim();
+  if (AGREEMENT_PORTAL_PHASES.includes(explicitStart) && AGREEMENT_PORTAL_PHASES.includes(explicitEnd)) {
+    return {
+      portalStartPhase: explicitStart,
+      portalEndPhase: AGREEMENT_PORTAL_PHASES[Math.max(getAgreementPortalPhaseIndex(explicitStart), getAgreementPortalPhaseIndex(explicitEnd))],
+    };
+  }
+  const timeline = String(record.portalTimeline || '').toLowerCase();
+  const matches = AGREEMENT_PORTAL_PHASES.filter(phase => timeline.includes(phase.toLowerCase()));
+  const portalStartPhase = matches[0] || 'Spring Seed';
+  const portalEndPhase = matches.length ? matches[matches.length - 1] : 'Fall Harvest';
+  return {
+    portalStartPhase,
+    portalEndPhase: AGREEMENT_PORTAL_PHASES[Math.max(getAgreementPortalPhaseIndex(portalStartPhase), getAgreementPortalPhaseIndex(portalEndPhase))],
+  };
+}
+
+function buildAgreementPortalTimeline(portalStartPhase = 'Spring Seed', portalEndPhase = 'Fall Harvest'): string {
+  const safeStartPhase = AGREEMENT_PORTAL_PHASES.includes(portalStartPhase) ? portalStartPhase : 'Spring Seed';
+  const safeEndPhase = AGREEMENT_PORTAL_PHASES.includes(portalEndPhase) ? portalEndPhase : 'Fall Harvest';
+  const startIndex = getAgreementPortalPhaseIndex(safeStartPhase);
+  const endIndex = Math.max(startIndex, getAgreementPortalPhaseIndex(safeEndPhase));
+  return `${safeStartPhase} -> ${AGREEMENT_PORTAL_PHASES[endIndex]}`;
+}
+
 function normalizeAgreementRecord(record: PartialRecord = {}): AgreementRecord {
+  const portalPhases = inferAgreementPortalPhases(record);
   return {
     id: String(record.id || `agreement_${Date.now()}`),
     sourceType: String(record.sourceType || 'template'),
@@ -522,7 +564,9 @@ function normalizeAgreementRecord(record: PartialRecord = {}): AgreementRecord {
     coCreatorCES: String(record.coCreatorCES || ''),
     coCreatorName: String(record.coCreatorName || '').trim(),
     roles: normalizeAgreementRoles(record.roles),
-    portalTimeline: String(record.portalTimeline || 'Spring Seed begin → Summer Bloom form → Fall Harvest exchange').trim(),
+    portalStartPhase: portalPhases.portalStartPhase,
+    portalEndPhase: portalPhases.portalEndPhase,
+    portalTimeline: String(record.portalTimeline || buildAgreementPortalTimeline(portalPhases.portalStartPhase, portalPhases.portalEndPhase)).trim(),
     scope: String(record.scope || '').trim(),
     format: String(record.format || 'Digital').trim(),
     exchangePathway: String(record.exchangePathway || 'Gift exchange').trim(),

@@ -165,6 +165,16 @@
       width: 100%;
       white-space: normal !important;
     }
+    .heart-theme-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .heart-theme-btn {
+      padding: 0.6rem 0.45rem;
+    }
+    .heart-theme-label {
+      font-size: 0.64rem;
+      line-height: 1.25;
+    }
     .wish-preview-sticky {
       overflow-x: hidden;
     }
@@ -1152,8 +1162,65 @@
     font-size: 0.75rem;
     letter-spacing: 0.1em;
     color: rgba(138,127,110,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
   footer span { color: rgba(138,127,110,0.5); }
+  .footer-discord-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.72rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(88, 101, 242, 0.34);
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.18), rgba(88, 101, 242, 0.07));
+    color: #eef1ff;
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .footer-discord-link:hover {
+    transform: translateY(-1px);
+    border-color: rgba(88, 101, 242, 0.55);
+    box-shadow: 0 10px 30px rgba(17, 24, 67, 0.28);
+  }
+  .footer-discord-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    display: block;
+    flex-shrink: 0;
+  }
+  .footer-discord-copy {
+    display: block;
+    line-height: 1;
+  }
+  .footer-meta {
+    line-height: 1.7;
+  }
+  .charter-flow-discord-wrap {
+    margin-top: 0.9rem;
+  }
+  .charter-flow-action-btn {
+    margin-top: 0.8rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid rgba(200,146,42,0.4);
+    background: transparent;
+    color: var(--orichalcum);
+    font-size: 0.72rem;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .charter-flow-action-btn:hover {
+    background: rgba(200,146,42,0.08);
+  }
 
   /* ── SEARCH BAR ── */
   .search-wrap {
@@ -2488,9 +2555,10 @@
       /* ── HEART THEME GRID ── */
       .heart-theme-grid {
         display: grid;
-        grid-template-columns: repeat(3,1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 0.5rem;
         margin-top: 0.5rem;
+        min-width: 0;
       }
       .heart-theme-btn {
         padding: 0.65rem 0.5rem;
@@ -2501,6 +2569,7 @@
         text-align: center;
         transition: all 0.22s;
         user-select: none;
+        min-width: 0;
       }
       .heart-theme-btn:hover { border-color: rgba(196,64,122,0.4); }
       .heart-theme-btn.selected {
@@ -2508,7 +2577,7 @@
         background: rgba(196,64,122,0.08);
       }
       .heart-theme-emoji { font-size: 1.2rem; display: block; margin-bottom: 0.2rem; }
-      .heart-theme-label { font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(240,232,213,0.6); }
+      .heart-theme-label { font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(240,232,213,0.6); overflow-wrap: anywhere; }
       .heart-theme-btn.selected .heart-theme-label { color: var(--cream); }
 
       /* ── FORMAT BUTTONS ── */
@@ -4304,9 +4373,23 @@
             <div class="charter-flow-copy">Every being enters through a Core Energetic Signature. Your signature holds your resonance, offerings, exchange pathways, and seasonal capacity inside the Heartlight Exchange.</div>
           </div>
           <div class="charter-flow-card">
-            <div class="charter-flow-step">2. Connect with Co-Creators in Directory</div>
-            <div class="charter-flow-title">Reach Through The Directory</div>
-            <div class="charter-flow-copy">The Directory lets beings feel resonance directly, discover aligned co-creators, and begin contact with those whose offerings and frequency match the wish or dream taking form.</div>
+            <div class="charter-flow-step">2. Connect with Co-Creators</div>
+            <div class="charter-flow-title">Connect Through Discord and Directory</div>
+            <div class="charter-flow-copy">The Directory and Atlas Island Discord Community is where beings share offerings, find meaning in life, discover aligned co-creators, and fulfill our dreams &amp; wishes together. Join the Discord to connect in community, then move through the Directory to explore signatures and reach out with clarity.</div>
+            <div class="charter-flow-discord-wrap">
+              <a
+                class="footer-discord-link"
+                href="https://discord.gg/BK3kbTsw5W"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Join the Atlas Island Discord Community"
+              >
+                <svg class="footer-discord-icon" viewBox="0 0 127.14 96.36" aria-hidden="true" focusable="false">
+                  <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83A97.68 97.68 0 0 0 49 6.83 72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21h.02a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.18 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2.05a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.67 2.05a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.17A105.25 105.25 0 0 0 126.6 80.2c2.64-27.29-4.5-51.02-18.9-72.13ZM42.45 65.69C35.62 65.69 30 59.5 30 51.9s5.52-13.79 12.45-13.79 12.57 6.19 12.45 13.79c0 7.6-5.52 13.79-12.45 13.79Zm42.24 0c-6.83 0-12.45-6.19-12.45-13.79S77.76 38.11 84.69 38.11s12.57 6.19 12.45 13.79c0 7.6-5.52 13.79-12.45 13.79Z"/>
+                </svg>
+                <span class="footer-discord-copy">Join the Atlas Island Discord Community</span>
+              </a>
+            </div>
           </div>
           <div class="charter-flow-card">
             <div class="charter-flow-step">3. Enter The Wishing Well</div>
@@ -4314,9 +4397,10 @@
             <div class="charter-flow-copy">Wishes are cast through an active Core Energetic Signature. The same Wishing Well lets beings answer wishes, feel resonance, and step forward for the roles they are called to fulfill.</div>
           </div>
           <div class="charter-flow-card">
-            <div class="charter-flow-step">4. Co-Creators Sign Heartlight Exchange Agreement</div>
-            <div class="charter-flow-title">Sign The Exchange</div>
-            <div class="charter-flow-copy">When resonance is mutual, the co-creators move into the Heartlight Exchange agreement, where scope, intentions, roles, boundaries, exchange pathways, and seasonal milestones are consciously held.</div>
+            <div class="charter-flow-step">4. Agree to Heartlight Exchange</div>
+            <div class="charter-flow-title">Shape The Agreement</div>
+            <div class="charter-flow-copy">When resonance is mutual, co-creators fill out the Heartlight Exchange Agreement to align on the wish, define each role, set the exchange pathway, choose communication preferences, and hold boundaries, consent, and seasonal milestones with clarity before the co-creation begins.</div>
+            <button class="charter-flow-action-btn" type="button" onclick="openHeartlightAgreementTemplate()">View Heartlight Exchange Agreement</button>
           </div>
           <div class="charter-flow-card">
             <div class="charter-flow-step">5. Wishes Granted &amp; Fulfilled Through the Exchange</div>
@@ -4766,7 +4850,21 @@
   </div>
 
   <footer>
-    <span>✦</span> Atlas Island · Heartlight Exchange · ALL That Loves Allow <span id="ftl" onclick="handleSyncClick()" style="cursor:default;user-select:none">Synchronicities</span> <span>✦</span>
+    <a
+      class="footer-discord-link"
+      href="https://discord.gg/BK3kbTsw5W"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Join the Atlas Island Discord Community"
+    >
+      <svg class="footer-discord-icon" viewBox="0 0 127.14 96.36" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83A97.68 97.68 0 0 0 49 6.83 72.37 72.37 0 0 0 45.64 0 105.89 105.89 0 0 0 19.39 8.09C2.79 32.65-1.71 56.6.54 80.21h.02a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.18 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2.05a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.67 2.05a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.17A105.25 105.25 0 0 0 126.6 80.2c2.64-27.29-4.5-51.02-18.9-72.13ZM42.45 65.69C35.62 65.69 30 59.5 30 51.9s5.52-13.79 12.45-13.79 12.57 6.19 12.45 13.79c0 7.6-5.52 13.79-12.45 13.79Zm42.24 0c-6.83 0-12.45-6.19-12.45-13.79S77.76 38.11 84.69 38.11s12.57 6.19 12.45 13.79c0 7.6-5.52 13.79-12.45 13.79Z"/>
+      </svg>
+      <span class="footer-discord-copy">Join the Atlas Island Discord Community</span>
+    </a>
+    <div class="footer-meta">
+      <span>✦</span> Atlas Island · Heartlight Exchange · ALL That Loves Allow <span id="ftl" onclick="handleSyncClick()" style="cursor:default;user-select:none">Synchronicities</span> <span>✦</span>
+    </div>
   </footer>
 </div>
 

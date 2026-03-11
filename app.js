@@ -303,7 +303,43 @@ function normalizeAgreementRoles(value) {
         .filter(role => role.label || role.beings);
     return normalized.length ? normalized : [{ label: '', beings: '' }];
 }
+const AGREEMENT_PORTAL_PHASES = [
+    'Spring Seed',
+    'Summer Bloom',
+    'Fall Harvest',
+    'Winter Rest',
+];
+function getAgreementPortalPhaseIndex(value = '') {
+    const index = AGREEMENT_PORTAL_PHASES.indexOf(String(value || '').trim());
+    return index >= 0 ? index : 0;
+}
+function inferAgreementPortalPhases(record = {}) {
+    const explicitStart = String(record.portalStartPhase || '').trim();
+    const explicitEnd = String(record.portalEndPhase || '').trim();
+    if (AGREEMENT_PORTAL_PHASES.includes(explicitStart) && AGREEMENT_PORTAL_PHASES.includes(explicitEnd)) {
+        return {
+            portalStartPhase: explicitStart,
+            portalEndPhase: AGREEMENT_PORTAL_PHASES[Math.max(getAgreementPortalPhaseIndex(explicitStart), getAgreementPortalPhaseIndex(explicitEnd))],
+        };
+    }
+    const timeline = String(record.portalTimeline || '').toLowerCase();
+    const matches = AGREEMENT_PORTAL_PHASES.filter(phase => timeline.includes(phase.toLowerCase()));
+    const portalStartPhase = matches[0] || 'Spring Seed';
+    const portalEndPhase = matches.length ? matches[matches.length - 1] : 'Fall Harvest';
+    return {
+        portalStartPhase,
+        portalEndPhase: AGREEMENT_PORTAL_PHASES[Math.max(getAgreementPortalPhaseIndex(portalStartPhase), getAgreementPortalPhaseIndex(portalEndPhase))],
+    };
+}
+function buildAgreementPortalTimeline(portalStartPhase = 'Spring Seed', portalEndPhase = 'Fall Harvest') {
+    const safeStartPhase = AGREEMENT_PORTAL_PHASES.includes(portalStartPhase) ? portalStartPhase : 'Spring Seed';
+    const safeEndPhase = AGREEMENT_PORTAL_PHASES.includes(portalEndPhase) ? portalEndPhase : 'Fall Harvest';
+    const startIndex = getAgreementPortalPhaseIndex(safeStartPhase);
+    const endIndex = Math.max(startIndex, getAgreementPortalPhaseIndex(safeEndPhase));
+    return `${safeStartPhase} -> ${AGREEMENT_PORTAL_PHASES[endIndex]}`;
+}
 function normalizeAgreementRecord(record = {}) {
+    const portalPhases = inferAgreementPortalPhases(record);
     return {
         id: String(record.id || `agreement_${Date.now()}`),
         sourceType: String(record.sourceType || 'template'),
@@ -317,7 +353,9 @@ function normalizeAgreementRecord(record = {}) {
         coCreatorCES: String(record.coCreatorCES || ''),
         coCreatorName: String(record.coCreatorName || '').trim(),
         roles: normalizeAgreementRoles(record.roles),
-        portalTimeline: String(record.portalTimeline || 'Spring Seed begin → Summer Bloom form → Fall Harvest exchange').trim(),
+        portalStartPhase: portalPhases.portalStartPhase,
+        portalEndPhase: portalPhases.portalEndPhase,
+        portalTimeline: String(record.portalTimeline || buildAgreementPortalTimeline(portalPhases.portalStartPhase, portalPhases.portalEndPhase)).trim(),
         scope: String(record.scope || '').trim(),
         format: String(record.format || 'Digital').trim(),
         exchangePathway: String(record.exchangePathway || 'Gift exchange').trim(),
@@ -981,6 +1019,117 @@ function buildProfileIdentityLine(profile = {}) {
 function createEmptyAgreementRole() {
     return { label: '', beings: '' };
 }
+function getWishAgreementLabel(wish) {
+    const portalLabel = getWishPortalShortLabel(wish?.portal);
+    const summary = summarizeWish(wish?.letter, 88);
+    return portalLabel && portalLabel !== 'Open Portal' ? `${portalLabel} · ${summary}` : summary;
+}
+function getAgreementWishCandidates(context = {}, draft = {}, currentUser = null) {
+    const candidates = [];
+    const seen = new Set();
+    const allWishes = getStoredWishEntries();
+    const addWish = (wish) => {
+        if (!wish?.id || seen.has(wish.id))
+            return;
+        seen.add(wish.id);
+        candidates.push(wish);
+    };
+    addWish(context.wishId ? getWishById(context.wishId) : null);
+    addWish(draft.sourceWishId ? getWishById(draft.sourceWishId) : null);
+    allWishes
+        .filter(wish => (draft.wishingProfileId && wish.ownerId === draft.wishingProfileId) ||
+        (draft.wishingCES && wish.ownerCes === draft.wishingCES) ||
+        (!draft.wishingProfileId && !draft.wishingCES && currentUser?.id && wish.ownerId === currentUser.id) ||
+        (!draft.wishingProfileId && !draft.wishingCES && currentUser?.cesNumber && wish.ownerCes === currentUser.cesNumber))
+        .forEach(addWish);
+    return candidates.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+}
+function renderAgreementWishOptions(wishes = [], selectedWishId = '') {
+    return [
+        '<option value="">Select the wish this agreement is fulfilling...</option>',
+        ...wishes.map(wish => `<option value="${escapeHtml(wish.id)}"${wish.id === selectedWishId ? ' selected' : ''}>${escapeHtml(getWishAgreementLabel(wish))}</option>`)
+    ].join('');
+}
+function renderAgreementWishSummary(wish = null, fallbackLabel = '') {
+    if (!wish) {
+        return `<div class="contact-form-note">${escapeHtml(fallbackLabel || 'Link the originating wish so this agreement stays connected to the reason the exchange exists.')}</div>`;
+    }
+    const ray = getWishRayMeta(wish.ray);
+    return `
+    <div class="contact-form-note" style="border-color:${ray.color}44;background:${ray.color}14">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.8rem;flex-wrap:wrap">
+        <div>
+          <div style="font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:${ray.color};margin-bottom:0.35rem">${escapeHtml(getWishPortalShortLabel(wish.portal))}</div>
+          <div style="font-family:'Alice',serif;font-size:1rem;color:var(--cream);margin-bottom:0.25rem">${escapeHtml(fallbackLabel || getWishAgreementLabel(wish))}</div>
+        </div>
+        <button type="button" class="contact-action-btn subtle" onclick="openLinkedWishFromAgreement('${escapeJsString(wish.id)}')">Open Wish</button>
+      </div>
+      <div style="font-size:0.82rem;line-height:1.65;color:rgba(240,232,213,0.78);margin-top:0.35rem">${escapeHtml(summarizeWish(wish.letter, 180))}</div>
+      ${wish.roles.length ? `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-top:0.7rem">${wish.roles.map(role => `<span class="modal-tag">${escapeHtml(role.label)}</span>`).join('')}</div>` : ''}
+    </div>`;
+}
+function agreementRolesHaveContent() {
+    return Array.from(document.querySelectorAll('#agreementRolesList .agreement-role-row')).some(row => Array.from(row.querySelectorAll('input')).some(input => String(input?.value || '').trim()));
+}
+function setAgreementRolesFromWish(wish) {
+    const list = document.getElementById('agreementRolesList');
+    if (!list || !wish)
+        return;
+    const roles = wish.roles.length
+        ? wish.roles.map(role => ({
+            label: moveLeadingEmojiToEnd(role.label || ''),
+            beings: (Array.isArray(role.beings) ? role.beings : []).filter(Boolean).join(' · '),
+        }))
+        : [createEmptyAgreementRole()];
+    list.innerHTML = roles.map((role, index) => renderAgreementRoleRow(role, roles.length > 1 || index > 0)).join('');
+}
+function syncAgreementPortalTimelineFields() {
+    const startSelect = document.getElementById('agreementPortalStartPhase');
+    const endSelect = document.getElementById('agreementPortalEndPhase');
+    const hiddenInput = document.getElementById('agreementPortalTimeline');
+    const preview = document.getElementById('agreementPortalTimelinePreview');
+    if (!startSelect || !endSelect || !hiddenInput || !preview)
+        return;
+    const startPhase = AGREEMENT_PORTAL_PHASES.includes(startSelect.value) ? startSelect.value : 'Spring Seed';
+    const endPhase = AGREEMENT_PORTAL_PHASES.includes(endSelect.value) ? endSelect.value : 'Fall Harvest';
+    if (getAgreementPortalPhaseIndex(endPhase) < getAgreementPortalPhaseIndex(startPhase)) {
+        endSelect.value = startPhase;
+    }
+    const timeline = buildAgreementPortalTimeline(startSelect.value, endSelect.value);
+    hiddenInput.value = timeline;
+    preview.textContent = timeline;
+}
+function openLinkedWishFromAgreement(wishId) {
+    closeAgreement();
+    setTimeout(() => openWishFieldWish(wishId), 80);
+}
+function syncAgreementWishSelection(selectedWishId = '') {
+    const select = document.getElementById('agreementSourceWishSelect');
+    const sourceWishIdInput = document.getElementById('agreementSourceWishId');
+    const sourceWishNameInput = document.getElementById('agreementSourceWishName');
+    const summary = document.getElementById('agreementWishSummary');
+    const wishId = selectedWishId || select?.value || '';
+    const wish = wishId ? getWishById(wishId) : null;
+    const wishLabel = wish ? getWishAgreementLabel(wish) : '';
+    if (sourceWishIdInput)
+        sourceWishIdInput.value = wish?.id || '';
+    if (sourceWishNameInput)
+        sourceWishNameInput.value = wishLabel;
+    if (summary)
+        summary.innerHTML = renderAgreementWishSummary(wish, wishLabel);
+    if (wish) {
+        const scope = document.getElementById('agreementScope');
+        const openingNote = document.getElementById('agreementOpeningNote');
+        if (scope && !scope.value.trim() && wish.letter)
+            scope.value = wish.letter.trim();
+        if (openingNote && !openingNote.value.trim() && wish.witnessed)
+            openingNote.value = wish.witnessed.trim();
+        if (!agreementRolesHaveContent())
+            setAgreementRolesFromWish(wish);
+        if (activeHeartlightAgreementContext)
+            activeHeartlightAgreementContext.wishId = wish.id;
+    }
+}
 function renderProfileAgreementsSection(profile = {}) {
     const agreements = getProfileAgreements(profile);
     return `
@@ -1006,7 +1155,8 @@ function renderProfileAgreementsSection(profile = {}) {
             <div class="profile-modal-label" style="margin:0.75rem 0 0.45rem">Shared Contact Paths</div>
             ${renderContactMethodGrid(agreement.sharedContactMethods)}
           ` : ''}
-          <div style="margin-top:0.85rem">
+          <div style="margin-top:0.85rem;display:flex;gap:0.5rem;flex-wrap:wrap">
+            ${agreement.sourceWishId ? `<button type="button" class="contact-action-btn subtle" onclick="closeProfileModal();setTimeout(()=>openWishFromProfile('${escapeJsString(agreement.sourceWishId)}'),80)">Open Wish</button>` : ''}
             <button type="button" class="contact-action-btn" onclick="closeProfileModal();setTimeout(()=>openSavedHeartlightAgreement('${escapeJsString(agreement.id)}'),80)">Open Agreement</button>
           </div>
         </div>
@@ -1420,7 +1570,7 @@ function createAgreementDraft(context = {}) {
         return normalizeAgreementRecord({
             sourceType: 'wish',
             sourceWishId: wish.id,
-            sourceWishName: wish.name,
+            sourceWishName: getWishAgreementLabel(wish),
             wishingProfileId: wish.ownerId || '',
             wishingCES: wish.ownerCes || '',
             wishingName: wish.name || '',
@@ -1458,17 +1608,26 @@ function openHeartlightAgreementEditor(context = {}) {
     const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
     const creator = context.creatorId ? getCreatorById(context.creatorId) : null;
     const wish = context.wishId ? getWishById(context.wishId) : null;
-    const rayColor = wish ? getWishRayMeta(wish.ray).color : ((creator && RAYS[creator.primaryRayKey]?.color) || '#c8922a');
+    const linkedWish = draft.sourceWishId ? getWishById(draft.sourceWishId) : wish;
+    const wishOptions = getAgreementWishCandidates(context, draft, currentUser);
+    const rayColor = linkedWish ? getWishRayMeta(linkedWish.ray).color : ((creator && RAYS[creator.primaryRayKey]?.color) || '#c8922a');
     activeHeartlightAgreementContext = { ...context, agreementId: draft.id };
     document.getElementById('agreementRayBar').style.background = `linear-gradient(90deg, ${rayColor}, #3a9b6f, transparent)`;
     document.getElementById('agreementContent').innerHTML = `
     <div class="agreement-title">Heartlight Exchange Agreement 📜</div>
     <div class="agreement-subtitle">A living vow that carries the seasonal co-creation structure through scope, exchange pathway, seasonal milestones, consent, and blessings.</div>
 
-    ${draft.sourceWishName ? `<div class="agreement-field-group">
+    <div class="agreement-field-group">
       <label class="agreement-field-label">Originating Wish</label>
-      <input class="agreement-field-value" type="text" value="${escapeHtml(draft.sourceWishName)}" readonly>
-    </div>` : ''}
+      ${wishOptions.length ? `
+        <select class="agreement-field-value" id="agreementSourceWishSelect" onchange="syncAgreementWishSelection(this.value)" style="background:rgba(15,12,25,0.9)">${renderAgreementWishOptions(wishOptions, draft.sourceWishId || '')}</select>
+      ` : `
+        <input class="agreement-field-value" type="text" value="${escapeHtml(draft.sourceWishName || 'No linked wish selected yet.')}" readonly>
+      `}
+      <input type="hidden" id="agreementSourceWishId" value="${escapeHtml(draft.sourceWishId || '')}">
+      <input type="hidden" id="agreementSourceWishName" value="${escapeHtml(draft.sourceWishName || '')}">
+      <div id="agreementWishSummary" style="margin-top:0.7rem">${renderAgreementWishSummary(linkedWish, draft.sourceWishName)}</div>
+    </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
       <div class="agreement-field-group">
@@ -1511,7 +1670,18 @@ function openHeartlightAgreementEditor(context = {}) {
 
     <div class="agreement-field-group">
       <label class="agreement-field-label">Portal Timeline</label>
-      <input class="agreement-field-value" type="text" id="agreementPortalTimeline" value="${escapeHtml(draft.portalTimeline)}">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">
+        <div>
+          <label class="agreement-field-label" style="margin-bottom:0.35rem">Starting Phase</label>
+          <select class="agreement-field-value" id="agreementPortalStartPhase" onchange="syncAgreementPortalTimelineFields()" style="background:rgba(15,12,25,0.9)">${renderAgreementPortalPhaseOptions(draft.portalStartPhase)}</select>
+        </div>
+        <div>
+          <label class="agreement-field-label" style="margin-bottom:0.35rem">Completion Phase</label>
+          <select class="agreement-field-value" id="agreementPortalEndPhase" onchange="syncAgreementPortalTimelineFields()" style="background:rgba(15,12,25,0.9)">${renderAgreementPortalPhaseOptions(draft.portalEndPhase)}</select>
+        </div>
+      </div>
+      <input type="hidden" id="agreementPortalTimeline" value="${escapeHtml(draft.portalTimeline)}">
+      <div class="contact-form-note" style="margin-top:0.7rem" id="agreementPortalTimelinePreview">${escapeHtml(draft.portalTimeline)}</div>
     </div>
 
     <div class="agreement-field-group">
@@ -1583,6 +1753,8 @@ function openHeartlightAgreementEditor(context = {}) {
     </div>
     <div class="contact-form-note" id="agreementSaveNote" style="display:none;margin-top:1rem"></div>
   `;
+    syncAgreementPortalTimelineFields();
+    syncAgreementWishSelection(draft.sourceWishId || '');
     document.getElementById('agreementOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
@@ -1639,6 +1811,11 @@ function saveHeartlightAgreement(signWithIntention = false) {
     const wishingName = document.getElementById('agreementWishingBeing')?.value?.trim();
     const coCreatorName = document.getElementById('agreementCoCreator')?.value?.trim();
     const scope = document.getElementById('agreementScope')?.value?.trim();
+    const linkedWishId = document.getElementById('agreementSourceWishId')?.value?.trim() || '';
+    const linkedWish = linkedWishId ? getWishById(linkedWishId) : null;
+    const portalStartPhase = document.getElementById('agreementPortalStartPhase')?.value || existing?.portalStartPhase || 'Spring Seed';
+    const portalEndPhase = document.getElementById('agreementPortalEndPhase')?.value || existing?.portalEndPhase || 'Fall Harvest';
+    const portalTimeline = buildAgreementPortalTimeline(portalStartPhase, portalEndPhase);
     const noteEl = document.getElementById('agreementSaveNote');
     if (!wishingName || !coCreatorName || !scope) {
         alert('✦ Please complete the wishing being, Heartlight Co-Creator, and scope before saving the agreement.');
@@ -1653,12 +1830,14 @@ function saveHeartlightAgreement(signWithIntention = false) {
         id: existing?.id || draft.id,
         status,
         sourceType: draft.sourceType,
-        sourceWishId: draft.sourceWishId,
-        sourceWishName: draft.sourceWishName,
+        sourceWishId: linkedWish?.id || draft.sourceWishId || null,
+        sourceWishName: linkedWish ? getWishAgreementLabel(linkedWish) : (document.getElementById('agreementSourceWishName')?.value?.trim() || draft.sourceWishName),
         wishingName,
         coCreatorName,
         roles: collectAgreementRoles(),
-        portalTimeline: document.getElementById('agreementPortalTimeline')?.value || '',
+        portalStartPhase,
+        portalEndPhase,
+        portalTimeline,
         scope,
         format: document.getElementById('agreementFormat')?.value || '',
         exchangePathway: document.getElementById('agreementExchangePathway')?.value || '',
