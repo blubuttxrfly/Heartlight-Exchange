@@ -91,6 +91,11 @@
     .nav-secondary { gap: 0.3rem; padding: 0.45rem 0.6rem 0.65rem; }
     .nav-btn-primary { font-size: 0.72rem !important; padding: 0.42rem 0.9rem !important; }
     .directory-grid { grid-template-columns: 1fr; }
+    .directory-filter-grid { grid-template-columns: 1fr; }
+    .directory-filter-toggle { align-items: flex-start; }
+    .directory-filter-toggle-right { gap: 0.5rem; }
+    .directory-filter-actions { justify-content: stretch; }
+    .directory-filter-clear { width: 100%; }
     .ces-form-wrap { grid-template-columns: 1fr !important; }
     .ces-preview-sticky { position: static !important; }
     .modal { padding: 1.4rem 1.1rem; }
@@ -362,6 +367,157 @@
     background: rgba(255,255,255,0.07);
   }
   .ray-pill.active { color: var(--cream); }
+  .directory-filter-shell {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+  }
+  .directory-filter-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: 0.95rem 1.1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(200,146,42,0.24);
+    background: rgba(255,255,255,0.035);
+    color: var(--cream);
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s, transform 0.25s;
+    text-align: left;
+  }
+  .directory-filter-toggle:hover,
+  .directory-filter-toggle.active {
+    border-color: rgba(200,146,42,0.45);
+    background: rgba(255,255,255,0.055);
+  }
+  .directory-filter-toggle-title {
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orichalcum-light);
+  }
+  .directory-filter-toggle-summary {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .directory-filter-toggle-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-shrink: 0;
+  }
+  .directory-filter-count {
+    padding: 0.16rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid rgba(200,146,42,0.22);
+    background: rgba(200,146,42,0.08);
+    color: var(--orichalcum-light);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .directory-filter-chevron {
+    font-size: 0.95rem;
+    color: var(--orichalcum);
+    transition: transform 0.25s ease;
+  }
+  .directory-filter-panel {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-0.45rem);
+    transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .directory-filter-panel.open {
+    max-height: 1200px;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .directory-filter-inner {
+    margin-top: 0.85rem;
+    padding: 1.15rem;
+    border-radius: 1.1rem;
+    border: 1px solid rgba(200,146,42,0.18);
+    background: linear-gradient(180deg, rgba(19,15,34,0.92), rgba(11,8,23,0.96));
+    box-shadow: 0 16px 36px rgba(0,0,0,0.22);
+  }
+  .directory-filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem 1.1rem;
+  }
+  .directory-filter-group-wide {
+    grid-column: 1 / -1;
+  }
+  .directory-filter-group .ray-filter {
+    justify-content: flex-start;
+    margin-bottom: 0;
+  }
+  .directory-filter-group-label {
+    margin-bottom: 0.55rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(200,146,42,0.85);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+  }
+  .directory-filter-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .directory-filter-chip {
+    padding: 0.34rem 0.72rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: rgba(240,232,213,0.76);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, color 0.2s, transform 0.2s;
+  }
+  .directory-filter-chip:hover {
+    border-color: rgba(200,146,42,0.3);
+    color: var(--cream);
+    transform: translateY(-1px);
+  }
+  .directory-filter-chip.active {
+    border-color: rgba(200,146,42,0.55);
+    background: rgba(200,146,42,0.12);
+    color: var(--orichalcum-light);
+  }
+  .directory-filter-empty {
+    font-size: 0.72rem;
+    color: rgba(138,127,110,0.72);
+    font-style: italic;
+  }
+  .directory-filter-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+  }
+  .directory-filter-clear {
+    padding: 0.42rem 0.92rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .directory-filter-clear:hover {
+    border-color: rgba(200,146,42,0.35);
+    color: var(--orichalcum-light);
+    background: rgba(200,146,42,0.08);
+  }
 
   /* ── SECTION HEADING ── */
   .section-heading {
@@ -484,6 +640,15 @@
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     color: rgba(138,127,110,0.7);
+  }
+  .card-ces {
+    margin-top: 0.45rem;
+    margin-bottom: 0.2rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: rgba(200,146,42,0.45);
+    font-family: 'Atkinson Hyperlegible', sans-serif;
+    text-transform: uppercase;
   }
 
   /* Ray Badge */
@@ -1051,6 +1216,26 @@
     min-height: 44px;
     resize: vertical;
   }
+  .portfolio-file-meta {
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.35rem;
+    font-size:0.72rem;
+    color:rgba(240,232,213,0.62);
+    font-family:'Atkinson Hyperlegible',sans-serif;
+  }
+  .portfolio-upload-status {
+    color:var(--orichalcum);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-size:0.64rem;
+  }
+  .portfolio-upload-error {
+    margin-top:0.45rem;
+    font-size:0.74rem;
+    color:#e8a0a0;
+    font-family:'Atkinson Hyperlegible',sans-serif;
+  }
   .portfolio-remove-btn {
     padding: 0.5rem 0.85rem;
     border-radius: 999px;
@@ -1221,6 +1406,31 @@
   .charter-flow-action-btn:hover {
     background: rgba(200,146,42,0.08);
   }
+  .charter-flow-action-stack {
+    margin-top: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .charter-flow-action-btn.primary {
+    margin-top: 0;
+    padding: 0.68rem 1.15rem;
+    background: rgba(200,146,42,0.08);
+    color: var(--orichalcum-light);
+    border-color: rgba(200,146,42,0.5);
+    font-size: 0.76rem;
+  }
+  .charter-flow-action-btn.secondary {
+    margin-top: 0;
+    padding: 0.38rem 0.82rem;
+    border-color: rgba(255,255,255,0.14);
+    color: rgba(240,232,213,0.76);
+    font-size: 0.64rem;
+  }
+  .charter-flow-action-btn.secondary:hover {
+    background: rgba(255,255,255,0.05);
+  }
 
   /* ── SEARCH BAR ── */
   .search-wrap {
@@ -1289,7 +1499,7 @@
   .profile-corner {
     position: absolute;
     top: 1.2rem;
-    right: 1.5rem;
+    right: 0.7rem;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -1303,6 +1513,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    flex-wrap: wrap;
     padding: 0.35rem 0.75rem 0.35rem 0.35rem;
     border-radius: 3rem;
     border: 1px solid rgba(200,146,42,0.35);
@@ -1321,6 +1532,17 @@
     font-family:'Alice',serif;font-size:0.85rem;color:var(--cream);flex-shrink:0;
   }
   .profile-btn-label { font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--orichalcum-light);white-space:nowrap; }
+  .profile-alert-pill {
+    padding:0.18rem 0.55rem;
+    border-radius:999px;
+    border:1px solid rgba(201,64,64,0.35);
+    background:rgba(201,64,64,0.12);
+    color:#f2b1b1;
+    font-size:0.62rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    font-family:'Atkinson Hyperlegible',sans-serif;
+  }
   .join-corner-btn {
     padding:0.4rem 1rem;border-radius:3rem;
     border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.06);
@@ -1357,6 +1579,17 @@
   .admin-stat-label { font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,232,213,0.4);font-family:'Atkinson Hyperlegible',sans-serif; }
   .admin-member-row { display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,0.07);background:rgba(10,0,30,0.5);margin-bottom:0.5rem; }
   .admin-member-info { display:flex;align-items:center;gap:0.75rem; }
+  .admin-media-review-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.85rem;margin-bottom:0.95rem; }
+  .admin-media-card { border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:0.75rem;background:rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:0.65rem; }
+  .admin-media-preview { display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:rgba(5,0,20,0.7);aspect-ratio:1/1; }
+  .admin-media-thumb { width:100%;height:100%;object-fit:cover;display:block; }
+  .admin-media-copy { display:flex;flex-direction:column;gap:0.25rem; }
+  .admin-media-title { font-size:0.76rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif; }
+  .admin-media-caption { font-size:0.75rem;color:rgba(240,232,213,0.7);font-family:'Cormorant Garamond',serif;font-style:italic;line-height:1.45; }
+  .admin-media-meta { font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(200,146,42,0.62);font-family:'Atkinson Hyperlegible',sans-serif; }
+  .admin-media-actions { display:flex;align-items:center;justify-content:space-between;gap:0.6rem;flex-wrap:wrap; }
+  .admin-media-link { color:var(--orichalcum);font-size:0.72rem;font-family:'Atkinson Hyperlegible',sans-serif;text-decoration:none;letter-spacing:0.06em;text-transform:uppercase; }
+  .admin-media-link:hover { color:var(--orichalcum-light); }
 
   /* ── PROFILE VIEW MODAL ── */
   .profile-modal-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,5,0.85);z-index:200;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(6px); }
@@ -1371,6 +1604,11 @@
   .profile-modal-section { margin-bottom:1.1rem;padding-bottom:1.1rem;border-bottom:1px solid rgba(255,255,255,0.07); }
   .profile-modal-label { font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.35rem;opacity:0.8; }
   .profile-modal-value { font-size:0.88rem;color:rgba(240,232,213,0.8);font-family:'Atkinson Hyperlegible',sans-serif;line-height:1.6; }
+  .steward-alert-stack { display:flex;flex-direction:column;gap:0.7rem; }
+  .steward-alert-card { border:1px solid rgba(201,64,64,0.22);border-radius:12px;padding:0.9rem 1rem;background:rgba(201,64,64,0.06); }
+  .steward-alert-meta { font-size:0.64rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(232,160,160,0.72);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.4rem; }
+  .steward-alert-title { font-size:0.78rem;color:#f0d1d1;font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.28rem; }
+  .steward-alert-body { font-size:0.88rem;line-height:1.55;color:rgba(240,232,213,0.82);font-family:'Cormorant Garamond',serif; }
   .directory-wish-status {
     display:inline-flex;
     align-items:center;
@@ -1609,47 +1847,93 @@
       <input class="search-input" type="text" placeholder="Search by name, offering, or Ray…" id="searchInput" oninput="filterCreators()">
     </div>
 
-    <!-- Ray Filters -->
-    <div class="ray-filter fade-up stagger-1" id="rayFilter">
-      <div class="ray-pill active" data-ray="all" onclick="setRayFilter('all', this)">
-        <span class="ray-dot" style="background: linear-gradient(135deg, #c94040, #d4b830, #3a9b6f, #8b4fb5)"></span>
-        All Rays
-      </div>
-      <div class="ray-pill" data-ray="Red" onclick="setRayFilter('Red', this)" style="--r:#c94040">
-        <span class="ray-dot" style="background:#c94040"></span> Red
-      </div>
-      <div class="ray-pill" data-ray="Orange" onclick="setRayFilter('Orange', this)">
-        <span class="ray-dot" style="background:#d4732a"></span> Orange
-      </div>
-      <div class="ray-pill" data-ray="Yellow" onclick="setRayFilter('Yellow', this)">
-        <span class="ray-dot" style="background:#d4b830"></span> Yellow
-      </div>
-      <div class="ray-pill" data-ray="Green" onclick="setRayFilter('Green', this)">
-        <span class="ray-dot" style="background:#3a9b6f"></span> Green
-      </div>
-      <div class="ray-pill" data-ray="Turquoise" onclick="setRayFilter('Turquoise', this)">
-        <span class="ray-dot" style="background:#2ab3c4"></span> Turquoise
-      </div>
-      <div class="ray-pill" data-ray="Blue" onclick="setRayFilter('Blue', this)">
-        <span class="ray-dot" style="background:#3a6bb5"></span> Blue
-      </div>
-      <div class="ray-pill" data-ray="Indigo" onclick="setRayFilter('Indigo', this)">
-        <span class="ray-dot" style="background:#5a4a9e"></span> Indigo
-      </div>
-      <div class="ray-pill" data-ray="Violet" onclick="setRayFilter('Violet', this)">
-        <span class="ray-dot" style="background:#8b4fb5"></span> Violet
-      </div>
-      <div class="ray-pill" data-ray="Magenta" onclick="setRayFilter('Magenta', this)">
-        <span class="ray-dot" style="background:#c4407a"></span> Magenta
-      </div>
-      <div class="ray-pill" data-ray="Omni" onclick="setRayFilter('Omni', this)">
-        <span class="ray-dot" style="background:#c0c0d8"></span> Omni
-      </div>
-      <div class="ray-pill" data-ray="Elemental" onclick="setRayFilter('Elemental', this)">
-        <span class="ray-dot" style="background:#7a9e5a"></span> Elemental
-      </div>
-      <div class="ray-pill" data-ray="ALL" onclick="setRayFilter('ALL', this)">
-        <span class="ray-dot" style="background:linear-gradient(135deg,#c4407a,#8b4fb5,#e8d4ff)"></span> ALL
+    <div class="directory-filter-shell fade-up stagger-1">
+      <button class="directory-filter-toggle" id="directoryFiltersToggle" type="button" onclick="toggleDirectoryFilters()" aria-expanded="false">
+        <div>
+          <div class="directory-filter-toggle-title">Directory Filters</div>
+        </div>
+        <div class="directory-filter-toggle-right">
+          <span class="directory-filter-count" id="directoryFiltersCount">0 Active</span>
+          <span class="directory-filter-chevron" id="directoryFiltersChevron">⌄</span>
+        </div>
+      </button>
+      <div class="directory-filter-panel" id="directoryFiltersPanel" aria-hidden="true">
+        <div class="directory-filter-inner">
+          <div class="directory-filter-grid">
+            <div class="directory-filter-group directory-filter-group-wide">
+              <div class="directory-filter-group-label">Wish Availability</div>
+              <div class="directory-filter-chip-row" id="directoryWishAvailabilityFilters"></div>
+            </div>
+            <div class="directory-filter-group directory-filter-group-wide">
+              <div class="directory-filter-group-label">Ray Resonance</div>
+              <div class="ray-filter" id="rayFilter">
+                <div class="ray-pill active" data-ray="all" onclick="setRayFilter('all', this)">
+                  <span class="ray-dot" style="background: linear-gradient(135deg, #c94040, #d4b830, #3a9b6f, #8b4fb5)"></span>
+                  All Rays
+                </div>
+                <div class="ray-pill" data-ray="Red" onclick="setRayFilter('Red', this)" style="--r:#c94040">
+                  <span class="ray-dot" style="background:#c94040"></span> Red
+                </div>
+                <div class="ray-pill" data-ray="Orange" onclick="setRayFilter('Orange', this)">
+                  <span class="ray-dot" style="background:#d4732a"></span> Orange
+                </div>
+                <div class="ray-pill" data-ray="Yellow" onclick="setRayFilter('Yellow', this)">
+                  <span class="ray-dot" style="background:#d4b830"></span> Yellow
+                </div>
+                <div class="ray-pill" data-ray="Green" onclick="setRayFilter('Green', this)">
+                  <span class="ray-dot" style="background:#3a9b6f"></span> Green
+                </div>
+                <div class="ray-pill" data-ray="Turquoise" onclick="setRayFilter('Turquoise', this)">
+                  <span class="ray-dot" style="background:#2ab3c4"></span> Turquoise
+                </div>
+                <div class="ray-pill" data-ray="Blue" onclick="setRayFilter('Blue', this)">
+                  <span class="ray-dot" style="background:#3a6bb5"></span> Blue
+                </div>
+                <div class="ray-pill" data-ray="Indigo" onclick="setRayFilter('Indigo', this)">
+                  <span class="ray-dot" style="background:#5a4a9e"></span> Indigo
+                </div>
+                <div class="ray-pill" data-ray="Violet" onclick="setRayFilter('Violet', this)">
+                  <span class="ray-dot" style="background:#8b4fb5"></span> Violet
+                </div>
+                <div class="ray-pill" data-ray="Magenta" onclick="setRayFilter('Magenta', this)">
+                  <span class="ray-dot" style="background:#c4407a"></span> Magenta
+                </div>
+                <div class="ray-pill" data-ray="Omni" onclick="setRayFilter('Omni', this)">
+                  <span class="ray-dot" style="background:#c0c0d8"></span> Omni
+                </div>
+                <div class="ray-pill" data-ray="Elemental" onclick="setRayFilter('Elemental', this)">
+                  <span class="ray-dot" style="background:#7a9e5a"></span> Elemental
+                </div>
+                <div class="ray-pill" data-ray="ALL" onclick="setRayFilter('ALL', this)">
+                  <span class="ray-dot" style="background:linear-gradient(135deg,#c4407a,#8b4fb5,#e8d4ff)"></span> ALL
+                </div>
+              </div>
+            </div>
+            <div class="directory-filter-group">
+              <div class="directory-filter-group-label">Offerings</div>
+              <div class="directory-filter-chip-row" id="directoryOfferingsFilters"></div>
+            </div>
+            <div class="directory-filter-group">
+              <div class="directory-filter-group-label">Seasonal Capacity</div>
+              <div class="directory-filter-chip-row" id="directorySeasonalCapacityFilters"></div>
+            </div>
+            <div class="directory-filter-group">
+              <div class="directory-filter-group-label">Exchange Pathways</div>
+              <div class="directory-filter-chip-row" id="directoryExchangeFilters"></div>
+            </div>
+            <div class="directory-filter-group">
+              <div class="directory-filter-group-label">Numerological Resonance</div>
+              <div class="directory-filter-chip-row" id="directoryNumerologyFilters"></div>
+            </div>
+            <div class="directory-filter-group">
+              <div class="directory-filter-group-label">Accessibility Offerings</div>
+              <div class="directory-filter-chip-row" id="directoryAccessibilityFilters"></div>
+            </div>
+          </div>
+          <div class="directory-filter-actions">
+            <button class="directory-filter-clear" type="button" onclick="clearDirectoryFilters()">Clear Filters</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2145,6 +2429,7 @@
     <div style="max-width:680px;margin:0 auto 2rem;text-align:center">
       <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:rgba(240,232,213,0.72);line-height:1.9">Each being carries a unique Core Energetic Signature that allows for them to co-create in a way that is authentic to them, and allows for all of us to share in a way that feels resonant for our being. The Core Energetic Signature (C.E.S.) holds space for your frequency to connect, create, and share.</div>
     </div>
+    <div id="submitStewardAlerts" style="max-width:680px;margin:0 auto 1.4rem"></div>
 
     <div class="ces-form-wrap">
 
@@ -2177,6 +2462,7 @@
               <input class="field-input" type="text" id="f_ces_number" maxlength="9" placeholder="e.g. 123456789" oninput="this.value=this.value.replace(/[^0-9]/g,'');updateCESNumberPreview();updatePreview()" style="letter-spacing:0.18em;font-family:'Atkinson Hyperlegible',sans-serif">
               <button type="button" onclick="assignGeneratedCESNumber()" style="padding:0.72rem 1.05rem;border-radius:999px;border:1px solid rgba(200,146,42,0.35);background:rgba(200,146,42,0.08);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.74rem;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.08)'">Auto-Generate</button>
             </div>
+            <div style="margin-top:0.3rem;font-size:0.72rem;color:rgba(240,232,213,0.38);font-family:'Atkinson Hyperlegible',sans-serif">After your profile is created, any requested C.E.S. number change must still be available and then approved by a Steward.</div>
             <div id="cesNumberStatus" style="margin-top:0.35rem;font-size:0.72rem;font-family:'Atkinson Hyperlegible',sans-serif;min-height:1.2em;transition:all 0.3s"></div>
           </div>
 
@@ -2195,6 +2481,44 @@
             <div>
               <label class="field-label">Location · Time Zone</label>
               <input class="field-input" type="text" id="f_location" placeholder="e.g. Vermont · EST" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="field-grid-2" style="margin-bottom:0.9rem">
+            <div>
+              <label class="field-label">Sun Placement 🌞</label>
+              <select class="field-input" id="f_sun_placement" onchange="updatePreview()" style="background:rgba(15,12,25,0.9)">
+                <option value="">Select Sun placement…</option>
+                <option value="♈">Aries ♈</option>
+                <option value="♉">Taurus ♉</option>
+                <option value="♊">Gemini ♊</option>
+                <option value="♋">Cancer ♋</option>
+                <option value="♌">Leo ♌</option>
+                <option value="♍">Virgo ♍</option>
+                <option value="♎">Libra ♎</option>
+                <option value="♏">Scorpio ♏</option>
+                <option value="♐">Sagittarius ♐</option>
+                <option value="♑">Capricorn ♑</option>
+                <option value="♒">Aquarius ♒</option>
+                <option value="♓">Pisces ♓</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Moon Placement 🌕</label>
+              <select class="field-input" id="f_moon_placement" onchange="updatePreview()" style="background:rgba(15,12,25,0.9)">
+                <option value="">Select Moon placement…</option>
+                <option value="♈">Aries ♈</option>
+                <option value="♉">Taurus ♉</option>
+                <option value="♊">Gemini ♊</option>
+                <option value="♋">Cancer ♋</option>
+                <option value="♌">Leo ♌</option>
+                <option value="♍">Virgo ♍</option>
+                <option value="♎">Libra ♎</option>
+                <option value="♏">Scorpio ♏</option>
+                <option value="♐">Sagittarius ♐</option>
+                <option value="♑">Capricorn ♑</option>
+                <option value="♒">Aquarius ♒</option>
+                <option value="♓">Pisces ♓</option>
+              </select>
             </div>
           </div>
           <div>
@@ -2383,7 +2707,7 @@
           </div>
           <div style="margin-top:1rem">
             <label class="field-label">Photo & Video Portfolio</label>
-            <div class="form-section-hint" style="margin-bottom:0.6rem">Add hosted media URLs to showcase your work in the Directory and on your Core Energetic Signature.</div>
+            <div class="form-section-hint" style="margin-bottom:0.6rem">Upload photos or lightweight videos directly if you want them shown in your public C.E.S. gallery.</div>
             <div id="portfolioItemsList" class="portfolio-form-stack"></div>
             <div style="display:flex;gap:0.55rem;flex-wrap:wrap;margin-top:0.85rem">
               <button type="button" class="chip-add-btn" onclick="addPortfolioItem('image')">+ Add Photo</button>
@@ -2416,7 +2740,7 @@
           </div>
         </div>
 
-        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>Offer My Core Energetic Signature to the Exchange ✦</button>
+        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>Offer My Core Energetic Signature</button>
         <div id="cesConfirmation" style="display:none;text-align:center;padding:2rem 1rem;animation:fadeIn 0.6s ease">
           <div style="font-size:2rem;margin-bottom:1rem">🌈✨</div>
           <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your Core Energetic Signature has been offered to the Exchange.</div>
@@ -2459,6 +2783,13 @@
             </div>
 
             <div style="margin-bottom:0.9rem">
+              <div class="preview-micro-label">Astrological Placements</div>
+              <div class="preview-chip-row" id="previewAstrology">
+                <span class="preview-chip" style="opacity:0.4;font-style:italic">Sun and Moon placements will appear here</span>
+              </div>
+            </div>
+
+            <div style="margin-bottom:0.9rem">
               <div class="preview-micro-label">Seasonal Capacity</div>
               <div class="preview-season-row" id="previewSeasons">
                 <div class="preview-season-cell closed">❄️<div style="font-size:0.6rem;margin-top:0.15rem">Winter</div></div>
@@ -2478,7 +2809,7 @@
             <div style="margin-top:0.95rem">
               <div class="preview-micro-label">Portfolio</div>
               <div class="portfolio-preview-grid" id="previewPortfolio">
-                <div class="portfolio-empty-note">Add photo or video links to preview your portfolio here.</div>
+                <div class="portfolio-empty-note">Upload a photo or video here if you want it shown in your portfolio preview.</div>
               </div>
             </div>
 
@@ -4371,6 +4702,7 @@
             <div class="charter-flow-step">1. Create Core Energetic Signature</div>
             <div class="charter-flow-title">Join As A Co-Creator</div>
             <div class="charter-flow-copy">Every being enters through a Core Energetic Signature. Your signature holds your resonance, offerings, exchange pathways, and seasonal capacity inside the Heartlight Exchange.</div>
+            <div class="charter-flow-action-stack" id="charterCesActions"></div>
           </div>
           <div class="charter-flow-card">
             <div class="charter-flow-step">2. Connect with Co-Creators</div>
@@ -4395,6 +4727,7 @@
             <div class="charter-flow-step">3. Enter The Wishing Well</div>
             <div class="charter-flow-title">Cast And Answer Wishes</div>
             <div class="charter-flow-copy">Wishes are cast through an active Core Energetic Signature. The same Wishing Well lets beings answer wishes, feel resonance, and step forward for the roles they are called to fulfill.</div>
+            <div class="charter-flow-action-stack" id="charterWishActions"></div>
           </div>
           <div class="charter-flow-card">
             <div class="charter-flow-step">4. Agree to Heartlight Exchange</div>
@@ -4661,8 +4994,15 @@
 
           <!-- Lockout Log -->
           <div style="margin-bottom:2rem">
-            <div class="admin-section-title">📋 Security Log</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">All failed access attempts are recorded here. Three consecutive failures trigger a lockout and log entry.</div>
+            <div class="admin-section-title">🔢 Pending C.E.S. Number Changes</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">Beings may request a new C.E.S. number only when it is not already holding space for another profile or another pending request. Steward approval makes the change live.</div>
+            <div id="pendingCesChangeRequests"><!-- rendered --></div>
+          </div>
+
+          <!-- Lockout Log -->
+          <div style="margin-bottom:2rem">
+            <div class="admin-section-title">📋 Steward Activity Log</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">Failed access attempts, profile updates, passphrase changes, and resolved C.E.S. number requests are recorded here.</div>
             <div id="securityLog"><!-- rendered --></div>
           </div>
 

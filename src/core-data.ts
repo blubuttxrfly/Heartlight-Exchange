@@ -53,6 +53,20 @@ interface PortfolioItem {
   type: 'image' | 'video';
   url: string;
   caption: string;
+  storagePath?: string;
+  fileName?: string;
+  contentType?: string;
+  fileSize?: number;
+  uploadedAt?: string;
+}
+
+interface StewardAlert {
+  id: string;
+  kind: 'media_removed';
+  message: string;
+  mediaLabel: string;
+  createdAt: string;
+  createdBy: string;
 }
 
 interface AgreementRole {
@@ -143,6 +157,8 @@ interface CreatorRecord {
   pronouns: string;
   title: string;
   location: string;
+  sunPlacement: string;
+  moonPlacement: string;
   emoji: string;
   photo: string | null;
   ray: string;
@@ -159,6 +175,7 @@ interface CreatorRecord {
   consent: string;
   portfolioLink: string;
   portfolioItems: PortfolioItem[];
+  stewardAlerts: StewardAlert[];
   contactMethods: ContactMethods;
   contactVisibility: ContactVisibility;
   publicContactVisibility: boolean;
@@ -517,6 +534,20 @@ const AGREEMENT_PORTAL_PHASES = [
   'Winter Rest',
 ];
 
+function normalizeAgreementExchangePathway(value: unknown = ''): string {
+  const normalized = String(value || '').trim();
+  switch (normalized) {
+    case 'Gift exchange':
+      return 'Gift Share';
+    case 'Scholarship exchange':
+      return 'Scholarship';
+    case 'Value exchange (trade / skill swap)':
+      return 'Trade';
+    default:
+      return normalized || 'Gift Share';
+  }
+}
+
 function getAgreementPortalPhaseIndex(value = ''): number {
   const index = AGREEMENT_PORTAL_PHASES.indexOf(String(value || '').trim());
   return index >= 0 ? index : 0;
@@ -569,7 +600,7 @@ function normalizeAgreementRecord(record: PartialRecord = {}): AgreementRecord {
     portalTimeline: String(record.portalTimeline || buildAgreementPortalTimeline(portalPhases.portalStartPhase, portalPhases.portalEndPhase)).trim(),
     scope: String(record.scope || '').trim(),
     format: String(record.format || 'Digital').trim(),
-    exchangePathway: String(record.exchangePathway || 'Gift exchange').trim(),
+    exchangePathway: normalizeAgreementExchangePathway(record.exchangePathway),
     springMilestone: String(record.springMilestone || '').trim(),
     summerMilestone: String(record.summerMilestone || '').trim(),
     fallMilestone: String(record.fallMilestone || '').trim(),
@@ -690,6 +721,8 @@ function normalizeCreatorRecord(profile: PartialRecord = {}): CreatorRecord {
     pronouns: String(profile.pronouns || ''),
     title: String(profile.title || ''),
     location: String(profile.location || ''),
+    sunPlacement: String(profile.sunPlacement || profile.sun || ''),
+    moonPlacement: String(profile.moonPlacement || profile.moon || ''),
     emoji: typeof profile.emoji === 'string' ? profile.emoji : '',
     photo: typeof profile.photo === 'string' ? profile.photo : null,
     ray: rayKey,
@@ -712,6 +745,16 @@ function normalizeCreatorRecord(profile: PartialRecord = {}): CreatorRecord {
     portfolioItems: normalizePortfolioItems(
       (Array.isArray(profile.portfolioItems) ? profile.portfolioItems : profile.mediaPortfolio) as unknown[]
     ) as PortfolioItem[],
+    stewardAlerts: Array.isArray(profile.stewardAlerts)
+      ? profile.stewardAlerts.map(alert => ({
+          id: String(alert?.id || ''),
+          kind: 'media_removed' as const,
+          message: String(alert?.message || '').trim(),
+          mediaLabel: String(alert?.mediaLabel || '').trim(),
+          createdAt: String(alert?.createdAt || ''),
+          createdBy: String(alert?.createdBy || 'Steward').trim() || 'Steward',
+        })).filter(alert => alert.id && alert.message)
+      : [],
     contactMethods,
     contactVisibility,
     publicContactVisibility,

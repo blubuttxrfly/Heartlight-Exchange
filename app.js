@@ -309,6 +309,19 @@ const AGREEMENT_PORTAL_PHASES = [
     'Fall Harvest',
     'Winter Rest',
 ];
+function normalizeAgreementExchangePathway(value = '') {
+    const normalized = String(value || '').trim();
+    switch (normalized) {
+        case 'Gift exchange':
+            return 'Gift Share';
+        case 'Scholarship exchange':
+            return 'Scholarship';
+        case 'Value exchange (trade / skill swap)':
+            return 'Trade';
+        default:
+            return normalized || 'Gift Share';
+    }
+}
 function getAgreementPortalPhaseIndex(value = '') {
     const index = AGREEMENT_PORTAL_PHASES.indexOf(String(value || '').trim());
     return index >= 0 ? index : 0;
@@ -358,7 +371,7 @@ function normalizeAgreementRecord(record = {}) {
         portalTimeline: String(record.portalTimeline || buildAgreementPortalTimeline(portalPhases.portalStartPhase, portalPhases.portalEndPhase)).trim(),
         scope: String(record.scope || '').trim(),
         format: String(record.format || 'Digital').trim(),
-        exchangePathway: String(record.exchangePathway || 'Gift exchange').trim(),
+        exchangePathway: normalizeAgreementExchangePathway(record.exchangePathway),
         springMilestone: String(record.springMilestone || '').trim(),
         summerMilestone: String(record.summerMilestone || '').trim(),
         fallMilestone: String(record.fallMilestone || '').trim(),
@@ -460,6 +473,8 @@ function normalizeCreatorRecord(profile = {}) {
         pronouns: String(profile.pronouns || ''),
         title: String(profile.title || ''),
         location: String(profile.location || ''),
+        sunPlacement: String(profile.sunPlacement || profile.sun || ''),
+        moonPlacement: String(profile.moonPlacement || profile.moon || ''),
         emoji: typeof profile.emoji === 'string' ? profile.emoji : '',
         photo: typeof profile.photo === 'string' ? profile.photo : null,
         ray: rayKey,
@@ -478,6 +493,16 @@ function normalizeCreatorRecord(profile = {}) {
         consent: String(profile.consent || ''),
         portfolioLink: String(profile.portfolioLink || profile.portfolio || ''),
         portfolioItems: normalizePortfolioItems((Array.isArray(profile.portfolioItems) ? profile.portfolioItems : profile.mediaPortfolio)),
+        stewardAlerts: Array.isArray(profile.stewardAlerts)
+            ? profile.stewardAlerts.map(alert => ({
+                id: String(alert?.id || ''),
+                kind: 'media_removed',
+                message: String(alert?.message || '').trim(),
+                mediaLabel: String(alert?.mediaLabel || '').trim(),
+                createdAt: String(alert?.createdAt || ''),
+                createdBy: String(alert?.createdBy || 'Steward').trim() || 'Steward',
+            })).filter(alert => alert.id && alert.message)
+            : [],
         contactMethods,
         contactVisibility,
         publicContactVisibility,
@@ -634,6 +659,157 @@ const CREATORS = [
 ];
 let activeRay = 'all';
 let searchQuery = '';
+let directoryFiltersOpen = false;
+const DIRECTORY_FILTER_GROUPS = [
+    { key: 'wishAvailability', elementId: 'directoryWishAvailabilityFilters' },
+    { key: 'offerings', elementId: 'directoryOfferingsFilters' },
+    { key: 'seasonalCapacity', elementId: 'directorySeasonalCapacityFilters' },
+    { key: 'exchanges', elementId: 'directoryExchangeFilters' },
+    { key: 'numerology', elementId: 'directoryNumerologyFilters' },
+    { key: 'accessibility', elementId: 'directoryAccessibilityFilters' },
+];
+const activeDirectoryFilters = {
+    wishAvailability: [],
+    offerings: [],
+    seasonalCapacity: [],
+    exchanges: [],
+    numerology: [],
+    accessibility: [],
+};
+const MEDIA_UPLOAD_ENDPOINT = '/api/media';
+const MAX_PORTFOLIO_UPLOAD_BYTES = Math.floor(4.5 * 1024 * 1024);
+const MAX_PORTFOLIO_UPLOAD_MB_LABEL = '4.5 MB';
+function normalizeDirectoryFilterValue(value) {
+    return String(value || '').trim().toLowerCase();
+}
+function getProfileFilterValues(profile, key) {
+    if (key === 'wishAvailability') {
+        return [normalizeWishAvailability(profile?.wishAvailability)];
+    }
+    if (key === 'seasonalCapacity') {
+        return ['Winter', 'Spring', 'Summer', 'Fall'].filter(season => !!profile?.seasons?.[season]);
+    }
+    const value = profile?.[key];
+    return Array.isArray(value) ? value.filter(Boolean).map(item => String(item).trim()) : [];
+}
+function getPresetDirectoryFilterOptions(key) {
+    switch (key) {
+        case 'wishAvailability':
+            return ['accepting', 'full'];
+        case 'seasonalCapacity':
+            return ['Winter', 'Spring', 'Summer', 'Fall'];
+        case 'offerings':
+            return typeof OFFERING_PRESETS !== 'undefined' ? OFFERING_PRESETS : [];
+        case 'exchanges':
+            return typeof EXCHANGE_PRESETS !== 'undefined' ? EXCHANGE_PRESETS : [];
+        case 'numerology':
+            return typeof NUMEROLOGY_PRESETS !== 'undefined' ? NUMEROLOGY_PRESETS : [];
+        case 'accessibility':
+            return typeof ACCESSIBILITY_PRESETS !== 'undefined' ? ACCESSIBILITY_PRESETS : [];
+        default:
+            return [];
+    }
+}
+function getDirectoryFilterOptionLabel(key, value) {
+    if (key === 'wishAvailability') {
+        return value === 'full' ? 'At Full Capacity' : 'Accepting Wishes';
+    }
+    return String(value || '').trim();
+}
+function getDirectoryFilterOptions(profiles, key) {
+    const values = new Map();
+    getPresetDirectoryFilterOptions(key).forEach(item => {
+        const label = String(item || '').trim();
+        if (!label)
+            return;
+        values.set(normalizeDirectoryFilterValue(label), label);
+    });
+    profiles.forEach(profile => {
+        getProfileFilterValues(profile, key).forEach(item => {
+            const label = String(item || '').trim();
+            if (!label)
+                return;
+            const normalized = normalizeDirectoryFilterValue(label);
+            if (!values.has(normalized))
+                values.set(normalized, label);
+        });
+    });
+    return [...values.values()];
+}
+function getActiveDirectoryFilterCount() {
+    return Object.values(activeDirectoryFilters).reduce((sum, list) => sum + list.length, 0);
+}
+function syncRayFilterUI() {
+    document.querySelectorAll('.ray-pill').forEach(pill => {
+        pill.classList.toggle('active', pill.getAttribute('data-ray') === activeRay);
+    });
+}
+function updateDirectoryFilterToggleState() {
+    const toggle = document.getElementById('directoryFiltersToggle');
+    const panel = document.getElementById('directoryFiltersPanel');
+    const count = document.getElementById('directoryFiltersCount');
+    const chevron = document.getElementById('directoryFiltersChevron');
+    const activeCount = getActiveDirectoryFilterCount() + (activeRay === 'all' ? 0 : 1) + (searchQuery.trim() ? 1 : 0);
+    if (toggle) {
+        toggle.classList.toggle('active', directoryFiltersOpen || activeCount > 0);
+        toggle.setAttribute('aria-expanded', String(directoryFiltersOpen));
+    }
+    if (panel) {
+        panel.classList.toggle('open', directoryFiltersOpen);
+        panel.setAttribute('aria-hidden', String(!directoryFiltersOpen));
+    }
+    if (count)
+        count.textContent = `${activeCount} Active`;
+    if (chevron)
+        chevron.style.transform = directoryFiltersOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+}
+function toggleDirectoryFilters(forceOpen) {
+    directoryFiltersOpen = typeof forceOpen === 'boolean' ? forceOpen : !directoryFiltersOpen;
+    updateDirectoryFilterToggleState();
+}
+function toggleDirectoryFilter(key, value) {
+    const list = activeDirectoryFilters[key];
+    if (!Array.isArray(list))
+        return;
+    const normalized = normalizeDirectoryFilterValue(value);
+    const existingIndex = list.findIndex(item => normalizeDirectoryFilterValue(item) === normalized);
+    if (existingIndex >= 0)
+        list.splice(existingIndex, 1);
+    else
+        list.push(value);
+    directoryFiltersOpen = true;
+    renderDirectory();
+}
+function clearDirectoryFilters() {
+    searchQuery = '';
+    activeRay = 'all';
+    Object.keys(activeDirectoryFilters).forEach(key => {
+        activeDirectoryFilters[key] = [];
+    });
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput)
+        searchInput.value = '';
+    syncRayFilterUI();
+    renderDirectory();
+}
+function renderDirectoryFilterControls(profiles = getDirectoryProfiles()) {
+    DIRECTORY_FILTER_GROUPS.forEach(group => {
+        const options = getDirectoryFilterOptions(profiles, group.key);
+        activeDirectoryFilters[group.key] = activeDirectoryFilters[group.key].filter(selected => options.some(option => normalizeDirectoryFilterValue(option) === normalizeDirectoryFilterValue(selected)));
+        const container = document.getElementById(group.elementId);
+        if (!container)
+            return;
+        container.innerHTML = options.map(option => `
+          <button
+            type="button"
+            class="directory-filter-chip ${activeDirectoryFilters[group.key].some(selected => normalizeDirectoryFilterValue(selected) === normalizeDirectoryFilterValue(option)) ? 'active' : ''}"
+            onclick="toggleDirectoryFilter('${group.key}', '${escapeJsString(option)}')"
+          >${escapeHtml(getDirectoryFilterOptionLabel(group.key, option))}</button>
+        `).join('');
+    });
+    syncRayFilterUI();
+    updateDirectoryFilterToggleState();
+}
 function escapeHtml(value) {
     return String(value ?? '')
         .replace(/&/g, '&amp;')
@@ -658,11 +834,93 @@ function normalizeExternalUrl(value) {
         return '';
     }
 }
+function normalizePortfolioMediaUrl(value) {
+    const raw = String(value ?? '').trim();
+    if (!raw)
+        return '';
+    if (/^data:/i.test(raw))
+        return raw;
+    try {
+        return new URL(raw, window.location.origin).href;
+    }
+    catch (_error) {
+        return '';
+    }
+}
+function formatFileSize(value) {
+    const size = Number(value || 0);
+    if (!size)
+        return '';
+    if (size >= 1024 * 1024)
+        return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    if (size >= 1024)
+        return `${Math.round(size / 1024)} KB`;
+    return `${size} B`;
+}
+function isStoredPortfolioItem(item = {}) {
+    return !!String(item?.storagePath || '').trim();
+}
+function getAllCESProfiles() {
+    return ['pending', 'approved', 'returned'].flatMap(key => getStorage(key, []));
+}
+function profileMatchesReference(profile = {}, reference = {}) {
+    return !!((reference?.id && String(profile?.id) === String(reference.id)) ||
+        (reference?.cesNumber && String(profile?.cesNumber || '').trim() === String(reference.cesNumber).trim()));
+}
+function getSecurityLogEntries() {
+    return getStorage('securityLog', []);
+}
+function getPendingCesChangeRequestForProfile(profile = {}) {
+    return getSecurityLogEntries().find(entry => entry?.type === 'ces_change_request' &&
+        entry?.status === 'pending' &&
+        profileMatchesReference(entry?.profileRef || {}, profile)) || null;
+}
+function isCESNumberAvailable(value, currentProfile = null, pendingRequestIdToIgnore = '') {
+    const normalized = String(value || '').trim();
+    if (normalized.length !== 9)
+        return false;
+    const takenByProfile = getAllCESProfiles().some(profile => {
+        const sameProfile = currentProfile && profileMatchesReference(profile, currentProfile);
+        if (sameProfile)
+            return false;
+        return String(profile?.cesNumber || '').trim() === normalized;
+    });
+    if (takenByProfile)
+        return false;
+    const takenByPendingRequest = getSecurityLogEntries().some(entry => {
+        if (entry?.type !== 'ces_change_request' || entry?.status !== 'pending')
+            return false;
+        if (pendingRequestIdToIgnore && String(entry.id) === String(pendingRequestIdToIgnore))
+            return false;
+        const sameProfile = currentProfile && profileMatchesReference(entry?.profileRef || {}, currentProfile);
+        if (sameProfile)
+            return false;
+        return String(entry?.requestedCesNumber || '').trim() === normalized;
+    });
+    return !takenByPendingRequest;
+}
+function getActiveStewardName() {
+    const steward = getStewardByCode(adminActiveCES);
+    return steward?.name || 'Active Steward';
+}
+function updateCESSubmitButtonText() {
+    const btn = document.getElementById('submitBtn');
+    if (!btn)
+        return;
+    btn.textContent = getCurrentUser()
+        ? 'Update My Core Energetic Signature'
+        : 'Offer My Core Energetic Signature';
+}
 function inferPortfolioType(item = {}) {
     const explicit = String(item.type || '').toLowerCase();
     if (explicit === 'image' || explicit === 'video')
         return explicit;
-    const url = normalizeExternalUrl(item.url || item.src || '');
+    const mimeType = String(item.contentType || '').toLowerCase();
+    if (mimeType.startsWith('video/'))
+        return 'video';
+    if (mimeType.startsWith('image/'))
+        return 'image';
+    const url = normalizePortfolioMediaUrl(item.url || item.src || '');
     const lowered = url.toLowerCase();
     return /\.(mp4|webm|ogg|mov)(\?|#|$)/.test(lowered) ? 'video' : 'image';
 }
@@ -670,13 +928,18 @@ function normalizePortfolioItems(items = []) {
     if (!Array.isArray(items))
         return [];
     return items.map(item => {
-        const url = normalizeExternalUrl(item?.url || item?.src || '');
+        const url = normalizePortfolioMediaUrl(item?.url || item?.src || '');
         if (!url)
             return null;
         return {
             type: inferPortfolioType(item),
             url,
             caption: String(item?.caption || item?.title || '').trim(),
+            storagePath: String(item?.storagePath || '').trim(),
+            fileName: String(item?.fileName || '').trim(),
+            contentType: String(item?.contentType || '').trim(),
+            fileSize: Number(item?.fileSize || 0) || 0,
+            uploadedAt: String(item?.uploadedAt || '').trim(),
         };
     }).filter(Boolean);
 }
@@ -1169,12 +1432,12 @@ function getSeasonBadge(seasons = {}) {
     return firstOpen ? SEASON_EMOJI[firstOpen[0]] : '✦';
 }
 function renderPortfolioMedia(item, className = 'portfolio-preview-thumb') {
-    const url = normalizeExternalUrl(item?.url || item?.src || '');
+    const url = normalizePortfolioMediaUrl(item?.url || item?.src || '');
     if (!url)
         return '';
     const type = inferPortfolioType(item);
     if (type === 'video') {
-        return `<video class="${className}" src="${escapeHtml(url)}" muted playsinline preload="metadata"></video>`;
+        return `<video class="${className}" src="${escapeHtml(url)}" muted playsinline preload="metadata" controlslist="nodownload"></video>`;
     }
     return `<img class="${className}" src="${escapeHtml(url)}" alt="${escapeHtml(item?.caption || 'Portfolio item')}">`;
 }
@@ -1224,20 +1487,38 @@ for (let i = 0; i < 120; i++) {
 // ── RENDER DIRECTORY ──
 function renderDirectory() {
     const grid = document.getElementById('directoryGrid');
-    const filtered = getDirectoryProfiles().filter(c => {
+    const profiles = getDirectoryProfiles();
+    renderDirectoryFilterControls(profiles);
+    const q = searchQuery.toLowerCase().trim();
+    const filtersActive = activeRay !== 'all' || !!q || getActiveDirectoryFilterCount() > 0;
+    const filtered = profiles.filter(c => {
         const matchRay = activeRay === 'all' || c.primaryRayKey === activeRay;
-        const q = searchQuery.toLowerCase();
         const matchSearch = !q ||
             c.name.toLowerCase().includes(q) ||
             c.title.toLowerCase().includes(q) ||
+            c.sunPlacement.toLowerCase().includes(q) ||
+            c.moonPlacement.toLowerCase().includes(q) ||
             c.offerings.some(o => o.toLowerCase().includes(q)) ||
+            c.exchanges.some(exchange => exchange.toLowerCase().includes(q)) ||
+            c.numerology.some(item => item.toLowerCase().includes(q)) ||
+            c.accessibility.some(item => item.toLowerCase().includes(q)) ||
             c.primaryRay.toLowerCase().includes(q) ||
             c.heartlight.toLowerCase().includes(q) ||
-            c.portfolioItems.some(item => item.caption.toLowerCase().includes(q));
-        return matchRay && matchSearch;
+            c.portfolioItems.some(item => item.caption.toLowerCase().includes(q)) ||
+            getProfileFilterValues(c, 'seasonalCapacity').some(season => season.toLowerCase().includes(q));
+        const matchAdvancedFilters = DIRECTORY_FILTER_GROUPS.every(group => {
+            const selected = activeDirectoryFilters[group.key];
+            if (!selected.length)
+                return true;
+            const values = getProfileFilterValues(c, group.key).map(normalizeDirectoryFilterValue);
+            return selected.some(value => values.includes(normalizeDirectoryFilterValue(value)));
+        });
+        return matchRay && matchSearch && matchAdvancedFilters;
     });
     if (filtered.length === 0) {
-        grid.innerHTML = '<div class="empty-state">No approved Core Energetic Signatures are in this resonance field yet.<br>Offer your Core Energetic Signature to the Exchange or approve one locally to begin testing connections.</div>';
+        grid.innerHTML = filtersActive
+            ? '<div class="empty-state">No Core Energetic Signatures match this filter field right now.<br>Widen the resonance or clear a few filters to see more beings.</div>'
+            : '<div class="empty-state">No approved Core Energetic Signatures are in this resonance field yet.<br>Offer your Core Energetic Signature to the Exchange or approve one locally to begin testing connections.</div>';
         return;
     }
     grid.innerHTML = filtered.map((c, i) => {
@@ -1249,6 +1530,7 @@ function renderDirectory() {
         const portfolioStrip = c.portfolioItems.length
             ? `<div class="directory-portfolio-strip">${c.portfolioItems.slice(0, 3).map(item => `<div class="directory-portfolio-thumb">${renderPortfolioMedia(item, 'portfolio-preview-thumb')}</div>`).join('')}</div>`
             : '';
+        const astrologyLine = renderDirectoryAstrologyLine(c);
         return `
     <div class="ces-card fade-up" style="--ray-color:${ray.color};animation-delay:${i * 0.07}s" onclick="openModal('${escapeJsString(c.id)}')">
       <div class="ray-bar"></div>
@@ -1263,12 +1545,13 @@ function renderDirectory() {
           <div class="card-location">📍 ${escapeHtml(c.location || 'Location shared upon resonance')}</div>
         </div>
       </div>
+      ${c.cesNumber ? `<div class="card-ces">C.E.S. ${escapeHtml(c.cesNumber)}</div>` : ''}
       <div class="ray-badge">
         <span style="width:7px;height:7px;border-radius:50%;background:${ray.color};flex-shrink:0;display:inline-block"></span>
         ${escapeHtml(ray.label)} · ${escapeHtml(ray.code || 'Resonance')}
       </div>
       <div style="margin-top:0.7rem">${renderWishAvailabilityBadge(c.wishAvailability)}</div>
-      ${c.cesNumber ? `<div style="font-size:0.6rem;letter-spacing:0.12em;color:rgba(200,146,42,0.35);font-family:'Atkinson Hyperlegible',sans-serif;margin-top:0.2rem;padding:0 0.1rem">C.E.S. ${escapeHtml(c.cesNumber)}</div>` : ''}
+      ${astrologyLine ? `<div class="card-location" style="margin-top:0.28rem"> ${escapeHtml(astrologyLine)}</div>` : ''}
       <div class="heartlight-statement">"${escapeHtml(c.heartlight)}"</div>
       <div class="offerings">
         ${c.offerings.map(o => `<span class="offering-tag">${escapeHtml(o)}</span>`).join('')}
@@ -1276,7 +1559,7 @@ function renderDirectory() {
       ${portfolioStrip}
       <div class="exchange-row">
         <div>
-          <div class="exchange-label" style="margin-bottom:0.3rem">${publicContactItems.length ? 'Public contact on Directory' : 'Connection privacy'}</div>
+          <div class="exchange-label" style="margin-bottom:0.3rem">${publicContactItems.length ? 'Public contact on Directory 🔗' : 'Connection privacy 🔗'}</div>
           <div class="exchange-styles">${publicContactItems.length
             ? publicContactItems.map(item => `<span class="offering-tag" style="font-size:0.65rem">${escapeHtml(item.label)}</span>`).join('')
             : '<span class="offering-tag" style="font-size:0.65rem">Shared only through C.E.S. connection</span>'}</div>
@@ -1301,6 +1584,7 @@ function openModal(id) {
     const seasons = ['Winter', 'Spring', 'Summer', 'Fall'];
     const seasonEmoji = { Winter: '❄️', Spring: '🌱', Summer: '🌞', Fall: '🍂' };
     const portfolioGallery = renderPortfolioGallery(c.portfolioItems, { linkItems: true, gridClass: 'portfolio-gallery-grid' });
+    const astrologyLine = renderExpandedAstrologyLine(c);
     document.getElementById('modalContent').innerHTML = `
     <div class="modal-header">
       <div class="modal-avatar" style="border-color:${ray.color};font-size:2.2rem;background:rgba(15,12,25,0.9);box-shadow:0 0 30px rgba(0,0,0,0.5),0 0 0 6px ${ray.color}18">${avatarContent}</div>
@@ -1320,13 +1604,18 @@ function openModal(id) {
       <div class="modal-text italic" style="padding-left:1rem;border-left:2px solid ${ray.color}40">"${escapeHtml(c.heartlight)}"</div>
     </div>
 
+    ${astrologyLine ? `<div class="modal-section">
+      <div class="modal-section-label">Astrological Placements ✨</div>
+      <div class="modal-text">${escapeHtml(astrologyLine)}</div>
+    </div>` : ''}
+
     <div class="modal-section">
-      <div class="modal-section-label">🌟 Offerings</div>
+      <div class="modal-section-label">Offerings 🌟</div>
       <div class="modal-tags">${c.offerings.map(o => `<span class="modal-tag">${escapeHtml(o)}</span>`).join('')}</div>
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-label">🌿 Seasonal Capacity</div>
+      <div class="modal-section-label">Seasonal Capacity 🌿</div>
       <div class="season-grid">
         ${seasons.map(s => `
           <div class="season-item ${c.seasons[s] ? 'open' : 'closed'}">
@@ -1338,17 +1627,17 @@ function openModal(id) {
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-label">💱 Exchange Pathways</div>
+      <div class="modal-section-label">Exchange Pathways 💱</div>
       <div class="modal-tags">${c.exchanges.map(e => `<span class="modal-tag" style="border-color:${ray.color}60;color:${ray.color}">${escapeHtml(e)}</span>`).join('')}</div>
     </div>
 
     ${c.numerology.length ? `<div class="modal-section">
-      <div class="modal-section-label">🔢 Numerological Resonance</div>
+      <div class="modal-section-label">Numerological Resonance 🔢</div>
       <div class="numerology-row">${c.numerology.map(n => `<span class="num-chip">${escapeHtml(n)}</span>`).join('')}</div>
     </div>` : ''}
 
     ${c.accessibility.length ? `<div class="modal-section">
-      <div class="modal-section-label">🤍 Accessibility Offerings</div>
+      <div class="modal-section-label">Accessibility Offerings 🤍</div>
       <div class="modal-tags">${c.accessibility.map(a => `<span class="modal-tag">${escapeHtml(a)}</span>`).join('')}</div>
     </div>` : ''}
 
@@ -1363,7 +1652,7 @@ function openModal(id) {
     </div>` : ''}
 
     ${(c.portfolioLink || hasAnyContactMethods(c.contactMethods) || c.contactMethod) ? `<div class="modal-section">
-      <div class="modal-section-label">🔗 ${publicContactItems.length ? 'Public Contact On Directory' : 'Connection Privacy'}</div>
+      <div class="modal-section-label">${publicContactItems.length ? 'Public Contact On Directory' : 'Connection Privacy'} 🔗</div>
       ${renderPortfolioLinkLine(c)}
       ${publicContactItems.length
         ? renderContactMethodGrid(getVisibleContactMethods(c.contactMethods, c.contactVisibility), {
@@ -1414,6 +1703,26 @@ function closeWishCastSectionOutside(event) {
     if (event.target === document.getElementById('wishCastSection'))
         closeWishCastSection();
 }
+function renderCharterFlowActions() {
+    const cesActions = document.getElementById('charterCesActions');
+    const wishActions = document.getElementById('charterWishActions');
+    const user = getCurrentUser();
+    if (cesActions) {
+        cesActions.innerHTML = user
+            ? `
+        <button class="charter-flow-action-btn primary" type="button" onclick="openProfileModal()">Open My C.E.S. Profile</button>
+      `
+            : `
+        <button class="charter-flow-action-btn primary" type="button" onclick="setView('submit', document.getElementById('navBtnSubmit'))">Join as Co-Creator</button>
+        <button class="charter-flow-action-btn secondary" type="button" onclick="openSignIn()">Sign In</button>
+      `;
+    }
+    if (wishActions) {
+        wishActions.innerHTML = `
+      <button class="charter-flow-action-btn" type="button" onclick="setView('wish', document.getElementById('navBtnWish'))">Enter Wishing Well</button>
+    `;
+    }
+}
 // ── VIEW SWITCHING (unified) ──
 function setView(name, btn) {
     ['directory', 'submit', 'wishes', 'wish', 'wishfield', 'codes', 'charter', 'privacy', 'admin'].forEach(v => {
@@ -1445,7 +1754,7 @@ function setView(name, btn) {
         setTimeout(renderMyWishes, 50);
     }
     if (name === 'charter') {
-        setTimeout(renderCharterCodesAccordion, 50);
+        setTimeout(() => { renderCharterFlowActions(); renderCharterCodesAccordion(); }, 50);
     }
     if (name === 'codes') {
         setTimeout(buildCodesGrid, 50);
@@ -1465,6 +1774,7 @@ function filterCreators() {
 }
 // ── PHOTO UPLOAD ──
 let photoDataUrl = null;
+let portfolioUploadCount = 0;
 function handlePhotoUpload(e) {
     const file = e.target.files[0];
     if (!file)
@@ -1486,6 +1796,76 @@ function handlePhotoUpload(e) {
         updatePreview();
     };
     reader.readAsDataURL(file);
+}
+function setPortfolioUploadingState(isUploading) {
+    portfolioUploadCount += isUploading ? 1 : -1;
+    if (portfolioUploadCount < 0)
+        portfolioUploadCount = 0;
+    updateSubmitBtn();
+}
+async function uploadPortfolioFile(file) {
+    const payload = new FormData();
+    payload.append('file', file);
+    const response = await fetch(MEDIA_UPLOAD_ENDPOINT, {
+        method: 'POST',
+        body: payload,
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data?.item) {
+        throw new Error(data?.error || 'Upload failed.');
+    }
+    return data.item;
+}
+async function deleteUploadedPortfolioAsset(item) {
+    if (!isStoredPortfolioItem(item))
+        return;
+    await fetch(MEDIA_UPLOAD_ENDPOINT, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            storagePath: item.storagePath || '',
+            url: item.url || '',
+        }),
+    }).catch(() => { });
+}
+async function handlePortfolioFileSelection(index, event) {
+    const file = event?.target?.files?.[0];
+    if (!file || !Array.isArray(formState.portfolioItems) || !formState.portfolioItems[index])
+        return;
+    const item = formState.portfolioItems[index];
+    const inferredType = String(file.type || '').startsWith('video/') ? 'video' : 'image';
+    if (file.size > MAX_PORTFOLIO_UPLOAD_BYTES) {
+        item.uploadError = `File is too large. Keep uploads at or below ${MAX_PORTFOLIO_UPLOAD_MB_LABEL}.`;
+        buildPortfolioInputs();
+        updatePreview();
+        event.target.value = '';
+        return;
+    }
+    item.type = inferredType;
+    item.uploadError = '';
+    item.uploading = true;
+    buildPortfolioInputs();
+    updatePreview();
+    setPortfolioUploadingState(true);
+    try {
+        const uploaded = await uploadPortfolioFile(file);
+        Object.assign(item, createEmptyPortfolioItem(uploaded.type || inferredType), uploaded, {
+            caption: item.caption || '',
+            uploading: false,
+            uploadError: '',
+        });
+    }
+    catch (error) {
+        item.uploading = false;
+        item.uploadError = error?.message || 'Upload failed.';
+    }
+    finally {
+        if (event?.target)
+            event.target.value = '';
+        setPortfolioUploadingState(false);
+        buildPortfolioInputs();
+        updatePreview();
+    }
 }
 // ── CONNECTION MODAL ──
 function openAgreement(creatorId) {
@@ -1603,6 +1983,9 @@ function createAgreementDraft(context = {}) {
 function renderAgreementSelectOptions(options = [], selected = '') {
     return options.map(option => `<option value="${escapeHtml(option)}"${selected === option ? ' selected' : ''}>${escapeHtml(option)}</option>`).join('');
 }
+function renderAgreementPortalPhaseOptions(selected = '') {
+    return AGREEMENT_PORTAL_PHASES.map(phase => (`<option value="${escapeHtml(phase)}"${selected === phase ? ' selected' : ''}>${escapeHtml(phase)}</option>`)).join('');
+}
 function openHeartlightAgreementEditor(context = {}) {
     const draft = createAgreementDraft(context);
     const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
@@ -1696,7 +2079,7 @@ function openHeartlightAgreementEditor(context = {}) {
       </div>
       <div>
         <label class="agreement-field-label">Exchange Pathway</label>
-        <select class="agreement-field-value" id="agreementExchangePathway" style="background:rgba(15,12,25,0.9)">${renderAgreementSelectOptions(['Currency (fixed price)', 'Currency (sliding scale)', 'Value exchange (trade / skill swap)', 'Gift exchange', 'Scholarship exchange'], draft.exchangePathway)}</select>
+        <select class="agreement-field-value" id="agreementExchangePathway" style="background:rgba(15,12,25,0.9)">${renderAgreementSelectOptions(['Currency (fixed price)', 'Currency (sliding scale)', 'Trade', 'Gift Share', 'Scholarship'], draft.exchangePathway)}</select>
       </div>
     </div>
 
@@ -1907,8 +2290,60 @@ const ACCESSIBILITY_PRESETS = [
     'Sliding pacing', 'Sensory-friendly', 'Physical & digital options',
     'Simplified language available', 'Chair-based adaptations', 'Async options',
 ];
+const ASTROLOGY_PLACEMENTS = [
+    { value: '♈', label: 'Aries ♈' },
+    { value: '♉', label: 'Taurus ♉' },
+    { value: '♊', label: 'Gemini ♊' },
+    { value: '♋', label: 'Cancer ♋' },
+    { value: '♌', label: 'Leo ♌' },
+    { value: '♍', label: 'Virgo ♍' },
+    { value: '♎', label: 'Libra ♎' },
+    { value: '♏', label: 'Scorpio ♏' },
+    { value: '♐', label: 'Sagittarius ♐' },
+    { value: '♑', label: 'Capricorn ♑' },
+    { value: '♒', label: 'Aquarius ♒' },
+    { value: '♓', label: 'Pisces ♓' },
+];
 function createEmptyPortfolioItem(type = 'image') {
-    return { type, url: '', caption: '' };
+    return {
+        type,
+        url: '',
+        caption: '',
+        storagePath: '',
+        fileName: '',
+        contentType: '',
+        fileSize: 0,
+        uploadedAt: '',
+        uploading: false,
+        uploadError: '',
+    };
+}
+function normalizeAstrologyPlacement(value = '') {
+    const normalized = String(value || '').trim();
+    return ASTROLOGY_PLACEMENTS.some(option => option.value === normalized) ? normalized : '';
+}
+function getAstrologyPlacementLabel(value = '') {
+    return ASTROLOGY_PLACEMENTS.find(option => option.value === String(value || '').trim())?.label || '';
+}
+function renderDirectoryAstrologyLine(profile = {}) {
+    const sun = normalizeAstrologyPlacement(profile?.sunPlacement || profile?.sun || '');
+    const moon = normalizeAstrologyPlacement(profile?.moonPlacement || profile?.moon || '');
+    if (!sun && !moon)
+        return '';
+    return [
+        sun ? `🌞 : ${sun}` : '',
+        moon ? `🌕 : ${moon}` : '',
+    ].filter(Boolean).join('  ');
+}
+function renderExpandedAstrologyLine(profile = {}) {
+    const sun = normalizeAstrologyPlacement(profile?.sunPlacement || profile?.sun || '');
+    const moon = normalizeAstrologyPlacement(profile?.moonPlacement || profile?.moon || '');
+    if (!sun && !moon)
+        return '';
+    return [
+        sun ? `Sun 🌞 : ${getAstrologyPlacementLabel(sun)}` : '',
+        moon ? `Moon 🌕 : ${getAstrologyPlacementLabel(moon)}` : '',
+    ].filter(Boolean).join(' ');
 }
 function createDefaultFormState() {
     return {
@@ -2063,7 +2498,7 @@ function buildPortfolioInputs() {
         return;
     const rows = Array.isArray(formState.portfolioItems) ? formState.portfolioItems : [];
     if (!rows.length) {
-        list.innerHTML = '<div class="portfolio-empty-note">Add a photo or video to begin your portfolio showcase.</div>';
+        list.innerHTML = '<div class="portfolio-empty-note">Add a photo or video here if you want a portfolio showcase.</div>';
         return;
     }
     list.innerHTML = rows.map((item, index) => `
@@ -2071,14 +2506,22 @@ function buildPortfolioInputs() {
       <div class="portfolio-item-grid">
         <div>
           <label class="field-label" style="margin-bottom:0.35rem">Media Type</label>
-          <select class="field-input" onchange="updatePortfolioItem(${index}, 'type', this.value)" style="background:rgba(15,12,25,0.9)">
+          <select class="field-input" onchange="updatePortfolioItem(${index}, 'type', this.value)" style="background:rgba(15,12,25,0.9)" ${item.uploading ? 'disabled' : ''}>
             <option value="image" ${item.type === 'image' ? 'selected' : ''}>Photo</option>
             <option value="video" ${item.type === 'video' ? 'selected' : ''}>Video</option>
           </select>
         </div>
         <div>
-          <label class="field-label" style="margin-bottom:0.35rem">Media URL</label>
-          <input class="field-input" type="text" value="${escapeHtml(item.url || '')}" placeholder="${item.type === 'video' ? 'https://…/video.mp4' : 'https://…/photo.jpg'}" oninput="updatePortfolioItem(${index}, 'url', this.value)">
+          <label class="field-label" style="margin-bottom:0.35rem">Upload ${item.type === 'video' ? 'Video' : 'Photo'}</label>
+          <input class="field-input" type="file" accept="${item.type === 'video' ? 'video/mp4,video/webm,video/ogg,video/quicktime' : 'image/jpeg,image/png,image/webp,image/gif'}" onchange="handlePortfolioFileSelection(${index}, event)" ${item.uploading ? 'disabled' : ''}>
+          <div class="portfolio-file-meta" style="margin-top:0.45rem">
+            ${item.uploading
+        ? `<span class="portfolio-upload-status">Uploading…</span>`
+        : item.url
+            ? `<span>${escapeHtml(item.fileName || `${item.type === 'video' ? 'Video' : 'Photo'} uploaded`)}</span>${item.fileSize ? `<span>· ${escapeHtml(formatFileSize(item.fileSize))}</span>` : ''}`
+            : `<span>No ${item.type === 'video' ? 'video' : 'photo'} uploaded yet</span>`}
+          </div>
+          ${item.uploadError ? `<div class="portfolio-upload-error">${escapeHtml(item.uploadError)}</div>` : ''}
           <label class="field-label" style="margin:0.6rem 0 0.35rem">Caption</label>
           <textarea class="field-input" placeholder="Short description of this piece…" oninput="updatePortfolioItem(${index}, 'caption', this.value)">${escapeHtml(item.caption || '')}</textarea>
         </div>
@@ -2102,7 +2545,7 @@ function addPortfolioItem(type = 'image') {
     buildPortfolioInputs();
     updatePreview();
 }
-function removePortfolioItem(index) {
+async function removePortfolioItem(index) {
     if (!Array.isArray(formState.portfolioItems))
         return;
     formState.portfolioItems.splice(index, 1);
@@ -2186,6 +2629,7 @@ function updateSubmitBtn() {
     const btn = document.getElementById('submitBtn');
     if (!btn)
         return;
+    updateCESSubmitButtonText();
     const name = (document.getElementById('f_name')?.value || '').trim();
     const cesVal = (document.getElementById('f_ces_number')?.value || '').trim();
     const passphrase = (document.getElementById('f_passphrase')?.value || '').trim();
@@ -2196,9 +2640,14 @@ function updateSubmitBtn() {
     const hasExchange = formState.selectedExchanges.length > 0;
     const hasSeason = Object.values(formState.selectedSeasons).some(Boolean);
     const quadRepeat = new RegExp('(\\d)\\1{3}').test(cesVal);
-    const cesOk = cesVal.length === 9 && !quadRepeat;
+    const currentUser = getCurrentUser();
+    const pendingChangeRequest = currentUser ? getPendingCesChangeRequestForProfile(currentUser) : null;
+    const cesOk = cesVal.length === 9 && !quadRepeat && ((!currentUser && isCESNumberAvailable(cesVal)) ||
+        (currentUser && (cesVal === String(currentUser.cesNumber || '').trim() ||
+            (pendingChangeRequest && cesVal === String(pendingChangeRequest.requestedCesNumber || '').trim()) ||
+            isCESNumberAvailable(cesVal, currentUser, pendingChangeRequest?.id || ''))));
     const passphraseOk = passphrase.length >= 6;
-    const ready = name && cesOk && passphraseOk && heartlight && hasRay && hasOffering && hasExchange && hasSeason && timeline && formState.oathSigned && formState.oath2Signed;
+    const ready = name && cesOk && passphraseOk && heartlight && hasRay && hasOffering && hasExchange && hasSeason && timeline && formState.oathSigned && formState.oath2Signed && portfolioUploadCount === 0;
     btn.disabled = !ready;
 }
 // ── LIVE PREVIEW UPDATE ──
@@ -2295,6 +2744,16 @@ function updatePreview() {
         const locStr = [location, pronouns].filter(Boolean).join(' · ');
         pLoc.textContent = '📍 ' + (locStr || 'Location · Time Zone');
     }
+    const pAstro = document.getElementById('previewAstrology');
+    if (pAstro) {
+        const astrologyLine = renderExpandedAstrologyLine({
+            sunPlacement: document.getElementById('f_sun_placement')?.value || '',
+            moonPlacement: document.getElementById('f_moon_placement')?.value || '',
+        });
+        pAstro.innerHTML = astrologyLine
+            ? `<span class="preview-chip">${escapeHtml(astrologyLine)}</span>`
+            : '<span class="preview-chip" style="opacity:0.4;font-style:italic">Sun and Moon placements will appear here</span>';
+    }
     const pStatement = document.getElementById('previewStatement');
     if (pStatement) {
         pStatement.textContent = heartlight ? `"${heartlight}"` : 'Your Heartlight Statement will appear here as you write…';
@@ -2347,8 +2806,8 @@ function updatePreview() {
     const pPortfolio = document.getElementById('previewPortfolio');
     if (pPortfolio) {
         pPortfolio.innerHTML = renderPortfolioGallery(formState.portfolioItems, {
-            emptyHtml: '<div class="portfolio-empty-note">Add photo or video links to preview your portfolio here.</div>'
-        }) || '<div class="portfolio-empty-note">Add photo or video links to preview your portfolio here.</div>';
+            emptyHtml: '<div class="portfolio-empty-note">Upload a photo or video here if you want it shown in your portfolio preview.</div>'
+        }) || '<div class="portfolio-empty-note">Upload a photo or video here if you want it shown in your portfolio preview.</div>';
     }
     const previewContacts = document.getElementById('previewContactMethods');
     if (previewContacts) {
@@ -2378,6 +2837,10 @@ async function submitCES() {
     const name = document.getElementById('f_name')?.value?.trim();
     if (!name)
         return;
+    if (portfolioUploadCount > 0) {
+        alert('Please wait for portfolio uploads to finish before submitting this C.E.S. profile.');
+        return;
+    }
     await hydrateStorageFromRemote();
     const result = submitCESProfile();
     const btn = document.getElementById('submitBtn');
@@ -2411,6 +2874,7 @@ function initCESForm() {
     buildChipGrid('accessibilityGrid', ACCESSIBILITY_PRESETS, 'selectedAccessibility');
     buildPortfolioInputs();
     buildWishAvailabilityToggles();
+    renderSubmitStewardAlerts(getCurrentUser());
     updatePreview();
     updateSubmitBtn();
 }
@@ -3632,6 +4096,86 @@ function syncProfileAcrossCollections(profile) {
             setStorage(key, next);
     });
 }
+function syncCurrentUserProfile(profile) {
+    const user = getCurrentUser();
+    if (!user)
+        return;
+    const sameProfile = user.id === profile.id || (profile.cesNumber && user.cesNumber === profile.cesNumber);
+    if (!sameProfile)
+        return;
+    setCurrentUser(profile);
+}
+function replaceProfileAcrossCollections(profile) {
+    const normalized = normalizeCreatorRecord(profile);
+    ['pending', 'approved', 'returned'].forEach(key => {
+        const list = getStorage(key, []);
+        let changed = false;
+        const next = list.map(entry => {
+            const sameProfile = entry.id === normalized.id || (normalized.cesNumber && entry.cesNumber === normalized.cesNumber);
+            if (!sameProfile)
+                return entry;
+            changed = true;
+            return {
+                ...entry,
+                ...normalized,
+                mediaPortfolio: normalized.portfolioItems.map(item => ({ ...item })),
+                stewardAlerts: normalized.stewardAlerts.map(alert => ({ ...alert })),
+            };
+        });
+        if (changed)
+            setStorage(key, next);
+    });
+    syncCurrentUserProfile(normalized);
+}
+function getStewardAlertCount(profile) {
+    return Array.isArray(profile?.stewardAlerts) ? profile.stewardAlerts.length : 0;
+}
+function renderStewardAlertsSection(profile) {
+    const alerts = Array.isArray(profile?.stewardAlerts) ? profile.stewardAlerts : [];
+    if (!alerts.length)
+        return '';
+    return `
+    <div class="profile-modal-section">
+      <div class="profile-modal-label">Steward Alerts</div>
+      <div class="steward-alert-stack">
+        ${alerts.map(alert => `
+          <div class="steward-alert-card">
+            <div class="steward-alert-meta">${escapeHtml(alert.createdBy || 'Steward')} · ${escapeHtml(new Date(alert.createdAt).toLocaleString())}</div>
+            <div class="steward-alert-title">Removed media: ${escapeHtml(alert.mediaLabel || 'Portfolio item')}</div>
+            <div class="steward-alert-body">${escapeHtml(alert.message || 'A steward removed one of your portfolio uploads.')}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+function renderSubmitStewardAlerts(profile) {
+    const container = document.getElementById('submitStewardAlerts');
+    if (!container)
+        return;
+    const alerts = Array.isArray(profile?.stewardAlerts) ? profile.stewardAlerts : [];
+    const pendingCesChange = profile ? getPendingCesChangeRequestForProfile(profile) : null;
+    if (!alerts.length && !pendingCesChange) {
+        container.innerHTML = '';
+        return;
+    }
+    container.innerHTML = [
+        pendingCesChange ? `
+      <div class="steward-alert-card" style="margin-bottom:${alerts.length ? '0.7rem' : '0'};border-color:rgba(212,184,48,0.25);background:rgba(212,184,48,0.06)">
+        <div class="steward-alert-meta" style="color:rgba(212,184,48,0.72)">C.E.S. Number Review</div>
+        <div class="steward-alert-title" style="color:var(--orichalcum-pale)">Requested change pending: ${escapeHtml(pendingCesChange.currentCesNumber || '—')} → ${escapeHtml(pendingCesChange.requestedCesNumber || '—')}</div>
+        <div class="steward-alert-body">This requested C.E.S. number is available and has been sent to the Stewards. Your active profile still holds ${escapeHtml(pendingCesChange.currentCesNumber || 'your current number')} until approval.</div>
+      </div>
+    ` : '',
+        alerts.length ? `
+      <div class="steward-alert-card">
+        <div class="steward-alert-meta">Steward Review Notice</div>
+        <div class="steward-alert-title">Your portfolio has review updates.</div>
+        <div class="steward-alert-body">A steward removed one or more uploads. Open your profile for the full notes, or replace the media below before you resubmit.</div>
+      </div>
+    ` : '',
+    ].filter(Boolean).join('');
+}
 // ── PROFILE CORNER BUTTON ──
 function renderProfileCorner() {
     const corner = document.getElementById('profileCorner');
@@ -3646,6 +4190,7 @@ function renderProfileCorner() {
             submitBtn.style.display = 'none';
         if (joinCta)
             joinCta.style.display = 'none';
+        const alertCount = getStewardAlertCount(user);
         const initial = (user.name || '?')[0].toUpperCase();
         const avatarHtml = user.photo
             ? `<img src="${escapeHtml(user.photo)}" class="profile-avatar-img" alt="${escapeHtml(user.name)}">`
@@ -3654,8 +4199,8 @@ function renderProfileCorner() {
       <button class="profile-avatar-btn" onclick="openProfileModal()">
         ${avatarHtml}
         <span class="profile-btn-label">${escapeHtml(user.name || 'Your Core Energetic Signature')}</span>
-      </button>
-      <button class="join-corner-btn profile-secondary-btn" style="opacity:0.55;font-size:0.65rem" onclick="signOutUser()">Sign Out</button>`;
+        ${alertCount ? `<span class="profile-alert-pill">${alertCount} Alert${alertCount === 1 ? '' : 's'}</span>` : ''}
+      </button>`;
     }
     else {
         // Not signed in — show nav tab and join CTA
@@ -3669,6 +4214,7 @@ function renderProfileCorner() {
         <button class="join-corner-btn profile-secondary-btn" onclick="openSignIn()">Sign In</button>
       </div>`;
     }
+    renderCharterFlowActions();
 }
 // ── PROFILE MODAL ──
 function resetSubmissionFeedback() {
@@ -3707,6 +4253,7 @@ function syncPhotoPreview(photoUrl) {
 }
 function populateCESFormFromProfile(profile) {
     const data = normalizeCreatorRecord(profile);
+    const pendingCesChange = getPendingCesChangeRequestForProfile(data);
     formState = createDefaultFormState();
     formState.emoji = normalizeAvatarMark(data.emoji || '');
     formState.selectedRays = data.rays.slice(0, 3);
@@ -3718,7 +4265,9 @@ function populateCESFormFromProfile(profile) {
     formState.customNumerology = data.numerology.filter(item => !NUMEROLOGY_PRESETS.includes(item));
     formState.selectedAccessibility = [...data.accessibility];
     formState.customAccessibility = data.accessibility.filter(item => !ACCESSIBILITY_PRESETS.includes(item));
-    formState.portfolioItems = data.portfolioItems.length ? data.portfolioItems.map(item => ({ ...item })) : [createEmptyPortfolioItem('image')];
+    formState.portfolioItems = data.portfolioItems.length
+        ? data.portfolioItems.map(item => ({ ...createEmptyPortfolioItem(item.type || 'image'), ...item, uploading: false, uploadError: '' }))
+        : [createEmptyPortfolioItem('image')];
     formState.wishAvailability = data.wishAvailability;
     formState.passphrase = data.passphrase || '';
     formState.oathSigned = true;
@@ -3726,10 +4275,12 @@ function populateCESFormFromProfile(profile) {
     const fieldMap = {
         f_name: data.name,
         f_pronouns: data.pronouns,
-        f_ces_number: data.cesNumber || '',
+        f_ces_number: pendingCesChange?.requestedCesNumber || data.cesNumber || '',
         f_passphrase: data.passphrase || '',
         f_title: data.title,
         f_location: data.location,
+        f_sun_placement: data.sunPlacement || '',
+        f_moon_placement: data.moonPlacement || '',
         f_heartlight: data.heartlight,
         f_timeline: data.timeline,
         f_consent: data.consent,
@@ -3770,6 +4321,7 @@ function populateCESFormFromProfile(profile) {
     buildChipGrid('accessibilityGrid', ACCESSIBILITY_PRESETS, 'selectedAccessibility');
     buildPortfolioInputs();
     buildWishAvailabilityToggles();
+    renderSubmitStewardAlerts(data);
     updateCESNumberPreview();
     updatePreview();
     updateSubmitBtn();
@@ -3811,6 +4363,7 @@ function openProfileModal() {
     const returned = getStorage('returned', []);
     const allSubmissions = [...pending, ...approved];
     const submission = normalizeCreatorRecord(allSubmissions.find(s => s.id === user.id) || returned.find(s => s.id === user.id) || user);
+    const pendingCesChange = getPendingCesChangeRequestForProfile(submission);
     const statusInPending = pending.find(s => s.id === user.id);
     const statusInApproved = approved.find(s => s.id === user.id);
     const statusReturned = returned.find(s => s.id === user.id);
@@ -3823,6 +4376,9 @@ function openProfileModal() {
     }
     else if (statusReturned) {
         statusLabel = `<span style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;font-family:'Atkinson Hyperlegible',sans-serif;color:#e8a0a0">↩ Returned — ${statusReturned.note || 'Review note sent'}</span>`;
+    }
+    else if (pendingCesChange) {
+        statusLabel = `<span class="admin-tag admin-tag-pending">⏳ C.E.S. change awaiting Steward approval</span>`;
     }
     const initial = (submission.name || '?')[0].toUpperCase();
     const avatarHtml = submission.photo
@@ -3841,9 +4397,10 @@ function openProfileModal() {
         ${statusLabel}
       </div>
     </div>
-    ${submission.title || submission.location ? `<div class="profile-modal-section">
+    ${submission.title || submission.location || submission.sunPlacement || submission.moonPlacement ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Identity</div>
       <div class="profile-modal-value">${escapeHtml([submission.title, submission.pronouns, submission.location].filter(Boolean).join(' · '))}</div>
+      ${renderExpandedAstrologyLine(submission) ? `<div class="profile-modal-value" style="margin-top:0.55rem">${escapeHtml(renderExpandedAstrologyLine(submission))}</div>` : ''}
     </div>` : ''}
     ${submission.heartlight ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Heartlight Statement</div>
@@ -3852,6 +4409,11 @@ function openProfileModal() {
     ${submission.offerings && submission.offerings.length ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Offerings</div>
       <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.3rem">${submission.offerings.map(o => `<span style="padding:0.2rem 0.65rem;border-radius:2rem;font-size:0.72rem;border:1px solid rgba(200,146,42,0.3);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif">${escapeHtml(o)}</span>`).join('')}</div>
+    </div>` : ''}
+    ${renderStewardAlertsSection(submission)}
+    ${pendingCesChange ? `<div class="profile-modal-section">
+      <div class="profile-modal-label">Pending C.E.S. Number Change</div>
+      <div class="profile-modal-value">Requested change: ${escapeHtml(pendingCesChange.currentCesNumber || '—')} → ${escapeHtml(pendingCesChange.requestedCesNumber || '—')}. Your approved sign-in number remains ${escapeHtml(pendingCesChange.currentCesNumber || submission.cesNumber || 'unchanged')} until a Steward approves this request.</div>
     </div>` : ''}
     ${submission.exchanges && submission.exchanges.length ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Exchange Pathways</div>
@@ -3927,6 +4489,11 @@ function submitCESProfile() {
     }
     if (!existingProfile && currentUser)
         existingProfile = currentUser;
+    const previousPortfolioItems = normalizePortfolioItems(existingProfile?.portfolioItems || existingProfile?.mediaPortfolio || []);
+    const priorCesNumber = String(existingProfile?.cesNumber || '').trim();
+    const existingPendingCesChange = existingProfile ? getPendingCesChangeRequestForProfile(existingProfile) : null;
+    const requestedCesChange = !!(existingProfile && priorCesNumber && cesNumber && cesNumber !== priorCesNumber);
+    const changes = [];
     const seasons = { ...formState.selectedSeasons };
     const rays = [...formState.selectedRays];
     const portfolioItems = normalizePortfolioItems(formState.portfolioItems);
@@ -3947,6 +4514,48 @@ function submitCESProfile() {
         whatsapp: !!document.getElementById('f_contact_public_whatsapp')?.checked,
     };
     const contactSummary = getContactMethodItems(contactMethods).map(item => `${item.label}: ${item.display}`).join(' · ');
+    if (existingProfile) {
+        if ((document.getElementById('f_name')?.value || '').trim() !== String(existingProfile?.name || '').trim())
+            changes.push('name');
+        if ((document.getElementById('f_title')?.value || '').trim() !== String(existingProfile?.title || '').trim())
+            changes.push('title');
+        if ((document.getElementById('f_location')?.value || '').trim() !== String(existingProfile?.location || '').trim())
+            changes.push('location');
+        if (normalizeAstrologyPlacement(document.getElementById('f_sun_placement')?.value || '') !== normalizeAstrologyPlacement(existingProfile?.sunPlacement || existingProfile?.sun || ''))
+            changes.push('sun placement');
+        if (normalizeAstrologyPlacement(document.getElementById('f_moon_placement')?.value || '') !== normalizeAstrologyPlacement(existingProfile?.moonPlacement || existingProfile?.moon || ''))
+            changes.push('moon placement');
+        if ((document.getElementById('f_heartlight')?.value || '').trim() !== String(existingProfile?.heartlight || '').trim())
+            changes.push('heartlight');
+        if ((document.getElementById('f_timeline')?.value || '').trim() !== String(existingProfile?.timeline || '').trim())
+            changes.push('timeline');
+        if ((document.getElementById('f_consent')?.value || '').trim() !== String(existingProfile?.consent || '').trim())
+            changes.push('consent');
+        if ((document.getElementById('f_portfolio')?.value || '').trim() !== String(existingProfile?.portfolioLink || existingProfile?.portfolio || '').trim())
+            changes.push('portfolio link');
+        if (JSON.stringify(portfolioItems) !== JSON.stringify(normalizePortfolioItems(existingProfile?.portfolioItems || existingProfile?.mediaPortfolio || [])))
+            changes.push('portfolio media');
+        if (JSON.stringify(contactMethods) !== JSON.stringify(normalizeContactMethods(existingProfile?.contactMethods, existingProfile?.contactMethod || existingProfile?.contact || '')))
+            changes.push('contact paths');
+        if (JSON.stringify(contactVisibility) !== JSON.stringify(normalizeContactVisibility(existingProfile?.contactVisibility, existingProfile?.contactMethods || {}, !!existingProfile?.publicContactVisibility)))
+            changes.push('public contact visibility');
+        if (JSON.stringify(rays) !== JSON.stringify(asArray(existingProfile?.rays)))
+            changes.push('ray resonance');
+        if (JSON.stringify([...formState.selectedOfferings]) !== JSON.stringify(asArray(existingProfile?.offerings)))
+            changes.push('offerings');
+        if (JSON.stringify([...formState.selectedExchanges]) !== JSON.stringify(asArray(existingProfile?.exchanges && existingProfile?.exchanges.length ? existingProfile?.exchanges : existingProfile?.exchangePathways)))
+            changes.push('exchange pathways');
+        if (JSON.stringify(seasons) !== JSON.stringify({ Winter: false, Spring: false, Summer: false, Fall: false, ...(existingProfile?.seasons || {}) }))
+            changes.push('seasonal capacity');
+        if (JSON.stringify([...formState.selectedNumerology]) !== JSON.stringify(asArray(existingProfile?.numerology)))
+            changes.push('numerology');
+        if (JSON.stringify([...formState.selectedAccessibility]) !== JSON.stringify(asArray(existingProfile?.accessibility && existingProfile?.accessibility.length ? existingProfile?.accessibility : existingProfile?.accessibilityOfferings)))
+            changes.push('accessibility');
+        if (normalizeWishAvailability(formState.wishAvailability || existingProfile?.wishAvailability || existingProfile?.directoryWishStatus) !== normalizeWishAvailability(existingProfile?.wishAvailability || existingProfile?.directoryWishStatus))
+            changes.push('wish status');
+        if (requestedCesChange)
+            changes.push('C.E.S. number request');
+    }
     const profile = {
         ...(existingProfile || {}),
         id: existingProfile?.id || `ces_${Date.now()}`,
@@ -3954,6 +4563,8 @@ function submitCESProfile() {
         pronouns: (document.getElementById('f_pronouns')?.value || '').trim(),
         title: (document.getElementById('f_title')?.value || '').trim(),
         location: (document.getElementById('f_location')?.value || '').trim(),
+        sunPlacement: normalizeAstrologyPlacement(document.getElementById('f_sun_placement')?.value || ''),
+        moonPlacement: normalizeAstrologyPlacement(document.getElementById('f_moon_placement')?.value || ''),
         photo: photoDataUrl || formState.photoData || existingProfile?.photo || null,
         emoji: normalizeAvatarMark(formState.emoji || ''),
         ray: rays[0] || '',
@@ -3974,12 +4585,13 @@ function submitCESProfile() {
         portfolio: (document.getElementById('f_portfolio')?.value || '').trim(),
         portfolioItems,
         mediaPortfolio: portfolioItems,
+        stewardAlerts: Array.isArray(existingProfile?.stewardAlerts) ? existingProfile.stewardAlerts.map(alert => ({ ...alert })) : [],
         contactMethods,
         contactVisibility,
         publicContactVisibility: getPublicContactMethodItems(contactMethods, contactVisibility).length > 0,
         contactMethod: contactSummary,
         contact: contactSummary,
-        cesNumber: cesNumber || existingProfile?.cesNumber || null,
+        cesNumber: requestedCesChange ? (priorCesNumber || null) : (cesNumber || existingProfile?.cesNumber || null),
         passphrase: passphrase || existingProfile?.passphrase || '',
         wishAvailability: normalizeWishAvailability(formState.wishAvailability || existingProfile?.wishAvailability || existingProfile?.directoryWishStatus),
         directoryWishStatus: normalizeWishAvailability(formState.wishAvailability || existingProfile?.wishAvailability || existingProfile?.directoryWishStatus),
@@ -4006,7 +4618,37 @@ function submitCESProfile() {
     setStorage('pending', collections.pending);
     setStorage('approved', collections.approved);
     setStorage('returned', collections.returned);
+    if (existingProfile) {
+        const log = getSecurityLogEntries();
+        if (changes.length) {
+            log.unshift(createProfileUpdateLogEntry(profile, changes));
+        }
+        const requestedCesAlreadyPending = !!(existingPendingCesChange && String(existingPendingCesChange.requestedCesNumber || '').trim() === cesNumber);
+        if (requestedCesChange && !requestedCesAlreadyPending && isCESNumberAvailable(cesNumber, existingProfile, existingPendingCesChange?.id || '')) {
+            if (existingPendingCesChange) {
+                const pendingIdx = log.findIndex(entry => String(entry?.id) === String(existingPendingCesChange.id));
+                if (pendingIdx > -1) {
+                    log[pendingIdx] = {
+                        ...log[pendingIdx],
+                        status: 'declined',
+                        resolvedAt: now,
+                        resolvedBy: 'Superseded by a newer request',
+                        message: `${profile.name || 'A being'} replaced an earlier pending C.E.S. number request.`,
+                    };
+                }
+            }
+            log.unshift(createCesChangeRequestLogEntry(profile, cesNumber));
+        }
+        setStorage('securityLog', log);
+    }
+    previousPortfolioItems
+        .filter(item => isStoredPortfolioItem(item))
+        .filter(item => !portfolioItems.some(nextItem => (nextItem.storagePath && nextItem.storagePath === item.storagePath) || nextItem.url === item.url))
+        .forEach(item => {
+        void deleteUploadedPortfolioAsset(item);
+    });
     setCurrentUser(profile);
+    renderSubmitStewardAlerts(profile);
     renderProfileCorner();
     renderDirectory();
     return { profile, status: targetStatus, isNew: !existingKey && !currentUser };
@@ -4015,6 +4657,7 @@ function submitCESProfile() {
 // Find the CES form submit and wire it
 document.addEventListener('DOMContentLoaded', function () {
     renderProfileCorner();
+    renderCharterFlowActions();
 });
 // ── ADMIN SYSTEM ──
 let adminAuthed = false;
@@ -4055,6 +4698,42 @@ function renderAdminStats() {
   </div>`).join('');
 }
 const RAY_COLORS = { 'Magenta Ray': '#c4407a', 'Red Ray': '#c94040', 'Orange Ray': '#d4732a', 'Yellow Ray': '#d4b830', 'Green Ray': '#3a9b6f', 'Turquoise Ray': '#2ab3c4', 'Blue Ray': '#3a6bb5', 'Indigo Ray': '#5a4a9e', 'Violet Ray': '#8b4fb5', 'Omni Ray': '#c0c0d8', 'Elemental Ray': '#7a9e5a', 'ALL Ray': '#e8d4ff' };
+function renderAdminPortfolioReview(profile) {
+    const items = normalizePortfolioItems(profile?.portfolioItems);
+    if (!items.length)
+        return '';
+    return `
+    <div class="admin-media-review-grid">
+      ${items.map((item, index) => `
+        <div class="admin-media-card">
+          <a class="admin-media-preview" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer noopener">
+            ${renderPortfolioMedia(item, 'admin-media-thumb')}
+          </a>
+          <div class="admin-media-copy">
+            <div class="admin-media-title">${escapeHtml(item.fileName || `${item.type === 'video' ? 'Video' : 'Photo'} ${index + 1}`)}</div>
+            ${item.caption ? `<div class="admin-media-caption">${escapeHtml(item.caption)}</div>` : ''}
+            <div class="admin-media-meta">${escapeHtml(item.type === 'video' ? 'Video' : 'Photo')}${item.fileSize ? ` · ${escapeHtml(formatFileSize(item.fileSize))}` : ''}</div>
+          </div>
+          <input class="admin-return-note" type="text" id="media_note_${profile.id}_${index}" placeholder="Reason for removing this media…">
+          <div class="admin-media-actions">
+            <a class="admin-media-link" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer noopener">Open</a>
+            <button class="admin-btn-return" onclick="removePortfolioMediaFromProfile('${profile.id}', ${index})">Remove Media</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+function createStewardMediaAlert(item, message) {
+    return {
+        id: `alert_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        kind: 'media_removed',
+        message: String(message || '').trim() || 'A steward removed one of your portfolio uploads. Please replace it when you are ready.',
+        mediaLabel: item?.caption || item?.fileName || `${item?.type === 'video' ? 'Video' : 'Photo'} upload`,
+        createdAt: new Date().toISOString(),
+        createdBy: adminActiveCES?.name || 'Steward',
+    };
+}
 function adminCardHTML(profile, actions) {
     const rayColor = RAY_COLORS[profile.primaryRay] || '#c8922a';
     const initial = (profile.name || '?')[0].toUpperCase();
@@ -4078,6 +4757,7 @@ function adminCardHTML(profile, actions) {
     </div>
     ${profile.heartlight ? `<div class="admin-card-body" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem">"${profile.heartlight}"</div>` : ''}
     ${profile.offerings && profile.offerings.length ? `<div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.8rem">${profile.offerings.map(o => `<span style="padding:0.15rem 0.55rem;border-radius:2rem;font-size:0.65rem;border:1px solid ${rayColor}55;color:${rayColor};font-family:'Atkinson Hyperlegible',sans-serif">${o}</span>`).join('')}</div>` : ''}
+    ${renderAdminPortfolioReview(profile)}
     ${profile.note ? `<div style="font-size:0.78rem;color:#e8a0a0;font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.7rem;padding:0.5rem 0.8rem;border-radius:0.5rem;background:rgba(201,64,64,0.06);border:1px solid rgba(201,64,64,0.2)">↩ Steward note: "${profile.note}"</div>` : ''}
     <div class="admin-card-actions">${actions}</div>
   </div>`;
@@ -4167,6 +4847,60 @@ function reAcceptProfile(id) {
     renderAdminStats();
     renderReturnedList();
     renderDirectory();
+}
+async function removePortfolioMediaFromProfile(id, mediaIndex) {
+    const collections = ['pending', 'approved', 'returned'];
+    let collectionKey = null;
+    let collectionList = null;
+    let profileIndex = -1;
+    collections.forEach(key => {
+        if (collectionKey)
+            return;
+        const list = getStorage(key, []);
+        const idx = list.findIndex(profile => profile.id === id);
+        if (idx > -1) {
+            collectionKey = key;
+            collectionList = list;
+            profileIndex = idx;
+        }
+    });
+    if (!collectionKey || !collectionList || profileIndex < 0)
+        return;
+    const profile = normalizeCreatorRecord(collectionList[profileIndex]);
+    const items = normalizePortfolioItems(profile.portfolioItems);
+    const targetItem = items[mediaIndex];
+    if (!targetItem)
+        return;
+    const noteInput = document.getElementById(`media_note_${id}_${mediaIndex}`);
+    const stewardMessage = String(noteInput?.value || '').trim();
+    if (!confirm(`Remove ${targetItem.type === 'video' ? 'this video' : 'this photo'} from ${profile.name}'s portfolio?`))
+        return;
+    items.splice(mediaIndex, 1);
+    const updatedProfile = {
+        ...profile,
+        portfolioItems: items,
+        mediaPortfolio: items,
+        stewardAlerts: [createStewardMediaAlert(targetItem, stewardMessage), ...(profile.stewardAlerts || [])],
+        updatedAt: new Date().toISOString(),
+    };
+    collectionList[profileIndex] = {
+        ...collectionList[profileIndex],
+        ...updatedProfile,
+    };
+    setStorage(collectionKey, collectionList);
+    syncCurrentUserProfile(updatedProfile);
+    renderSubmitStewardAlerts(updatedProfile);
+    await deleteUploadedPortfolioAsset(targetItem);
+    renderAdminStats();
+    renderPendingList();
+    renderApprovedList();
+    renderReturnedList();
+    renderDirectory();
+    renderProfileCorner();
+    const currentUser = getCurrentUser();
+    if (currentUser && (currentUser.id === updatedProfile.id || (updatedProfile.cesNumber && currentUser.cesNumber === updatedProfile.cesNumber))) {
+        openProfileModal();
+    }
 }
 function removeFromDirectory(id) {
     if (!confirm('Remove this Co-Creator from the Heartlight Directory?'))
@@ -4461,9 +5195,75 @@ function setAdminTab(tab, el) {
     if (tab === 'security')
         renderSecuritySettings();
 }
+function createProfileUpdateLogEntry(profile, changes = []) {
+    return {
+        id: 'profile_update_' + Date.now(),
+        cesEncrypted: cesEncrypt(String(profile?.cesNumber || '').trim()) || '—',
+        stewardName: profile?.name || 'Unknown Being',
+        timestamp: new Date().toISOString(),
+        type: 'profile_update',
+        profileRef: {
+            id: profile?.id || null,
+            cesNumber: String(profile?.cesNumber || '').trim() || null,
+        },
+        message: `${profile?.name || 'A being'} submitted an updated Core Energetic Signature.`,
+        changes,
+    };
+}
+function createCesChangeRequestLogEntry(profile, requestedCesNumber) {
+    return {
+        id: 'ces_change_' + Date.now(),
+        cesEncrypted: cesEncrypt(String(profile?.cesNumber || '').trim()) || '—',
+        stewardName: profile?.name || 'Unknown Being',
+        timestamp: new Date().toISOString(),
+        type: 'ces_change_request',
+        status: 'pending',
+        profileRef: {
+            id: profile?.id || null,
+            cesNumber: String(profile?.cesNumber || '').trim() || null,
+        },
+        currentCesNumber: String(profile?.cesNumber || '').trim() || '',
+        requestedCesNumber: String(requestedCesNumber || '').trim(),
+        message: `${profile?.name || 'A being'} requested a C.E.S. number change from ${profile?.cesNumber || '—'} to ${requestedCesNumber}.`,
+        resolvedAt: null,
+        resolvedBy: '',
+    };
+}
 function renderSecuritySettings() {
     renderAuthorizedList();
+    renderPendingCesChangeRequests();
     renderSecurityLog();
+}
+function renderPendingCesChangeRequests() {
+    const el = document.getElementById('pendingCesChangeRequests');
+    if (!el)
+        return;
+    const requests = getSecurityLogEntries().filter(entry => entry?.type === 'ces_change_request' && entry?.status === 'pending');
+    if (!requests.length) {
+        el.innerHTML = '<div class="admin-empty" style="padding:1rem">No C.E.S. number changes are awaiting Steward approval.</div>';
+        return;
+    }
+    el.innerHTML = requests.map(entry => {
+        const profile = getAllCESProfiles().find(item => profileMatchesReference(item, entry?.profileRef || {}));
+        const availabilityNow = isCESNumberAvailable(entry.requestedCesNumber, entry.profileRef || {}, entry.id);
+        return `<div style="padding:0.95rem 1rem;border-radius:0.8rem;border:1px solid rgba(212,184,48,0.2);background:rgba(212,184,48,0.05);margin-bottom:0.7rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div>
+          <div style="font-size:0.86rem;color:var(--cream);font-family:'Alice',serif;margin-bottom:0.25rem">${escapeHtml(entry.stewardName || 'Unknown Being')}</div>
+          <div style="font-size:0.72rem;color:rgba(240,232,213,0.72);font-family:'Atkinson Hyperlegible',sans-serif;line-height:1.6">
+            Current C.E.S.: ${escapeHtml(entry.currentCesNumber || '—')}<br>
+            Requested C.E.S.: ${escapeHtml(entry.requestedCesNumber || '—')}<br>
+            Status now: <span style="color:${availabilityNow ? '#d4b830' : '#e8a0a0'}">${availabilityNow ? 'Available for approval' : 'No longer available'}</span>
+          </div>
+          ${profile ? `<div style="font-size:0.65rem;color:rgba(200,146,42,0.45);font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;margin-top:0.3rem">Profile ID: ${escapeHtml(String(profile.id || '—'))}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          <button class="admin-btn-accept" onclick="approveCesChangeRequest('${entry.id}')">Approve C.E.S.</button>
+          <button class="admin-btn-return" onclick="declineCesChangeRequest('${entry.id}')">Decline</button>
+        </div>
+      </div>
+    </div>`;
+    }).join('');
 }
 function renderAuthorizedList() {
     const list = document.getElementById('authorizedList');
@@ -4624,17 +5424,22 @@ function renderSecurityLog() {
     const el = document.getElementById('securityLog');
     if (!el)
         return;
-    const log = getStorage('securityLog', []);
+    const log = getStorage('securityLog', []).filter(entry => !(entry?.type === 'ces_change_request' && entry?.status === 'pending'));
     if (!log.length) {
-        el.innerHTML = '<div class="admin-empty" style="padding:1rem">The field is clear. No security events recorded.</div>';
+        el.innerHTML = '<div class="admin-empty" style="padding:1rem">The field is clear. No Steward activity has been recorded.</div>';
         return;
     }
     el.innerHTML = log.map(entry => {
         const date = new Date(entry.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        const detailLine = entry?.type === 'profile_update' && Array.isArray(entry?.changes) && entry.changes.length
+            ? `Updated fields: ${entry.changes.join(', ')}`
+            : entry?.type === 'ces_change_request'
+                ? `C.E.S. change ${entry.status === 'approved' ? 'approved' : 'declined'} · ${entry.currentCesNumber || '—'} → ${entry.requestedCesNumber || '—'}${entry.resolvedBy ? ` · ${entry.resolvedBy}` : ''}`
+                : `CES: ${entry.cesEncrypted} &nbsp;·&nbsp; ${entry.stewardName}`;
         return `<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:0.7rem 1rem;border-radius:0.65rem;background:rgba(201,64,64,0.04);border:1px solid rgba(201,64,64,0.15);margin-bottom:0.45rem;gap:1rem">
       <div>
         <div style="font-size:0.78rem;color:rgba(240,232,213,0.7);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.2rem">${entry.message}</div>
-        <div style="font-size:0.65rem;color:rgba(200,146,42,0.45);font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em">CES: ${entry.cesEncrypted} &nbsp;·&nbsp; ${entry.stewardName}</div>
+        <div style="font-size:0.65rem;color:rgba(200,146,42,0.45);font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em">${detailLine}</div>
       </div>
       <div style="font-size:0.65rem;color:rgba(240,232,213,0.3);white-space:nowrap;font-family:'Atkinson Hyperlegible',sans-serif">${date}</div>
     </div>`;
@@ -4647,6 +5452,76 @@ function renderSecurityLog() {
       <button onclick="unlockGate()" style="padding:0.35rem 0.9rem;border-radius:2rem;border:1px solid rgba(58,155,111,0.4);background:rgba(58,155,111,0.07);color:#7dd9a8;font-size:0.72rem;cursor:pointer;font-family:'Atkinson Hyperlegible',sans-serif;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;transition:all 0.2s" onmouseover="this.style.background='rgba(58,155,111,0.18)'" onmouseout="this.style.background='rgba(58,155,111,0.07)'">Unlock Gate</button>
     </div>`;
     }
+}
+function approveCesChangeRequest(id) {
+    const log = getSecurityLogEntries();
+    const idx = log.findIndex(entry => String(entry?.id) === String(id));
+    if (idx < 0)
+        return;
+    const request = log[idx];
+    if (request?.type !== 'ces_change_request' || request?.status !== 'pending')
+        return;
+    const profileLists = ['pending', 'approved', 'returned'];
+    let updatedProfile = null;
+    let handled = false;
+    if (!isCESNumberAvailable(request.requestedCesNumber, request.profileRef || {}, request.id)) {
+        alert('That requested C.E.S. number is no longer available.');
+        return;
+    }
+    profileLists.forEach(key => {
+        if (handled)
+            return;
+        const list = getStorage(key, []);
+        const profileIndex = list.findIndex(profile => profileMatchesReference(profile, request.profileRef || {}));
+        if (profileIndex < 0)
+            return;
+        const profile = normalizeCreatorRecord(list[profileIndex]);
+        updatedProfile = {
+            ...profile,
+            cesNumber: request.requestedCesNumber,
+            updatedAt: new Date().toISOString(),
+        };
+        list[profileIndex] = { ...list[profileIndex], ...updatedProfile };
+        setStorage(key, list);
+        handled = true;
+    });
+    if (!handled || !updatedProfile) {
+        alert('That profile could not be found.');
+        return;
+    }
+    log[idx] = {
+        ...request,
+        status: 'approved',
+        resolvedAt: new Date().toISOString(),
+        resolvedBy: getActiveStewardName(),
+        message: `${request.stewardName || 'A being'} received Steward approval for C.E.S. ${request.requestedCesNumber}.`,
+    };
+    setStorage('securityLog', log);
+    syncCurrentUserProfile(updatedProfile);
+    renderSecuritySettings();
+    renderPendingList();
+    renderApprovedList();
+    renderReturnedList();
+    renderDirectory();
+    renderProfileCorner();
+}
+function declineCesChangeRequest(id) {
+    const log = getSecurityLogEntries();
+    const idx = log.findIndex(entry => String(entry?.id) === String(id));
+    if (idx < 0)
+        return;
+    const request = log[idx];
+    if (request?.type !== 'ces_change_request' || request?.status !== 'pending')
+        return;
+    log[idx] = {
+        ...request,
+        status: 'declined',
+        resolvedAt: new Date().toISOString(),
+        resolvedBy: getActiveStewardName(),
+        message: `${request.stewardName || 'A being'} had their requested C.E.S. number change declined by Steward review.`,
+    };
+    setStorage('securityLog', log);
+    renderSecuritySettings();
 }
 function unlockGate() {
     setStorage('gateLockout', { locked: false });
@@ -4787,8 +5662,12 @@ function updateCESNumberPreview() {
     const status = document.getElementById('cesNumberStatus');
     if (!input || !status)
         return;
-    const val = input.value;
+    const val = input.value.trim();
     const quadRepeat = /(\d)\1{3}/.test(val);
+    const currentUser = getCurrentUser();
+    const currentCes = String(currentUser?.cesNumber || '').trim();
+    const pendingChangeRequest = currentUser ? getPendingCesChangeRequestForProfile(currentUser) : null;
+    const pendingRequestedCes = String(pendingChangeRequest?.requestedCesNumber || '').trim();
     if (val.length === 0) {
         status.textContent = '';
     }
@@ -4801,16 +5680,38 @@ function updateCESNumberPreview() {
         status.textContent = (9 - val.length) + ' digit' + (9 - val.length === 1 ? '' : 's') + ' remaining';
     }
     else if (val.length === 9) {
-        status.style.color = 'rgba(58,155,111,0.8)';
-        status.textContent = '\u2713 C.E.S. number complete';
+        if (currentUser && val === currentCes) {
+            status.style.color = 'rgba(58,155,111,0.8)';
+            status.textContent = '\u2713 Your current approved C.E.S. number';
+        }
+        else if (currentUser && pendingRequestedCes && val === pendingRequestedCes) {
+            status.style.color = 'rgba(212,184,48,0.88)';
+            status.textContent = '\u23f3 This C.E.S. number change is awaiting Steward approval';
+        }
+        else if (isCESNumberAvailable(val, currentUser, pendingChangeRequest?.id || '')) {
+            status.style.color = currentUser ? 'rgba(212,184,48,0.88)' : 'rgba(58,155,111,0.8)';
+            status.textContent = currentUser
+                ? '\u2713 Available. Submit to request Steward approval for this C.E.S. number change.'
+                : '\u2713 C.E.S. number available';
+        }
+        else {
+            status.style.color = '#e8a0a0';
+            status.textContent = '\u2726 This C.E.S. number is already holding space for another profile or request';
+        }
     }
     updateSubmitBtn();
 }
 function generateCESNumberValue() {
-    const used = new Set(['pending', 'approved', 'returned']
-        .flatMap(key => getStorage(key, []))
+    const used = new Set(getAllCESProfiles()
         .map(profile => String(profile?.cesNumber || profile?.ces || profile?.cesPlain || '').trim())
         .filter(Boolean));
+    getSecurityLogEntries()
+        .filter(entry => entry?.type === 'ces_change_request' && entry?.status === 'pending')
+        .forEach(entry => {
+        const requested = String(entry?.requestedCesNumber || '').trim();
+        if (requested)
+            used.add(requested);
+    });
     for (let attempt = 0; attempt < 200; attempt++) {
         let value = '';
         while (value.length < 9) {
@@ -4919,6 +5820,7 @@ function signOutUser() {
     if (!confirm('Sign out of your C.E.S. session?'))
         return;
     clearCurrentUser();
+    renderSubmitStewardAlerts(null);
     renderProfileCorner();
     setView('directory', document.querySelector('nav button'));
 }
