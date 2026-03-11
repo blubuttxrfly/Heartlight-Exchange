@@ -50,7 +50,14 @@
     .join-cta { background: rgba(200,146,42,0.04) !important; }
     .oath-block { background: rgba(58,155,111,0.06) !important; }
     .form-section-hint, .card-title, .card-location, .preview-title-text, .preview-loc { color: #8a7f6e !important; }
-    nav button { color: #8a7f6e !important; }
+    nav button { color: rgba(240,232,213,0.86) !important; }
+    nav button:hover,
+    nav button.active,
+    nav button:focus-visible {
+      background: rgba(200,146,42,0.12) !important;
+      border-color: var(--orichalcum) !important;
+      color: var(--orichalcum-light) !important;
+    }
     .site-subtitle, .section-sub { color: #8a7f6e !important; }
     footer, footer span { color: rgba(138,127,110,0.5) !important; }
     .search-input { background: rgba(255,255,255,0.05) !important; color: #f0e8d5 !important; }
@@ -86,10 +93,23 @@
     }
     .site-title { font-size: 1.9rem; }
     nav { gap: 0; padding: 0.7rem 0 0; }
-    nav button { font-size: 0.65rem; padding: 0.35rem 0.7rem; }
+    nav button {
+      font-size: 0.69rem;
+      line-height: 1.25;
+      padding: 0.4rem 0.75rem;
+      color: rgba(240,232,213,0.94);
+      text-shadow: 0 1px 10px rgba(6,5,15,0.35);
+    }
+    nav button.active,
+    nav button:focus-visible {
+      background: rgba(200,146,42,0.16);
+      border-color: var(--orichalcum);
+      color: var(--orichalcum-light);
+      box-shadow: 0 0 0 1px rgba(200,146,42,0.18);
+    }
     .nav-primary { gap: 0.35rem; padding-bottom: 0.5rem; }
     .nav-secondary { gap: 0.3rem; padding: 0.45rem 0.6rem 0.65rem; }
-    .nav-btn-primary { font-size: 0.72rem !important; padding: 0.42rem 0.9rem !important; }
+    .nav-btn-primary { font-size: 0.75rem !important; padding: 0.46rem 0.94rem !important; }
     .directory-grid { grid-template-columns: 1fr; }
     .directory-filter-grid { grid-template-columns: 1fr; }
     .directory-filter-toggle { align-items: flex-start; }
