@@ -775,6 +775,8 @@
   .contact-method-actions {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 0.45rem;
     flex-shrink: 0;
   }
@@ -1383,7 +1385,7 @@
 
 <!-- EXCHANGE AGREEMENT MODAL -->
 <div class="modal-overlay" id="agreementOverlay" onclick="closeAgreementOutside(event)" style="z-index:200">
-  <div class="modal" id="agreementModal" style="max-width:660px">
+  <div class="modal" id="agreementModal" style="max-width:760px">
     <div class="modal-ray-bar" id="agreementRayBar" style="background:linear-gradient(90deg,#c8922a,#3a9b6f,transparent)"></div>
     <button class="modal-close" onclick="closeAgreement()">✕</button>
     <div id="agreementContent">
@@ -2180,13 +2182,34 @@
             </div>
           </div>
           <div style="margin-top:1rem;padding:0.95rem 1rem;border-radius:0.9rem;border:1px solid rgba(200,146,42,0.16);background:rgba(255,255,255,0.03)">
-            <label style="display:flex;align-items:flex-start;gap:0.7rem;cursor:pointer">
-              <input type="checkbox" id="f_contact_public" onchange="updatePreview()" style="margin-top:0.2rem;accent-color:#c8922a">
-              <span>
-                <span style="display:block;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.25rem">Public On Directory</span>
-                <span style="display:block;font-size:0.82rem;line-height:1.65;color:rgba(240,232,213,0.75)">Turn this on to make your saved socials and contact paths visible on your public Directory card and signature modal. Leave it off to keep them private until you share them through a direct co-creator connection.</span>
-              </span>
-            </label>
+            <div style="display:block;font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.25rem">Public On Directory</div>
+            <span style="display:block;font-size:0.82rem;line-height:1.65;color:rgba(240,232,213,0.75)">Choose exactly which saved socials and communication paths appear on your public Directory card and signature modal. Unchecked channels stay private until you share them directly through a co-creator connection.</span>
+            <div class="field-grid-3" style="margin-top:0.9rem">
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;color:rgba(240,232,213,0.86)">
+                <input type="checkbox" id="f_contact_public_instagram" onchange="updatePreview()" style="accent-color:#c8922a">
+                Instagram
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;color:rgba(240,232,213,0.86)">
+                <input type="checkbox" id="f_contact_public_email" onchange="updatePreview()" style="accent-color:#c8922a">
+                Email
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;color:rgba(240,232,213,0.86)">
+                <input type="checkbox" id="f_contact_public_phone" onchange="updatePreview()" style="accent-color:#c8922a">
+                Phone
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;color:rgba(240,232,213,0.86)">
+                <input type="checkbox" id="f_contact_public_discord" onchange="updatePreview()" style="accent-color:#c8922a">
+                Discord
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;color:rgba(240,232,213,0.86)">
+                <input type="checkbox" id="f_contact_public_signal" onchange="updatePreview()" style="accent-color:#c8922a">
+                Signal
+              </label>
+              <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-size:0.78rem;color:rgba(240,232,213,0.86)">
+                <input type="checkbox" id="f_contact_public_whatsapp" onchange="updatePreview()" style="accent-color:#c8922a">
+                WhatsApp
+              </label>
+            </div>
           </div>
           <div style="margin-top:1rem">
             <label class="field-label">Photo & Video Portfolio</label>
@@ -2316,6 +2339,14 @@
   <!-- WISH PORTAL VIEW -->
   <div id="view-wish" style="display:none">
     <style>
+      .wish-cast-overlay .modal {
+        max-width: 1180px;
+        padding: 2rem;
+        max-height: 92vh;
+      }
+      .wish-cast-overlay .modal-close {
+        z-index: 2;
+      }
       .wish-form-wrap {
         display: grid;
         grid-template-columns: 1fr 360px;
@@ -2686,16 +2717,19 @@
       }
     </style>
 
-    <div style="max-width:900px;margin:0 auto">
+    <div id="wishCastSection" class="modal-overlay wish-cast-overlay" onclick="closeWishCastSectionOutside(event)" style="z-index:220">
+      <div class="modal" style="max-width:1180px">
+      <button class="modal-close" onclick="closeWishCastSection()">✕</button>
+      <div style="max-width:900px;margin:0 auto">
       <div class="section-heading">🪙 The Wishing Well</div>
       <p class="section-sub">Cast a wish into the well, then explore the field of active wishes below.</p>
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:1rem 1.2rem;border:1px solid rgba(42,179,196,0.2);border-radius:14px;background:rgba(42,179,196,0.05);margin-bottom:2rem">
         <div>
           <div style="font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;color:#7dd8e4;margin-bottom:0.35rem">For Co-Creator Beings</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.98rem;color:rgba(240,232,213,0.8);line-height:1.7">The Wish Field lives just below, woven directly into the Wishing Well so beings can cast wishes and answer them in one place.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.98rem;color:rgba(240,232,213,0.8);line-height:1.7">The Wishing Well lives just below, woven directly into this space so beings can cast wishes and answer them in one place.</div>
         </div>
-        <button onclick="document.getElementById('wishFieldSection').scrollIntoView({behavior:'smooth',block:'start'})" style="padding:0.7rem 1.45rem;border-radius:999px;border:1px solid rgba(42,179,196,0.45);background:rgba(42,179,196,0.1);color:#7dd8e4;font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.25s;white-space:nowrap" onmouseover="this.style.background='rgba(42,179,196,0.18)'" onmouseout="this.style.background='rgba(42,179,196,0.1)'">✨ Explore The Wish Field</button>
+        <button onclick="closeWishCastSection()" style="padding:0.7rem 1.45rem;border-radius:999px;border:1px solid rgba(42,179,196,0.45);background:rgba(42,179,196,0.1);color:#7dd8e4;font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.25s;white-space:nowrap" onmouseover="this.style.background='rgba(42,179,196,0.18)'" onmouseout="this.style.background='rgba(42,179,196,0.1)'">✨ Return to the Wishing Well</button>
       </div>
 
       <div class="wish-form-wrap">
@@ -2845,7 +2879,7 @@
           </div>
 
           <button class="wish-submit-btn" id="wishSubmitBtn" onclick="submitWish()">🪙 Cast My Wish Into The Well</button>
-          <p style="text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.82rem;color:var(--muted);margin-top:0.75rem">A Co-Creator who feels your resonance will respond. When alignment is felt, a Seasonal Co-Creation Agreement will be offered.</p>
+          <p style="text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.82rem;color:var(--muted);margin-top:0.75rem">A Co-Creator who feels your resonance will respond. When alignment is felt, a Heartlight Exchange Agreement will be offered.</p>
 
           <!-- WHAT HAPPENS NEXT -->
           <div style="margin-top:2.5rem">
@@ -2861,9 +2895,9 @@
               <div style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
                 <span style="font-size:1.4rem;flex-shrink:0">📜</span>
                 <div>
-                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.78rem;font-weight:700;color:var(--cream);margin-bottom:0.25rem;letter-spacing:0.04em">SEASONAL CO-CREATION AGREEMENT</div>
+                  <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.78rem;font-weight:700;color:var(--cream);margin-bottom:0.25rem;letter-spacing:0.04em">HEARTLIGHT EXCHANGE AGREEMENT</div>
                   <div style="font-size:0.82rem;color:rgba(240,232,213,0.65);line-height:1.6">Once resonance is felt, a living agreement is co-created between you and the Co-Creator — scope, exchange pathway, seasonal milestones, and a closing blessing. Both beings sign with intention.</div>
-                  <button onclick="openAgreementModal()" style="margin-top:0.6rem;padding:0.35rem 0.9rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:transparent;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.08)'" onmouseout="this.style.background='transparent'">View Agreement Template →</button>
+                  <button onclick="openHeartlightAgreementTemplate()" style="margin-top:0.6rem;padding:0.35rem 0.9rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:transparent;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.08)'" onmouseout="this.style.background='transparent'">View Heartlight Exchange Agreement →</button>
                 </div>
               </div>
               <div style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
@@ -2909,6 +2943,8 @@
           </div>
         </div>
 
+      </div>
+      </div>
       </div>
     </div>
   </div>
@@ -2956,7 +2992,7 @@
       }
       .wish-field-title {
         font-family: 'Alice', serif;
-        font-size: clamp(2.6rem, 5vw, 3.65rem);
+        font-size: clamp(1.8rem, 3.2vw, 2.45rem);
         color: var(--cream);
         margin-bottom: 0.55rem;
       }
@@ -3277,10 +3313,12 @@
     <div class="wish-field-wrap" id="wishFieldSection">
       <div class="wish-field-hero">
         <div class="wish-field-hero-inner">
-          <div class="wish-field-eyebrow">✨ Inside The Wishing Well</div>
-          <div class="wish-field-title">The Wish Field</div>
+          <div class="wish-field-title">The Wishing Well</div>
           <div class="wish-field-sub">Let's grant our wishes. ✨</div>
           <div class="wish-field-copy">This is the active constellation of wishes offered through the Wishing Well. Filter by wish type, heart theme, and ray resonance to find the calls that match your gifts. Roles can welcome many beings at once, so one wish may gather a whole circle of co-creators.</div>
+          <div style="display:flex;justify-content:flex-start;flex-wrap:wrap;gap:0.75rem;margin:0 0 1.5rem">
+            <button onclick="openWishCastSection()" style="padding:0.75rem 1.45rem;border-radius:999px;border:1px solid rgba(200,146,42,0.45);background:rgba(200,146,42,0.12);color:var(--orichalcum-pale);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.25s;white-space:nowrap" onmouseover="this.style.background='rgba(200,146,42,0.2)'" onmouseout="this.style.background='rgba(200,146,42,0.12)'">Cast a Wish 💫</button>
+          </div>
           <div class="wish-field-stats">
             <div class="wish-field-stat">
               <div class="wish-field-stat-label">Awaiting Wishes</div>
@@ -3307,6 +3345,10 @@
           <div class="wish-field-filter-group">
             <div class="wish-field-filter-label">Wish Type</div>
             <div class="wish-field-filter-row" id="wishFieldTypeFilters"></div>
+          </div>
+          <div class="wish-field-filter-group">
+            <div class="wish-field-filter-label">Role</div>
+            <div class="wish-field-filter-row" id="wishFieldRoleFilters"></div>
           </div>
           <div class="wish-field-filter-group">
             <div class="wish-field-filter-label">Heart Theme</div>
@@ -3808,7 +3850,7 @@
             <div class="privacy-phase-label">Before the Exchange</div>
             <div class="privacy-phase-title">Consent Opens the Door</div>
             <div class="privacy-phase-body">
-              A wish enters the Heartlight Exchange as a sacred letter. Its contents are held with reverence and shared only with Co-Creators who feel genuine resonance. A Co-Creator reads a wish through the lens of care, and any response they offer is an act of consent, not obligation. No wishing being's story is shared beyond the portal without their explicit agreement. The Seasonal Co-Creation Agreement is established before any creative work begins, so both beings enter with full clarity on what will be made, how it will be shared, and with whom.
+              A wish enters the Heartlight Exchange as a sacred letter. Its contents are held with reverence and shared only with Co-Creators who feel genuine resonance. A Co-Creator reads a wish through the lens of care, and any response they offer is an act of consent, not obligation. No wishing being's story is shared beyond the portal without their explicit agreement. The Heartlight Exchange Agreement is established before any creative work begins, so both beings enter with full clarity on what will be made, how it will be shared, and with whom.
             </div>
             <div class="privacy-pillars">
               <div class="privacy-pillar" style="border-color:rgba(58,155,111,0.25)">
@@ -3835,7 +3877,7 @@
             <div class="privacy-phase-label">During the Exchange</div>
             <div class="privacy-phase-title">The Sacred Container Holds</div>
             <div class="privacy-phase-body">
-              Once a Seasonal Co-Creation Agreement is signed, the exchange lives inside a sacred container shared only by the wishing being and their Co-Creator. Personal stories, wishes, creative details, and the shape of what is being made remain within that container. Neither being shares the work in progress, the personal content of the wish, nor the nature of the exchange without the other's explicit consent. The boundaries established in the Agreement govern all sharing during the creative seasons of Spring, Summer, and Fall.
+              Once a Heartlight Exchange Agreement is signed, the exchange lives inside a sacred container shared only by the wishing being and their Co-Creator. Personal stories, wishes, creative details, and the shape of what is being made remain within that container. Neither being shares the work in progress, the personal content of the wish, nor the nature of the exchange without the other's explicit consent. The boundaries established in the Agreement govern all sharing during the creative seasons of Spring, Summer, and Fall.
             </div>
             <div class="privacy-pillars">
               <div class="privacy-pillar" style="border-color:rgba(212,184,48,0.25)">
@@ -3844,7 +3886,7 @@
               </div>
               <div class="privacy-pillar" style="border-color:rgba(212,184,48,0.25)">
                 <div class="privacy-pillar-name">Agreement Boundaries</div>
-                <div class="privacy-pillar-desc">The Seasonal Co-Creation Agreement names what may be shared and protects what may not.</div>
+                <div class="privacy-pillar-desc">The Heartlight Exchange Agreement names what may be shared and protects what may not.</div>
               </div>
               <div class="privacy-pillar" style="border-color:rgba(212,184,48,0.25)">
                 <div class="privacy-pillar-name">Protective Stewardship</div>
@@ -3887,7 +3929,7 @@
       <div class="privacy-agreement-section">
         <div class="privacy-section-title">📜 Boundaries of the Exchange Agreement</div>
         <div class="privacy-section-body">
-          The Seasonal Co-Creation Agreement is the living boundary holder of the exchange. Within it, both beings name what is protected, what may flow outward, and how the creative work lives in the world once it is complete. These boundaries are sacred agreements, held with the same reverence as any Heartlight vow.
+          The Heartlight Exchange Agreement is the living boundary holder of the exchange. Within it, both beings name what is protected, what may flow outward, and how the creative work lives in the world once it is complete. These boundaries are sacred agreements, held with the same reverence as any Heartlight vow.
         </div>
         <div class="privacy-promise-list">
           <div class="privacy-promise-item">
@@ -4442,117 +4484,6 @@
     </div>
   </div>
 
-  <!-- EXCHANGE AGREEMENT MODAL -->
-  <div class="agreement-modal-overlay" id="agreementOverlay" onclick="closeAgreementOutside(event)">
-    <div class="agreement-modal">
-      <div class="agreement-top-bar"></div>
-      <button class="agreement-close" onclick="closeAgreementModal()">✕</button>
-
-      <div class="agreement-title">📜 Seasonal Co-Creation Agreement</div>
-      <div class="agreement-subtitle">A living vow between a wishing being and their Heartlight Co-Creator</div>
-
-      <div style="margin-bottom:1.4rem">
-        <div class="agreement-field-group">
-          <label class="agreement-field-label">Wishing Being</label>
-          <input class="agreement-field-value" type="text" placeholder="Name / pronouns / time zone">
-        </div>
-      </div>
-
-      <div style="margin-bottom:1.4rem">
-        <label class="agreement-field-label" style="display:block;margin-bottom:0.6rem">Co-Creator Roles in This Exchange</label>
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.84rem;color:rgba(240,232,213,0.55);margin-bottom:0.8rem">The wishing being defines the roles. Each role may hold one or many Co-Creator beings.</div>
-        <div id="agreementRolesList" style="display:grid;gap:0.65rem">
-          <div class="agreement-role-row">
-            <input class="agreement-field-value" type="text" placeholder="Role name (e.g. Sound Weaver, Visual Artist…)" style="margin-bottom:0.4rem">
-            <input class="agreement-field-value" type="text" placeholder="Co-Creator(s) in this role — name / pronouns / time zone">
-          </div>
-        </div>
-        <button onclick="addAgreementRole()" style="margin-top:0.65rem;padding:0.4rem 0.9rem;border-radius:2rem;border:1px dashed rgba(200,146,42,0.35);background:transparent;color:rgba(200,146,42,0.7);font-size:0.72rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;font-family:'Atkinson Hyperlegible',sans-serif;transition:all 0.2s" onmouseover="this.style.borderColor='var(--orichalcum)';this.style.color='var(--orichalcum)'" onmouseout="this.style.borderColor='rgba(200,146,42,0.35)';this.style.color='rgba(200,146,42,0.7)'">+ Add Another Role</button>
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">Portal Timeline</label>
-        <input class="agreement-field-value" type="text" value="Spring Seed begin → Summer Bloom form → Fall Harvest exchange" readonly style="opacity:0.75;font-style:italic;font-family:'Cormorant Garamond',serif">
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">Scope — What Is Being Co-Created</label>
-        <textarea class="agreement-field-value italic-val" rows="3" placeholder="Describe in resonant, clear language what will be created together…"></textarea>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem">
-        <div>
-          <label class="agreement-field-label">Format</label>
-          <select class="agreement-field-value" style="background:rgba(15,12,25,0.9)">
-            <option>Digital</option>
-            <option>Physical</option>
-            <option>Both digital & physical</option>
-          </select>
-        </div>
-        <div>
-          <label class="agreement-field-label">Exchange Pathway</label>
-          <select class="agreement-field-value" style="background:rgba(15,12,25,0.9)">
-            <option>Currency (fixed price)</option>
-            <option>Currency (sliding scale)</option>
-            <option>Value exchange (trade / skill swap)</option>
-            <option>Gift exchange</option>
-            <option>Scholarship exchange</option>
-          </select>
-        </div>
-      </div>
-
-      <div style="font-family:'Alice',serif;font-size:0.9rem;color:var(--orichalcum-pale);margin-bottom:0.8rem">🌱🌞🍂 Sacred Milestones</div>
-      <div class="milestone-grid">
-        <div class="milestone-card">
-          <div class="milestone-season">🌱</div>
-          <div class="milestone-label">Spring Seed</div>
-          <div class="milestone-sublabel">What begins here</div>
-          <textarea class="agreement-field-value italic-val" rows="3" placeholder="First draft, sketch, session arc, prototype…" style="font-size:0.82rem"></textarea>
-        </div>
-        <div class="milestone-card">
-          <div class="milestone-season">🌞</div>
-          <div class="milestone-label">Summer Bloom</div>
-          <div class="milestone-sublabel">What takes form</div>
-          <textarea class="agreement-field-value italic-val" rows="3" placeholder="Refinement, recording, crafting, shaping…" style="font-size:0.82rem"></textarea>
-        </div>
-        <div class="milestone-card">
-          <div class="milestone-season">🍂</div>
-          <div class="milestone-label">Fall Harvest</div>
-          <div class="milestone-sublabel">What is delivered</div>
-          <textarea class="agreement-field-value italic-val" rows="3" placeholder="Final offering, delivery, exchange completion…" style="font-size:0.82rem"></textarea>
-        </div>
-      </div>
-
-      <div class="adaptability-note">
-        🌀 <strong>Adaptability Clause (Heartlight-Led Growth):</strong> This agreement honors organic unfolding. Either being may propose adjustments to scope, timeline, or form as the co-creation grows — always through open communication, mutual resonance, and the spirit of the Heartlight Exchange Charter.
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">Boundaries & Consent Notes</label>
-        <textarea class="agreement-field-value" rows="2" placeholder="Any boundaries, consent agreements, or care notes for this co-creation…"></textarea>
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">🌸 Closing Blessing — Co-Creator</label>
-        <textarea class="blessing-field" rows="2" placeholder="Speak a closing blessing for this co-creation from your heart…"></textarea>
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">🌸 Closing Blessing — Receiver</label>
-        <textarea class="blessing-field" rows="2" placeholder="And your blessing in return…"></textarea>
-      </div>
-
-      <div style="padding:0.9rem 1.1rem;border-radius:0.6rem;background:rgba(58,155,111,0.05);border:1px solid rgba(58,155,111,0.18);margin-bottom:1.2rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.88rem;color:rgba(240,232,213,0.7);line-height:1.65">
-          💎 <strong>The Codes of Heartlight govern this agreement:</strong> Consent and sovereignty · Kindness and dignity · Cultural respect · Sustainability · Accessibility · Clear communication · Joy, integrity, and sacred play.
-        </div>
-      </div>
-
-      <button class="sign-agreement-btn" onclick="closeAgreementModal()">✦ This Agreement Is a Living Vow — Signed with Intention</button>
-    </div>
-  </div>
-
-
   <!-- CODES OF ALL VIEW -->
   <div id="view-codes" style="display:none">
     <style>
@@ -4930,6 +4861,7 @@ const CONTACT_FIELD_CONFIG = [
   { key: 'signal', label: 'Signal', icon: '◌' },
   { key: 'whatsapp', label: 'WhatsApp', icon: '◍' },
 ];
+const CONTACT_FIELD_KEYS = CONTACT_FIELD_CONFIG.map(field => field.key);
 
 function createEmptyContactMethods() {
   return {
@@ -4942,8 +4874,41 @@ function createEmptyContactMethods() {
   };
 }
 
+function createEmptyContactVisibility() {
+  return {
+    instagram: false,
+    email: false,
+    phone: false,
+    discord: false,
+    signal: false,
+    whatsapp: false,
+  };
+}
+
 function hasAnyContactMethods(contactMethods = {}) {
   return Object.values(contactMethods || {}).some(value => String(value || '').trim());
+}
+
+function normalizeContactVisibility(value, contactMethods = {}, legacyPublicVisibility = false) {
+  const base = createEmptyContactVisibility();
+  let hasExplicitVisibility = false;
+
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    CONTACT_FIELD_KEYS.forEach(key => {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        hasExplicitVisibility = true;
+        base[key] = !!value[key];
+      }
+    });
+  }
+
+  if (!hasExplicitVisibility && legacyPublicVisibility) {
+    CONTACT_FIELD_KEYS.forEach(key => {
+      base[key] = !!String(contactMethods[key] || '').trim();
+    });
+  }
+
+  return base;
 }
 
 function guessLegacyContactMethods(legacyValue) {
@@ -4990,43 +4955,79 @@ function getContactMethodItems(contactMethods = {}) {
         ? normalizeExternalUrl(raw)
         : normalizeExternalUrl(`https://instagram.com/${raw.replace(/^@/, '')}`);
       const handle = raw.replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/$/, '').replace(/^@/, '').split('/')[0];
-      return { ...field, display: `@${handle || raw.replace(/^@/, '')}`, href, copyValue: raw, actionLabel: 'Open' };
+      return {
+        ...field,
+        display: `@${handle || raw.replace(/^@/, '')}`,
+        copyValue: raw,
+        actions: href ? [{ label: 'Open', href }] : [],
+      };
     }
     if (field.key === 'email') {
-      return { ...field, display: raw, href: `mailto:${raw}`, copyValue: raw, actionLabel: 'Email' };
+      return {
+        ...field,
+        display: raw,
+        copyValue: raw,
+        actions: [{ label: 'Email', href: `mailto:${raw}` }],
+      };
     }
     if (field.key === 'phone') {
       const tel = sanitizePhoneNumber(raw, true);
-      return { ...field, display: raw, href: tel ? `tel:${tel}` : '', copyValue: raw, actionLabel: 'Call' };
+      const actions = [];
+      if (tel) actions.push({ label: 'Call', href: `tel:${tel}` });
+      if (tel) actions.push({ label: 'Message', href: `sms:${tel}` });
+      return { ...field, display: raw, copyValue: raw, actions };
     }
     if (field.key === 'signal') {
       const signalNumber = sanitizePhoneNumber(raw, true);
       const href = signalNumber ? `https://signal.me/#p/${encodeURIComponent(signalNumber)}` : '';
-      return { ...field, display: raw, href, copyValue: raw, actionLabel: href ? 'Open' : 'Copy' };
+      return {
+        ...field,
+        display: raw,
+        copyValue: raw,
+        actions: href ? [{ label: 'Open', href }] : [],
+      };
     }
     if (field.key === 'whatsapp') {
       const waNumber = sanitizePhoneNumber(raw, false);
       const href = waNumber ? `https://wa.me/${waNumber}` : '';
-      return { ...field, display: raw, href, copyValue: raw, actionLabel: href ? 'Open' : 'Copy' };
+      return {
+        ...field,
+        display: raw,
+        copyValue: raw,
+        actions: href ? [{ label: 'Open', href }] : [],
+      };
     }
 
-    return { ...field, display: raw, href: '', copyValue: raw, actionLabel: 'Copy' };
+    return { ...field, display: raw, copyValue: raw, actions: [] };
   }).filter(Boolean);
+}
+
+function getPublicContactMethodItems(contactMethods = {}, contactVisibility = {}) {
+  const normalizedVisibility = normalizeContactVisibility(contactVisibility, contactMethods);
+  return getContactMethodItems(contactMethods).filter(item => normalizedVisibility[item.key]);
+}
+
+function getPublicContactVisibilitySummary(contactMethods = {}, contactVisibility = {}) {
+  const labels = getPublicContactMethodItems(contactMethods, contactVisibility).map(item => item.label);
+  return labels.length ? labels.join(', ') : 'Private until shared through a co-creator connection';
 }
 
 function renderContactMethodGrid(contactMethods = {}, options = {}) {
   const items = getContactMethodItems(contactMethods);
   if (!items.length) return options.emptyHtml || '';
   return `<div class="contact-method-grid">${items.map(item => {
-    const anchorAttrs = item.href && /^https?:/i.test(item.href)
-      ? ' target="_blank" rel="noreferrer noopener"'
-      : '';
+    const actionButtons = (item.actions || []).map(action => {
+      const anchorAttrs = action.href && /^https?:/i.test(action.href)
+        ? ' target="_blank" rel="noreferrer noopener"'
+        : '';
+      return `<a class="contact-action-btn" href="${escapeHtml(action.href)}"${anchorAttrs}>${escapeHtml(action.label)}</a>`;
+    }).join('');
     return `
       <div class="contact-method-card">
         <div class="contact-method-head">
           <div class="contact-method-label">${escapeHtml(item.icon)} ${escapeHtml(item.label)}</div>
           <div class="contact-method-actions">
-            ${item.href ? `<a class="contact-action-btn" href="${escapeHtml(item.href)}"${anchorAttrs}>${escapeHtml(item.actionLabel)}</a>` : ''}
+            ${actionButtons}
             <button type="button" class="contact-action-btn subtle" onclick="copyContactValue('${escapeJsString(item.copyValue)}', '${escapeJsString(item.label)}')">Copy</button>
           </div>
         </div>
@@ -5038,7 +5039,7 @@ function renderContactMethodGrid(contactMethods = {}, options = {}) {
 
 function renderContactPathChips(contactMethods = {}) {
   const items = getContactMethodItems(contactMethods);
-  if (!items.length) return '<span class="preview-chip" style="opacity:0.4;font-style:italic">No contact channels shared yet</span>';
+  if (!items.length) return '<span class="preview-chip" style="opacity:0.4;font-style:italic">No public contact channels selected yet</span>';
   return items.map(item => `<span class="contact-path-chip">${escapeHtml(item.label)}</span>`).join('');
 }
 
@@ -5107,12 +5108,14 @@ function getSelectedSharedContactMethods() {
 
 function renderContactShareSelector(contactMethods = {}) {
   const items = getContactMethodItems(contactMethods);
+  const selectedMethods = arguments[1] || {};
   if (!items.length) {
     return `<div class="contact-form-note">Add at least one contact path to your own Core Energetic Signature before sharing it in a co-creator connection.</div>`;
   }
+  const selectedKeys = Object.keys(selectedMethods).filter(key => !!selectedMethods[key]);
   return `<div class="share-selector-grid">${items.map((item, index) => `
     <div class="share-selector-card">
-      <input type="checkbox" id="share_contact_${item.key}" ${index === 0 ? 'checked' : ''}>
+      <input type="checkbox" id="share_contact_${item.key}" ${selectedKeys.length ? (selectedKeys.includes(item.key) ? 'checked' : '') : (index === 0 ? 'checked' : '')}>
       <label for="share_contact_${item.key}">
         <div class="share-selector-label">
           <span>${escapeHtml(item.label)}</span>
@@ -5185,6 +5188,130 @@ function renderProfileConnectionsSection(profile = {}) {
   `;
 }
 
+const AGREEMENT_STORAGE_KEY = 'agreements';
+let activeHeartlightAgreementContext = null;
+
+function buildProfileIdentityLine(profile = {}) {
+  return [profile.name, profile.pronouns, profile.location].filter(Boolean).join(' · ');
+}
+
+function createEmptyAgreementRole() {
+  return { label: '', beings: '' };
+}
+
+function normalizeAgreementRoles(value) {
+  const roles = Array.isArray(value) ? value : [];
+  const normalized = roles.map(role => ({
+    label: String(role?.label || '').trim(),
+    beings: String(role?.beings || '').trim(),
+  })).filter(role => role.label || role.beings);
+  return normalized.length ? normalized : [createEmptyAgreementRole()];
+}
+
+function normalizeAgreementRecord(record = {}) {
+  return {
+    id: record.id || `agreement_${Date.now()}`,
+    sourceType: record.sourceType || 'template',
+    sourceWishId: record.sourceWishId || null,
+    sourceWishName: record.sourceWishName || '',
+    status: record.status === 'signed' ? 'signed' : 'draft',
+    wishingProfileId: record.wishingProfileId || '',
+    wishingCES: record.wishingCES || '',
+    wishingName: String(record.wishingName || '').trim(),
+    coCreatorProfileId: record.coCreatorProfileId || '',
+    coCreatorCES: record.coCreatorCES || '',
+    coCreatorName: String(record.coCreatorName || '').trim(),
+    roles: normalizeAgreementRoles(record.roles),
+    portalTimeline: String(record.portalTimeline || 'Spring Seed begin → Summer Bloom form → Fall Harvest exchange').trim(),
+    scope: String(record.scope || '').trim(),
+    format: String(record.format || 'Digital').trim(),
+    exchangePathway: String(record.exchangePathway || 'Gift exchange').trim(),
+    springMilestone: String(record.springMilestone || '').trim(),
+    summerMilestone: String(record.summerMilestone || '').trim(),
+    fallMilestone: String(record.fallMilestone || '').trim(),
+    openingNote: String(record.openingNote || '').trim(),
+    replyPreference: String(record.replyPreference || '').trim(),
+    boundaries: String(record.boundaries || '').trim(),
+    coCreatorBlessing: String(record.coCreatorBlessing || '').trim(),
+    receiverBlessing: String(record.receiverBlessing || '').trim(),
+    sharedContactMethods: normalizeContactMethods(record.sharedContactMethods),
+    createdAt: record.createdAt || new Date().toISOString(),
+    updatedAt: record.updatedAt || record.createdAt || new Date().toISOString(),
+    signedAt: record.status === 'signed' ? (record.signedAt || record.updatedAt || new Date().toISOString()) : null,
+  };
+}
+
+function getAllAgreements() {
+  return getStorage(AGREEMENT_STORAGE_KEY, []).map(normalizeAgreementRecord);
+}
+
+function getAgreementById(id) {
+  return getAllAgreements().find(entry => entry.id === id) || null;
+}
+
+function agreementMatchesProfile(agreement = {}, profile = {}) {
+  const match = getProfileConnectionMatch(profile);
+  return (
+    (match.id && (String(agreement.wishingProfileId || '') === match.id || String(agreement.coCreatorProfileId || '') === match.id)) ||
+    (match.cesNumber && (String(agreement.wishingCES || '') === match.cesNumber || String(agreement.coCreatorCES || '') === match.cesNumber))
+  );
+}
+
+function getProfileAgreements(profile = {}) {
+  return getAllAgreements()
+    .filter(entry => agreementMatchesProfile(entry, profile))
+    .sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+}
+
+function getAgreementCounterparty(agreement = {}, profile = {}) {
+  const match = getProfileConnectionMatch(profile);
+  const isWishingBeing = (match.id && String(agreement.wishingProfileId || '') === match.id) || (match.cesNumber && String(agreement.wishingCES || '') === match.cesNumber);
+  return isWishingBeing ? (agreement.coCreatorName || 'Unnamed Co-Creator') : (agreement.wishingName || 'Unnamed Wishing Being');
+}
+
+function getAgreementStatusMarkup(agreement = {}) {
+  const signed = agreement.status === 'signed';
+  const label = signed ? 'Signed With Intention' : 'Draft Agreement';
+  const borderColor = signed ? 'rgba(58,155,111,0.32)' : 'rgba(200,146,42,0.28)';
+  const background = signed ? 'rgba(58,155,111,0.12)' : 'rgba(200,146,42,0.12)';
+  const color = signed ? '#97dfb4' : 'var(--orichalcum-light)';
+  return `<span style="display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:999px;border:1px solid ${borderColor};background:${background};color:${color};font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;font-family:'Atkinson Hyperlegible',sans-serif">${escapeHtml(label)}</span>`;
+}
+
+function renderProfileAgreementsSection(profile = {}) {
+  const agreements = getProfileAgreements(profile);
+  return `
+    <div class="profile-modal-section">
+      <div class="profile-modal-label">Heartlight Exchange Agreements</div>
+      <div class="profile-modal-value" style="margin-bottom:0.9rem">These living agreements hold the scope, exchange pathway, seasonal milestones, consent notes, and blessings for your co-creations.</div>
+      ${agreements.length ? `<div class="connection-request-list">${agreements.map(agreement => `
+        <div class="connection-request-card">
+          <div class="connection-request-meta">
+            <div>
+              <div class="connection-request-title">${escapeHtml(getAgreementCounterparty(agreement, profile))}</div>
+              <div class="connection-request-sub">${escapeHtml(agreement.scope || 'Scope still being woven.')} </div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+              ${getAgreementStatusMarkup(agreement)}
+              <div class="connection-request-time">${escapeHtml(formatConnectionTimestamp(agreement.updatedAt) || '')}</div>
+            </div>
+          </div>
+          ${agreement.sourceWishName ? `<div class="portfolio-link-line" style="margin-bottom:0.45rem">Originating wish: ${escapeHtml(agreement.sourceWishName)}</div>` : ''}
+          <div class="portfolio-link-line" style="margin-bottom:0.45rem">Seasonal milestones: ${escapeHtml([agreement.springMilestone, agreement.summerMilestone, agreement.fallMilestone].filter(Boolean).join(' · ') || 'Still taking form')}</div>
+          ${agreement.openingNote ? `<div class="connection-request-message">${escapeHtml(agreement.openingNote)}</div>` : ''}
+          ${hasAnyContactMethods(agreement.sharedContactMethods) ? `
+            <div class="profile-modal-label" style="margin:0.75rem 0 0.45rem">Shared Contact Paths</div>
+            ${renderContactMethodGrid(agreement.sharedContactMethods)}
+          ` : ''}
+          <div style="margin-top:0.85rem">
+            <button type="button" class="contact-action-btn" onclick="closeProfileModal();setTimeout(()=>openSavedHeartlightAgreement('${escapeJsString(agreement.id)}'),80)">Open Agreement</button>
+          </div>
+        </div>
+      `).join('')}</div>` : `<div class="my-wishes-empty">No Heartlight Exchange Agreements have been saved for this Core Energetic Signature yet.</div>`}
+    </div>
+  `;
+}
+
 function getSeasonBadge(seasons = {}) {
   const firstOpen = Object.entries(seasons).find(([, open]) => open);
   return firstOpen ? SEASON_EMOJI[firstOpen[0]] : '✦';
@@ -5237,7 +5364,12 @@ function normalizeCreatorRecord(profile = {}) {
   const passphrase = String(profile.passphrase || '').trim();
   const legacyContactText = profile.contactMethod || profile.contact || '';
   const contactMethods = normalizeContactMethods(profile.contactMethods, legacyContactText);
-  const publicContactVisibility = !!(profile.publicContactVisibility || profile.contactVisibility === 'public');
+  const contactVisibility = normalizeContactVisibility(
+    profile.contactVisibility,
+    contactMethods,
+    !!(profile.publicContactVisibility || profile.contactVisibility === 'public')
+  );
+  const publicContactVisibility = getPublicContactMethodItems(contactMethods, contactVisibility).length > 0;
   return {
     ...profile,
     id: profile.id,
@@ -5262,6 +5394,7 @@ function normalizeCreatorRecord(profile = {}) {
     portfolioLink: profile.portfolioLink || profile.portfolio || '',
     portfolioItems: normalizePortfolioItems(profile.portfolioItems || profile.mediaPortfolio),
     contactMethods,
+    contactVisibility,
     publicContactVisibility,
     contactMethod: hasAnyContactMethods(contactMethods)
       ? getContactMethodItems(contactMethods).map(item => `${item.label}: ${item.display}`).join(' · ')
@@ -5366,7 +5499,7 @@ function renderDirectory() {
 
   grid.innerHTML = filtered.map((c, i) => {
     const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRay || 'Ray', code: '' };
-    const publicContactItems = c.publicContactVisibility ? getContactMethodItems(c.contactMethods) : [];
+    const publicContactItems = getPublicContactMethodItems(c.contactMethods, c.contactVisibility);
     const avatarContent = c.photo
       ? `<img src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}">`
       : escapeHtml(getAvatarLabel(c));
@@ -5416,6 +5549,7 @@ function openModal(id) {
   const c = getCreatorById(id);
   if (!c) return;
   const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRay || 'Ray', code: '' };
+  const publicContactItems = getPublicContactMethodItems(c.contactMethods, c.contactVisibility);
   const avatarContent = c.photo
     ? `<img src="${escapeHtml(c.photo)}" alt="${escapeHtml(c.name)}">`
     : escapeHtml(getAvatarLabel(c));
@@ -5489,10 +5623,10 @@ function openModal(id) {
     </div>` : ''}
 
     ${(c.portfolioLink || hasAnyContactMethods(c.contactMethods) || c.contactMethod) ? `<div class="modal-section">
-      <div class="modal-section-label">🔗 ${c.publicContactVisibility ? 'Public Contact On Directory' : 'Connection Privacy'}</div>
+      <div class="modal-section-label">🔗 ${publicContactItems.length ? 'Public Contact On Directory' : 'Connection Privacy'}</div>
       ${renderPortfolioLinkLine(c)}
-      ${c.publicContactVisibility
-        ? renderContactMethodGrid(c.contactMethods, {
+      ${publicContactItems.length
+        ? renderContactMethodGrid(getVisibleContactMethods(c.contactMethods, c.contactVisibility), {
             emptyHtml: '<div class="contact-form-note">No public contact paths are turned on right now.</div>'
           })
         : '<div class="contact-form-note">Preferred contact details stay private until one Core Energetic Signature shares them with another through the co-creator connection flow.</div>'}
@@ -5517,6 +5651,33 @@ function closeModalOutside(e) {
   if (e.target === document.getElementById('modalOverlay')) closeModal();
 }
 
+function focusWishFieldSection() {
+  document.getElementById('wishFieldSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetWishCastSection() {
+  const castSection = document.getElementById('wishCastSection');
+  if (castSection) castSection.classList.remove('open');
+}
+
+function openWishCastSection() {
+  const castSection = document.getElementById('wishCastSection');
+  if (!castSection) return;
+  castSection.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeWishCastSection() {
+  const castSection = document.getElementById('wishCastSection');
+  if (!castSection) return;
+  castSection.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeWishCastSectionOutside(event) {
+  if (event.target === document.getElementById('wishCastSection')) closeWishCastSection();
+}
+
 // ── VIEW SWITCHING (unified) ──
 function setView(name, btn) {
   ['directory','submit','wishes','wish','wishfield','codes','charter','privacy','admin'].forEach(v => {
@@ -5533,7 +5694,8 @@ function setView(name, btn) {
   const jc = document.getElementById('joinCta');
   if (jc) jc.style.display = name === 'directory' ? 'block' : 'none';
   if (name === 'submit') { setTimeout(initCESForm, 50); }
-  if (name === 'wish')   { setTimeout(() => { buildWishForm(); renderWishField(); }, 50); }
+  if (name === 'wish')   { setTimeout(() => { resetWishCastSection(); buildWishForm(); renderWishField(); setTimeout(focusWishFieldSection, 40); }, 50); }
+  if (name !== 'wish')   { resetWishCastSection(); }
   if (name === 'wishes') { setTimeout(renderMyWishes, 50); }
   if (name === 'charter') { setTimeout(renderCharterCodesAccordion, 50); }
   if (name === 'codes')  { setTimeout(buildCodesGrid, 50); }
@@ -5577,11 +5739,7 @@ function handlePhotoUpload(e) {
 function openAgreement(creatorId) {
   const c = getCreatorById(creatorId);
   if (!c) return;
-  const ray = RAYS[c.primaryRayKey] || { color: '#c8922a', label: c.primaryRayKey || 'Ray' };
   const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
-
-  document.getElementById('agreementRayBar').style.background =
-    `linear-gradient(90deg, ${ray.color}, #3a9b6f, transparent)`;
 
   if (!currentUser) {
     document.getElementById('agreementContent').innerHTML = `
@@ -5604,7 +5762,7 @@ function openAgreement(creatorId) {
     document.getElementById('agreementContent').innerHTML = `
       <div style="padding-top:0.5rem">
         <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ Your Core Energetic Signature</div>
-        <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">This is your own Core Energetic Signature</div>
+        <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">${escapeHtml(currentUser.name || 'Your Core Energetic Signature')}</div>
         <div class="contact-form-note">Private contact sharing happens when one co-creator reaches another. Open your Core Energetic Signature if you want to edit which channels are available to share.</div>
       </div>
     `;
@@ -5612,62 +5770,7 @@ function openAgreement(creatorId) {
     document.body.style.overflow = 'hidden';
     return;
   }
-
-  document.getElementById('agreementContent').innerHTML = `
-    <div style="padding-top:0.5rem">
-      <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ Co-Creator Connection</div>
-      <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.9rem;color:var(--muted);margin-bottom:1.8rem">Share your first note, then choose exactly which contact paths from your own Core Energetic Signature you want this co-creator to receive.</div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
-        <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your Name</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none" placeholder="Your name / pronouns" type="text" id="connection_name" value="${escapeHtml([currentUser.name, currentUser.pronouns].filter(Boolean).join(' · '))}">
-        </div>
-        <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Co-Creator</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.05);border:1px solid ${ray.color}40;border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none" value="${escapeHtml(c.name)}" readonly>
-        </div>
-      </div>
-
-      <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">What Do You Want to Co-Create?</div>
-        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.18);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.85rem;outline:none;resize:vertical;min-height:70px" placeholder="Share the collaboration, offering, or invitation you feel called to begin." id="connection_scope"></textarea>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem">
-        <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your C.E.S.</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" value="${escapeHtml(currentUser.cesNumber || '')}" readonly>
-        </div>
-        <div>
-          <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Preferred Reply Channel</div>
-          <input style="width:100%;padding:0.6rem 0.85rem;background:rgba(13,11,26,0.95);border:1px solid rgba(200,146,42,0.2);border-radius:0.5rem;color:var(--cream);font-size:0.85rem;outline:none" id="connection_reply" placeholder="Email, Instagram, Discord, Signal…">
-        </div>
-      </div>
-
-      <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">First Message into the Field</div>
-        <textarea style="width:100%;padding:0.6rem 0.85rem;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.15);border-radius:0.5rem;color:var(--cream);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.82rem;outline:none;resize:vertical;min-height:90px" placeholder="Write the note you want to send so the connection starts with clarity and care." id="connection_message"></textarea>
-      </div>
-
-      <div style="margin-bottom:1.2rem">
-        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Choose Which of Your Contact Paths to Share</div>
-        ${renderContactShareSelector(currentUser.contactMethods)}
-      </div>
-
-      <div class="contact-form-note" id="connectionResponseNote" style="display:none;margin-bottom:1.2rem"></div>
-
-      <button onclick="submitAgreement('${escapeJsString(c.id)}')" style="width:100%;padding:0.9rem;border-radius:3rem;border:1px solid ${ray.color};background:linear-gradient(135deg,${ray.color}14,${ray.color}06);color:${ray.color};font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s"
-        onmouseover="this.style.background='linear-gradient(135deg,${ray.color}28,${ray.color}10)'"
-        onmouseout="this.style.background='linear-gradient(135deg,${ray.color}14,${ray.color}06)'">
-        ✦ Prepare Connection with ${escapeHtml(c.name.split(' ')[0])}
-      </button>
-    </div>
-  `;
-
-  document.getElementById('agreementOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  openHeartlightAgreementEditor({ mode: 'directory', creatorId });
 }
 
 function closeAgreement() {
@@ -5677,53 +5780,330 @@ function closeAgreement() {
 function closeAgreementOutside(e) {
   if (e.target === document.getElementById('agreementOverlay')) closeAgreement();
 }
-function submitAgreement(creatorId) {
-  const creator = getCreatorById(creatorId);
-  if (!creator) return;
+function renderAgreementRoleRow(role = createEmptyAgreementRole(), removable = true) {
+  return `
+    <div class="agreement-role-row" style="position:relative">
+      <input class="agreement-field-value" type="text" placeholder="Role name (e.g. Sound Weaver, Visual Artist…)" value="${escapeHtml(role.label || '')}" style="margin-bottom:0.4rem">
+      <input class="agreement-field-value" type="text" placeholder="Co-Creator(s) in this role — name / pronouns / time zone" value="${escapeHtml(role.beings || '')}">
+      ${removable ? `<button type="button" onclick="removeAgreementRole(this)" style="position:absolute;top:0.3rem;right:0.3rem;background:none;border:none;color:rgba(240,232,213,0.3);cursor:pointer;font-size:0.75rem" onmouseover="this.style.color='rgba(240,232,213,0.7)'" onmouseout="this.style.color='rgba(240,232,213,0.3)'">✕</button>` : ''}
+    </div>
+  `;
+}
+
+function removeAgreementRole(button) {
+  const row = button?.closest('.agreement-role-row');
+  if (row) row.remove();
+}
+
+function collectAgreementRoles() {
+  return Array.from(document.querySelectorAll('#agreementRolesList .agreement-role-row')).map(row => {
+    const inputs = row.querySelectorAll('input');
+    return {
+      label: String(inputs[0]?.value || '').trim(),
+      beings: String(inputs[1]?.value || '').trim(),
+    };
+  }).filter(role => role.label || role.beings);
+}
+
+function createAgreementDraft(context = {}) {
+  if (context.agreementId) {
+    const existing = getAgreementById(context.agreementId);
+    if (existing) return existing;
+  }
   const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
-  const senderName = document.getElementById('connection_name')?.value?.trim();
-  const scope = document.getElementById('connection_scope')?.value?.trim();
-  const replyPreference = document.getElementById('connection_reply')?.value?.trim();
-  const message = document.getElementById('connection_message')?.value?.trim();
-  const response = document.getElementById('connectionResponseNote');
-  if (!currentUser) {
-    alert('✦ Sign into your Core Energetic Signature before sharing private contact details.');
-    return;
+  const creator = context.creatorId ? getCreatorById(context.creatorId) : null;
+  const wish = context.wishId ? getWishById(context.wishId) : null;
+  const currentIdentity = currentUser ? buildProfileIdentityLine(currentUser) : '';
+  const creatorIdentity = creator ? buildProfileIdentityLine(creator) : '';
+
+  if (context.mode === 'wish' && wish && currentUser) {
+    const defaultRole = wish.roles.length ? wish.roles[0].label : '';
+    return normalizeAgreementRecord({
+      sourceType: 'wish',
+      sourceWishId: wish.id,
+      sourceWishName: wish.name,
+      wishingProfileId: wish.ownerId || '',
+      wishingCES: wish.ownerCes || '',
+      wishingName: wish.name || '',
+      coCreatorProfileId: currentUser.id || '',
+      coCreatorCES: currentUser.cesNumber || '',
+      coCreatorName: currentIdentity,
+      roles: [{ label: defaultRole, beings: currentIdentity }],
+      scope: wish.letter || '',
+    });
   }
-  const sharedContactMethods = getSelectedSharedContactMethods();
-  if (!senderName || !message) {
-    alert('✦ Please share your name and first message before preparing the connection.');
-    return;
+
+  if (context.mode === 'directory' && currentUser && creator) {
+    return normalizeAgreementRecord({
+      sourceType: 'directory',
+      wishingProfileId: currentUser.id || '',
+      wishingCES: currentUser.cesNumber || '',
+      wishingName: currentIdentity,
+      coCreatorProfileId: creator.id || '',
+      coCreatorCES: creator.cesNumber || '',
+      coCreatorName: creatorIdentity,
+      roles: [{ label: '', beings: creatorIdentity }],
+    });
   }
-  if (!hasAnyContactMethods(sharedContactMethods)) {
-    alert('✦ Choose at least one saved contact path from your Core Energetic Signature to share.');
-    return;
-  }
-  const connections = getStorage('connections', []);
-  const entry = {
-    id: `connection_${Date.now()}`,
-    createdAt: new Date().toISOString(),
-    fromProfileId: currentUser.id,
+
+  return normalizeAgreementRecord({
+    sourceType: context.mode || 'template',
+    wishingProfileId: currentUser?.id || '',
+    wishingCES: currentUser?.cesNumber || '',
+    wishingName: currentIdentity,
+  });
+}
+
+function renderAgreementSelectOptions(options = [], selected = '') {
+  return options.map(option => `<option value="${escapeHtml(option)}"${selected === option ? ' selected' : ''}>${escapeHtml(option)}</option>`).join('');
+}
+
+function openHeartlightAgreementEditor(context = {}) {
+  const draft = createAgreementDraft(context);
+  const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
+  const creator = context.creatorId ? getCreatorById(context.creatorId) : null;
+  const wish = context.wishId ? getWishById(context.wishId) : null;
+  const rayColor = wish ? getWishRayMeta(wish.ray).color : ((creator && RAYS[creator.primaryRayKey]?.color) || '#c8922a');
+  activeHeartlightAgreementContext = { ...context, agreementId: draft.id };
+
+  document.getElementById('agreementRayBar').style.background = `linear-gradient(90deg, ${rayColor}, #3a9b6f, transparent)`;
+  document.getElementById('agreementContent').innerHTML = `
+    <div class="agreement-title">📜 Heartlight Exchange Agreement</div>
+    <div class="agreement-subtitle">A living vow that carries the seasonal co-creation structure through scope, exchange pathway, seasonal milestones, consent, and blessings.</div>
+
+    ${draft.sourceWishName ? `<div class="agreement-field-group">
+      <label class="agreement-field-label">Originating Wish</label>
+      <input class="agreement-field-value" type="text" value="${escapeHtml(draft.sourceWishName)}" readonly>
+    </div>` : ''}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="agreement-field-group">
+        <label class="agreement-field-label">Wishing Being</label>
+        <input class="agreement-field-value" type="text" id="agreementWishingBeing" value="${escapeHtml(draft.wishingName)}" placeholder="Name / pronouns / time zone">
+      </div>
+      <div class="agreement-field-group">
+        <label class="agreement-field-label">Heartlight Co-Creator</label>
+        <input class="agreement-field-value" type="text" id="agreementCoCreator" value="${escapeHtml(draft.coCreatorName)}" placeholder="Name / pronouns / time zone">
+      </div>
+    </div>
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label">Opening Note Into The Field</label>
+      <textarea class="agreement-field-value italic-val" id="agreementOpeningNote" rows="3" placeholder="Share the first note, intention, or resonance that brought this agreement into being.">${escapeHtml(draft.openingNote)}</textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem">
+      <div>
+        <label class="agreement-field-label">Preferred Reply Channel</label>
+        <input class="agreement-field-value" type="text" id="agreementReplyPreference" value="${escapeHtml(draft.replyPreference)}" placeholder="Email, Instagram, Discord, Signal…">
+      </div>
+      <div>
+        <label class="agreement-field-label">Agreement Status</label>
+        <div style="padding-top:0.35rem">${getAgreementStatusMarkup(draft)}</div>
+      </div>
+    </div>
+
+    ${currentUser ? `<div class="agreement-field-group">
+      <label class="agreement-field-label">Shared Contact Paths</label>
+      ${renderContactShareSelector(currentUser.contactMethods, draft.sharedContactMethods)}
+    </div>` : ''}
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label" style="display:block;margin-bottom:0.6rem">Co-Creator Roles in This Exchange</label>
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.84rem;color:rgba(240,232,213,0.55);margin-bottom:0.8rem">The wishing being defines the roles. Each role may hold one or many Co-Creator beings.</div>
+      <div id="agreementRolesList" style="display:grid;gap:0.65rem">${draft.roles.map((role, index) => renderAgreementRoleRow(role, draft.roles.length > 1 || index > 0)).join('')}</div>
+      <button type="button" onclick="addAgreementRole()" style="margin-top:0.65rem;padding:0.4rem 0.9rem;border-radius:2rem;border:1px dashed rgba(200,146,42,0.35);background:transparent;color:rgba(200,146,42,0.7);font-size:0.72rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;font-family:'Atkinson Hyperlegible',sans-serif;transition:all 0.2s" onmouseover="this.style.borderColor='var(--orichalcum)';this.style.color='var(--orichalcum)'" onmouseout="this.style.borderColor='rgba(200,146,42,0.35)';this.style.color='rgba(200,146,42,0.7)'">+ Add Another Role</button>
+    </div>
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label">Portal Timeline</label>
+      <input class="agreement-field-value" type="text" id="agreementPortalTimeline" value="${escapeHtml(draft.portalTimeline)}">
+    </div>
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label">Scope — What Is Being Co-Created</label>
+      <textarea class="agreement-field-value italic-val" id="agreementScope" rows="3" placeholder="Describe in resonant, clear language what will be created together…">${escapeHtml(draft.scope)}</textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem">
+      <div>
+        <label class="agreement-field-label">Format</label>
+        <select class="agreement-field-value" id="agreementFormat" style="background:rgba(15,12,25,0.9)">${renderAgreementSelectOptions(['Digital', 'Physical', 'Both digital & physical'], draft.format)}</select>
+      </div>
+      <div>
+        <label class="agreement-field-label">Exchange Pathway</label>
+        <select class="agreement-field-value" id="agreementExchangePathway" style="background:rgba(15,12,25,0.9)">${renderAgreementSelectOptions(['Currency (fixed price)', 'Currency (sliding scale)', 'Value exchange (trade / skill swap)', 'Gift exchange', 'Scholarship exchange'], draft.exchangePathway)}</select>
+      </div>
+    </div>
+
+    <div style="font-family:'Alice',serif;font-size:0.9rem;color:var(--orichalcum-pale);margin-bottom:0.8rem">🌱🌞🍂 Sacred Milestones</div>
+    <div class="milestone-grid">
+      <div class="milestone-card">
+        <div class="milestone-season">🌱</div>
+        <div class="milestone-label">Spring Seed</div>
+        <div class="milestone-sublabel">What begins here</div>
+        <textarea class="agreement-field-value italic-val" id="agreementSpringMilestone" rows="3" placeholder="First draft, sketch, session arc, prototype…" style="font-size:0.82rem">${escapeHtml(draft.springMilestone)}</textarea>
+      </div>
+      <div class="milestone-card">
+        <div class="milestone-season">🌞</div>
+        <div class="milestone-label">Summer Bloom</div>
+        <div class="milestone-sublabel">What takes form</div>
+        <textarea class="agreement-field-value italic-val" id="agreementSummerMilestone" rows="3" placeholder="Refinement, recording, crafting, shaping…" style="font-size:0.82rem">${escapeHtml(draft.summerMilestone)}</textarea>
+      </div>
+      <div class="milestone-card">
+        <div class="milestone-season">🍂</div>
+        <div class="milestone-label">Fall Harvest</div>
+        <div class="milestone-sublabel">What is delivered</div>
+        <textarea class="agreement-field-value italic-val" id="agreementFallMilestone" rows="3" placeholder="Final offering, delivery, exchange completion…" style="font-size:0.82rem">${escapeHtml(draft.fallMilestone)}</textarea>
+      </div>
+    </div>
+
+    <div class="adaptability-note">
+      🌀 <strong>Adaptability Clause (Heartlight-Led Growth):</strong> This agreement honors organic unfolding. Either being may propose adjustments to scope, timeline, or form as the co-creation grows — always through open communication, mutual resonance, and the spirit of the Heartlight Exchange Charter.
+    </div>
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label">Boundaries & Consent Notes</label>
+      <textarea class="agreement-field-value" id="agreementBoundaries" rows="2" placeholder="Any boundaries, consent agreements, or care notes for this co-creation…">${escapeHtml(draft.boundaries)}</textarea>
+    </div>
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label">🌸 Closing Blessing — Co-Creator</label>
+      <textarea class="blessing-field" id="agreementCoCreatorBlessing" rows="2" placeholder="Speak a closing blessing for this co-creation from your heart…">${escapeHtml(draft.coCreatorBlessing)}</textarea>
+    </div>
+
+    <div class="agreement-field-group">
+      <label class="agreement-field-label">🌸 Closing Blessing — Receiver</label>
+      <textarea class="blessing-field" id="agreementReceiverBlessing" rows="2" placeholder="And your blessing in return…">${escapeHtml(draft.receiverBlessing)}</textarea>
+    </div>
+
+    <div style="padding:0.9rem 1.1rem;border-radius:0.6rem;background:rgba(58,155,111,0.05);border:1px solid rgba(58,155,111,0.18);margin-bottom:1.2rem">
+      <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.88rem;color:rgba(240,232,213,0.7);line-height:1.65">
+        💎 <strong>The Codes of Heartlight govern this agreement:</strong> Consent and sovereignty · Kindness and dignity · Cultural respect · Sustainability · Accessibility · Clear communication · Joy, integrity, and sacred play.
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem">
+      <button type="button" class="sign-agreement-btn" style="margin-top:0" onclick="saveHeartlightAgreement(false)">Save Draft</button>
+      <button type="button" class="sign-agreement-btn" style="margin-top:0" onclick="saveHeartlightAgreement(true)">Save & Sign With Intention</button>
+    </div>
+    <div class="contact-form-note" id="agreementSaveNote" style="display:none;margin-top:1rem"></div>
+  `;
+
+  document.getElementById('agreementOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openHeartlightAgreementTemplate() {
+  openHeartlightAgreementEditor({ mode: 'template' });
+}
+
+function openSavedHeartlightAgreement(agreementId) {
+  openHeartlightAgreementEditor({ mode: 'saved', agreementId });
+}
+
+function addAgreementRole(label = '', beings = '') {
+  const list = document.getElementById('agreementRolesList');
+  if (!list) return;
+  list.insertAdjacentHTML('beforeend', renderAgreementRoleRow({ label, beings }, true));
+}
+
+function syncAgreementToConnections(agreement, currentUser) {
+  if (!currentUser || !agreement || !['directory', 'wish'].includes(agreement.sourceType)) return;
+  const existingConnections = getStorage('connections', []);
+  const currentMatchesWishing = (currentUser.id && agreement.wishingProfileId === currentUser.id) || (currentUser.cesNumber && agreement.wishingCES === currentUser.cesNumber);
+  const otherProfileId = currentMatchesWishing ? agreement.coCreatorProfileId : agreement.wishingProfileId;
+  const otherCES = currentMatchesWishing ? agreement.coCreatorCES : agreement.wishingCES;
+  const otherName = currentMatchesWishing ? agreement.coCreatorName : agreement.wishingName;
+  if (!otherProfileId && !otherCES && !otherName) return;
+  const matchIndex = existingConnections.findIndex(entry => entry.sourceAgreementId === agreement.id);
+  const nextEntry = {
+    id: matchIndex >= 0 ? existingConnections[matchIndex].id : `connection_${Date.now()}`,
+    sourceAgreementId: agreement.id,
+    createdAt: matchIndex >= 0 ? existingConnections[matchIndex].createdAt : agreement.createdAt,
+    updatedAt: agreement.updatedAt,
+    fromProfileId: currentUser.id || '',
     fromCES: currentUser.cesNumber || '',
-    fromName: senderName,
+    fromName: currentUser.name || '',
     fromRay: currentUser.primaryRay || '',
-    toProfileId: creator.id,
-    toCES: creator.cesNumber || '',
-    toName: creator.name || '',
-    toRay: creator.primaryRay || '',
-    scope,
-    replyPreference,
-    message,
-    sharedContactMethods,
+    toProfileId: otherProfileId || '',
+    toCES: otherCES || '',
+    toName: otherName || '',
+    toRay: agreement.sourceType === 'directory' ? (getCreatorById(otherProfileId)?.primaryRay || '') : '',
+    scope: agreement.scope,
+    replyPreference: agreement.replyPreference,
+    message: agreement.openingNote,
+    sharedContactMethods: agreement.sharedContactMethods,
   };
-  connections.push(entry);
-  setStorage('connections', connections);
-  if (response) {
-    response.style.display = 'block';
-    response.innerHTML = `Your connection has been shared with ${escapeHtml(creator.name.split(' ')[0])}. The contact paths you selected are now available privately on their Core Energetic Signature, and this connection will also appear in your own private inbox.`;
-    response.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (matchIndex >= 0) existingConnections[matchIndex] = nextEntry;
+  else existingConnections.push(nextEntry);
+  setStorage('connections', existingConnections);
+}
+
+function saveHeartlightAgreement(signWithIntention = false) {
+  const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
+  const existing = activeHeartlightAgreementContext?.agreementId ? getAgreementById(activeHeartlightAgreementContext.agreementId) : null;
+  const wishingName = document.getElementById('agreementWishingBeing')?.value?.trim();
+  const coCreatorName = document.getElementById('agreementCoCreator')?.value?.trim();
+  const scope = document.getElementById('agreementScope')?.value?.trim();
+  const noteEl = document.getElementById('agreementSaveNote');
+  if (!wishingName || !coCreatorName || !scope) {
+    alert('✦ Please complete the wishing being, Heartlight Co-Creator, and scope before saving the agreement.');
+    return;
   }
-  if (typeof renderProfileCorner === 'function') renderProfileCorner();
+  const now = new Date().toISOString();
+  const status = signWithIntention || existing?.status === 'signed' ? 'signed' : 'draft';
+  const draft = createAgreementDraft(activeHeartlightAgreementContext || {});
+  const agreement = normalizeAgreementRecord({
+    ...draft,
+    ...existing,
+    id: existing?.id || draft.id,
+    status,
+    sourceType: draft.sourceType,
+    sourceWishId: draft.sourceWishId,
+    sourceWishName: draft.sourceWishName,
+    wishingName,
+    coCreatorName,
+    roles: collectAgreementRoles(),
+    portalTimeline: document.getElementById('agreementPortalTimeline')?.value || '',
+    scope,
+    format: document.getElementById('agreementFormat')?.value || '',
+    exchangePathway: document.getElementById('agreementExchangePathway')?.value || '',
+    springMilestone: document.getElementById('agreementSpringMilestone')?.value || '',
+    summerMilestone: document.getElementById('agreementSummerMilestone')?.value || '',
+    fallMilestone: document.getElementById('agreementFallMilestone')?.value || '',
+    openingNote: document.getElementById('agreementOpeningNote')?.value || '',
+    replyPreference: document.getElementById('agreementReplyPreference')?.value || '',
+    boundaries: document.getElementById('agreementBoundaries')?.value || '',
+    coCreatorBlessing: document.getElementById('agreementCoCreatorBlessing')?.value || '',
+    receiverBlessing: document.getElementById('agreementReceiverBlessing')?.value || '',
+    sharedContactMethods: currentUser ? getSelectedSharedContactMethods() : (existing?.sharedContactMethods || {}),
+    createdAt: existing?.createdAt || now,
+    updatedAt: now,
+    signedAt: status === 'signed' ? (existing?.signedAt || now) : null,
+  });
+
+  const agreements = getStorage(AGREEMENT_STORAGE_KEY, []);
+  const index = agreements.findIndex(entry => entry.id === agreement.id);
+  if (index >= 0) agreements[index] = agreement;
+  else agreements.unshift(agreement);
+  setStorage(AGREEMENT_STORAGE_KEY, agreements);
+  syncAgreementToConnections(agreement, currentUser);
+
+  if (noteEl) {
+    noteEl.style.display = 'block';
+    noteEl.textContent = status === 'signed'
+      ? 'This Heartlight Exchange Agreement has been saved and signed with intention.'
+      : 'This Heartlight Exchange Agreement has been saved as a draft.';
+  }
+
+  if (typeof openProfileModal === 'function' && document.getElementById('profileModalOverlay')?.classList.contains('open')) {
+    openProfileModal();
+  }
+}
+
+function submitAgreement() {
+  saveHeartlightAgreement(true);
 }
 
 
@@ -5787,6 +6167,15 @@ function createDefaultFormState() {
     oathSigned: false,
     oath2Signed: false,
   };
+}
+
+function getVisibleContactMethods(contactMethods = {}, contactVisibility = {}) {
+  const visible = createEmptyContactMethods();
+  const normalizedVisibility = normalizeContactVisibility(contactVisibility, contactMethods);
+  CONTACT_FIELD_KEYS.forEach(key => {
+    if (normalizedVisibility[key]) visible[key] = String(contactMethods[key] || '').trim();
+  });
+  return visible;
 }
 
 let formState = createDefaultFormState();
@@ -6204,14 +6593,23 @@ function updatePreview() {
 
   const previewContacts = document.getElementById('previewContactMethods');
   if (previewContacts) {
-    previewContacts.innerHTML = renderContactPathChips({
+    const previewContactMethods = {
       instagram: document.getElementById('f_contact_instagram')?.value || '',
       email: document.getElementById('f_contact_email')?.value || '',
       phone: document.getElementById('f_contact_phone')?.value || '',
       discord: document.getElementById('f_contact_discord')?.value || '',
       signal: document.getElementById('f_contact_signal')?.value || '',
       whatsapp: document.getElementById('f_contact_whatsapp')?.value || '',
-    });
+    };
+    const previewContactVisibility = {
+      instagram: !!document.getElementById('f_contact_public_instagram')?.checked,
+      email: !!document.getElementById('f_contact_public_email')?.checked,
+      phone: !!document.getElementById('f_contact_public_phone')?.checked,
+      discord: !!document.getElementById('f_contact_public_discord')?.checked,
+      signal: !!document.getElementById('f_contact_public_signal')?.checked,
+      whatsapp: !!document.getElementById('f_contact_public_whatsapp')?.checked,
+    };
+    previewContacts.innerHTML = renderContactPathChips(getVisibleContactMethods(previewContactMethods, previewContactVisibility));
   }
 }
 
@@ -6366,9 +6764,10 @@ const WISH_FIELD_DEMOS = [
 
 let wishFieldFilters = {
   search: '',
-  type: 'All',
-  theme: 'All',
-  ray: 'All',
+  type: [],
+  role: [],
+  theme: [],
+  ray: [],
 };
 
 function getWishRayMeta(rayKey) {
@@ -6508,13 +6907,22 @@ function setWishFieldSearch(value) {
   renderWishField();
 }
 
-function setWishFieldFilter(kind, value) {
-  wishFieldFilters[kind] = value;
+function toggleWishFieldFilter(kind, value) {
+  if (value === 'All') {
+    wishFieldFilters[kind] = [];
+    renderWishField();
+    return;
+  }
+  const current = Array.isArray(wishFieldFilters[kind]) ? [...wishFieldFilters[kind]] : [];
+  const index = current.indexOf(value);
+  if (index >= 0) current.splice(index, 1);
+  else current.push(value);
+  wishFieldFilters[kind] = current;
   renderWishField();
 }
 
 function clearWishFieldFilters() {
-  wishFieldFilters = { search: '', type: 'All', theme: 'All', ray: 'All' };
+  wishFieldFilters = { search: '', type: [], role: [], theme: [], ray: [] };
   const search = document.getElementById('wishFieldSearch');
   if (search) search.value = '';
   renderWishField();
@@ -6522,22 +6930,31 @@ function clearWishFieldFilters() {
 
 function renderWishFieldFilters() {
   const typeRow = document.getElementById('wishFieldTypeFilters');
+  const roleRow = document.getElementById('wishFieldRoleFilters');
   const themeRow = document.getElementById('wishFieldThemeFilters');
   const rayRow = document.getElementById('wishFieldRayFilters');
   if (typeRow) {
     typeRow.innerHTML = ['All', ...WISH_TYPES].map(type => `
-      <button class="wish-field-filter-btn ${wishFieldFilters.type === type ? 'active' : ''}"
+      <button class="wish-field-filter-btn ${type === 'All' ? (!wishFieldFilters.type.length ? 'active' : '') : (wishFieldFilters.type.includes(type) ? 'active' : '')}"
         style="--wish-filter-color:${type === 'All' ? '#c8922a' : '#e8b84b'}"
-        onclick="setWishFieldFilter('type','${escapeJsString(type)}')">${type}</button>
+        onclick="toggleWishFieldFilter('type','${escapeJsString(type)}')">${type}</button>
+    `).join('');
+  }
+  if (roleRow) {
+    const roleOptions = ['All', ...Array.from(new Set(getWishFieldEntries().flatMap(entry => entry.roles.map(role => role.label)).filter(Boolean))).sort((a, b) => a.localeCompare(b))];
+    roleRow.innerHTML = roleOptions.map(role => `
+      <button class="wish-field-filter-btn ${role === 'All' ? (!wishFieldFilters.role.length ? 'active' : '') : (wishFieldFilters.role.includes(role) ? 'active' : '')}"
+        style="--wish-filter-color:${role === 'All' ? '#c8922a' : '#3a9b6f'}"
+        onclick="toggleWishFieldFilter('role','${escapeJsString(role)}')">${role === 'All' ? 'All Roles' : role}</button>
     `).join('');
   }
   if (themeRow) {
     themeRow.innerHTML = ['All', ...HEART_THEMES.map(theme => theme.l)].map(theme => {
       const themeMeta = HEART_THEMES.find(item => item.l === theme);
       return `
-        <button class="wish-field-filter-btn ${wishFieldFilters.theme === theme ? 'active' : ''}"
+        <button class="wish-field-filter-btn ${theme === 'All' ? (!wishFieldFilters.theme.length ? 'active' : '') : (wishFieldFilters.theme.includes(theme) ? 'active' : '')}"
           style="--wish-filter-color:${theme === 'All' ? '#c8922a' : '#c4407a'}"
-          onclick="setWishFieldFilter('theme','${escapeJsString(theme)}')">${themeMeta ? themeMeta.e + ' ' : ''}${theme}</button>
+          onclick="toggleWishFieldFilter('theme','${escapeJsString(theme)}')">${themeMeta ? themeMeta.e + ' ' : ''}${theme}</button>
       `;
     }).join('');
   }
@@ -6545,9 +6962,9 @@ function renderWishFieldFilters() {
     rayRow.innerHTML = ['All', ...ALL_RAYS.map(ray => ray.key)].map(rayKey => {
       const ray = getWishRayMeta(rayKey);
       return `
-        <button class="wish-field-filter-btn ${wishFieldFilters.ray === rayKey ? 'active' : ''}"
+        <button class="wish-field-filter-btn ${rayKey === 'All' ? (!wishFieldFilters.ray.length ? 'active' : '') : (wishFieldFilters.ray.includes(rayKey) ? 'active' : '')}"
           style="--wish-filter-color:${rayKey === 'All' ? '#c8922a' : ray.color}"
-          onclick="setWishFieldFilter('ray','${escapeJsString(rayKey)}')">${rayKey === 'All' ? 'All Rays' : ray.emoji + ' ' + ray.label}</button>
+          onclick="toggleWishFieldFilter('ray','${escapeJsString(rayKey)}')">${rayKey === 'All' ? 'All Rays' : ray.emoji + ' ' + ray.label}</button>
       `;
     }).join('');
   }
@@ -6556,9 +6973,10 @@ function renderWishFieldFilters() {
 function filterWishEntries(entries) {
   const query = wishFieldFilters.search.trim().toLowerCase();
   return entries.filter(entry => {
-    const typeMatch = wishFieldFilters.type === 'All' || entry.wishTypes.includes(wishFieldFilters.type);
-    const themeMatch = wishFieldFilters.theme === 'All' || entry.heartTheme === wishFieldFilters.theme;
-    const rayMatch = wishFieldFilters.ray === 'All' || entry.ray === wishFieldFilters.ray;
+    const typeMatch = !wishFieldFilters.type.length || entry.wishTypes.some(type => wishFieldFilters.type.includes(type));
+    const roleMatch = !wishFieldFilters.role.length || entry.roles.some(role => wishFieldFilters.role.includes(role.label));
+    const themeMatch = !wishFieldFilters.theme.length || wishFieldFilters.theme.includes(entry.heartTheme);
+    const rayMatch = !wishFieldFilters.ray.length || wishFieldFilters.ray.includes(entry.ray);
     const searchHaystack = [
       entry.name,
       entry.location,
@@ -6569,7 +6987,7 @@ function filterWishEntries(entries) {
       entry.roles.map(role => role.label + ' ' + role.beings.join(' ')).join(' '),
     ].join(' ').toLowerCase();
     const searchMatch = !query || searchHaystack.includes(query);
-    return typeMatch && themeMatch && rayMatch && searchMatch;
+    return typeMatch && roleMatch && themeMatch && rayMatch && searchMatch;
   });
 }
 
@@ -6654,7 +7072,7 @@ function renderWishField() {
   if (rolesEl) rolesEl.textContent = String(totalRoles);
   if (multiEl) multiEl.textContent = String(multiBeingRoles);
   if (resultsCopy) {
-    const filtersActive = [wishFieldFilters.type, wishFieldFilters.theme, wishFieldFilters.ray].some(value => value !== 'All') || wishFieldFilters.search.trim();
+    const filtersActive = [wishFieldFilters.type, wishFieldFilters.role, wishFieldFilters.theme, wishFieldFilters.ray].some(value => Array.isArray(value) && value.length) || wishFieldFilters.search.trim();
     resultsCopy.textContent = filtered.length
       ? `${filtered.length} wish${filtered.length === 1 ? '' : 'es'} currently shimmering${filtersActive ? ' within your selected filters' : ' in the field'}.`
       : 'No wishes match this constellation yet. Try a wider filter and feel for another thread.';
@@ -6883,62 +7301,30 @@ function openWishFieldWish(wishId) {
 }
 
 function openWishResonance(wishId) {
-  const wish = getWishById(wishId);
-  if (!wish) return;
-  const ray = getWishRayMeta(wish.ray);
+  const currentUser = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
+  if (!currentUser) {
+    closeModal();
+    document.getElementById('agreementContent').innerHTML = `
+      <div style="padding-top:0.5rem">
+        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ C.E.S. Sign-In Required</div>
+        <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Respond through the Wishing Well</div>
+        <div class="contact-form-note" style="margin-bottom:1rem">Sign into your Core Energetic Signature first so your Heartlight Exchange Agreement can be woven and saved to your profile.</div>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
+          <button class="contact-action-btn" type="button" onclick="closeAgreement();openSignIn()">Sign In</button>
+          <button class="contact-action-btn subtle" type="button" onclick="closeAgreement();setView('submit', document.getElementById('navBtnSubmit'))">Open Core Energetic Signature</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('agreementOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
   closeModal();
-  document.getElementById('agreementRayBar').style.background = `linear-gradient(90deg, ${ray.color}, #c8922a, transparent)`;
-  document.getElementById('agreementContent').innerHTML = `
-    <div style="padding-top:0.5rem">
-      <div style="font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:${ray.color};margin-bottom:0.4rem">✨ Offer Resonance</div>
-      <div class="agreement-title" style="margin-bottom:0.2rem">Respond to ${escapeHtml(wish.name)}'s wish</div>
-      <div class="agreement-subtitle">Share the role you feel called to and how your offering wants to arrive. This begins the connection; the full Seasonal Co-Creation Agreement comes later through mutual consent.</div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">Wish Holder</label>
-        <input class="agreement-field-value" type="text" value="${escapeHtml(wish.name)}" readonly>
-      </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-        <div class="agreement-field-group">
-          <label class="agreement-field-label">Your Name</label>
-          <input class="agreement-field-value" type="text" id="wishConnectName" placeholder="Your name / pronouns">
-        </div>
-        <div class="agreement-field-group">
-          <label class="agreement-field-label">Role You Feel</label>
-          <input class="agreement-field-value" type="text" id="wishConnectRole" placeholder="e.g. Sound Weaver, Space Holder">
-        </div>
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">What Are You Offering?</label>
-        <textarea class="agreement-field-value italic-val" id="wishConnectOffering" rows="4" placeholder="Share the form your response wants to take, the tone you can hold, and anything important about timing or scope."></textarea>
-      </div>
-
-      <div class="agreement-field-group">
-        <label class="agreement-field-label">First Message Into The Field</label>
-        <textarea class="agreement-field-value italic-val" id="wishConnectMessage" rows="4" placeholder="Write a first note of resonance for this wish-holder."></textarea>
-      </div>
-
-      <button class="sign-agreement-btn" onclick="sendWishResonance('${escapeJsString(wish.id)}')">✦ Send Resonance</button>
-    </div>
-  `;
-  document.getElementById('agreementOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+  openHeartlightAgreementEditor({ mode: 'wish', wishId });
 }
 
 function sendWishResonance(wishId) {
-  const wish = getWishById(wishId);
-  if (!wish) return;
-  const name = document.getElementById('wishConnectName')?.value?.trim();
-  const role = document.getElementById('wishConnectRole')?.value?.trim();
-  const offering = document.getElementById('wishConnectOffering')?.value?.trim();
-  if (!name || !role || !offering) {
-    alert('✦ Please share your name, the role you feel, and what you are offering before sending resonance.');
-    return;
-  }
-  closeAgreement();
-  alert(`✦ Your resonance has been offered to ${wish.name}'s wish field.\n\nIf the connection is mutual, the Seasonal Co-Creation Agreement can now be woven in full.`);
+  openWishResonance(wishId);
 }
 
 function buildWishForm() {
@@ -7099,21 +7485,9 @@ function submitWish() {
   saveWishSubmission(submission);
   renderWishField();
   renderMyWishes();
+  closeWishCastSection();
   alert(`✦ Your wish has been cast into the Wishing Well, ${name}.\n\nIt is now awaiting to be granted and can be tracked from your Core Energetic Signature. All That Loves Allow Synchronicities. 🕯️🌈`);
   openProfileModal();
-}
-
-// ── EXCHANGE AGREEMENT MODAL ──
-function openAgreementModal() {
-  document.getElementById('agreementOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeAgreementModal() {
-  document.getElementById('agreementOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function closeAgreementOutside(e) {
-  if (e.target === document.getElementById('agreementOverlay')) closeAgreementModal();
 }
 
 // ── PHOTO UPLOAD ──
@@ -7166,7 +7540,7 @@ const CODES_OF_ALL = [
     ray: 'Red Ray',
     color: '#c94040',
     mantra: 'I ground courage into form.',
-    exchange: 'Every step of the Heartlight Exchange is consent-led. Co-Creators respond to wishes through resonance, not compulsion. The Seasonal Co-Creation Agreement is co-signed by both beings. Boundaries are honored as sacred intelligence.'
+    exchange: 'Every step of the Heartlight Exchange is consent-led. Co-Creators respond to wishes through resonance, not compulsion. The Heartlight Exchange Agreement is co-signed by both beings. Boundaries are honored as sacred intelligence.'
   },
   {
     number: 3,
@@ -7541,21 +7915,6 @@ function updateRoleBeing(ri, bi, val) {
   updateWishPreview();
 }
 
-// ── AGREEMENT MODAL: add role row ──
-function addAgreementRole() {
-  const list = document.getElementById('agreementRolesList');
-  if (!list) return;
-  const row = document.createElement('div');
-  row.className = 'agreement-role-row';
-  row.style.cssText = 'position:relative';
-  row.innerHTML = `
-    <input class="agreement-field-value" type="text" placeholder="Role name…" style="margin-bottom:0.4rem">
-    <input class="agreement-field-value" type="text" placeholder="Co-Creator(s) in this role — name / pronouns / time zone">
-    <button onclick="this.parentElement.remove()" style="position:absolute;top:0.3rem;right:0.3rem;background:none;border:none;color:rgba(240,232,213,0.3);cursor:pointer;font-size:0.75rem" onmouseover="this.style.color='rgba(240,232,213,0.7)'" onmouseout="this.style.color='rgba(240,232,213,0.3)'">✕</button>
-  `;
-  list.appendChild(row);
-}
-
 // ── EXTEND updateWishPreview to show roles ──
 const _origUpdateWishPreview = updateWishPreview;
 updateWishPreview = function() {
@@ -7605,7 +7964,7 @@ function createDefaultStewardEntry() {
 }
 const STORAGE_PREFIX = 'ai_';
 const STORAGE_QUEUE_KEYS = new Set(['pending', 'approved', 'returned']);
-const REMOTE_STORAGE_KEYS = ['pending', 'approved', 'returned', 'connections', 'authorizedCES', 'securityLog', 'gateLockout', 'stewardPass'];
+const REMOTE_STORAGE_KEYS = ['pending', 'approved', 'returned', 'connections', 'agreements', 'authorizedCES', 'securityLog', 'gateLockout', 'stewardPass'];
 const REMOTE_STORAGE_ENDPOINT = '/api/store';
 const LOCAL_DEMO_HOSTS = new Set(['localhost', '127.0.0.1']);
 const storageCache = Object.create(null);
@@ -7901,7 +8260,7 @@ function renderProfileCorner() {
     corner.innerHTML = `
       <button class="profile-avatar-btn" onclick="openProfileModal()">
         ${avatarHtml}
-        <span class="profile-btn-label">My Core Energetic Signature</span>
+        <span class="profile-btn-label">${escapeHtml(user.name || 'Your Core Energetic Signature')}</span>
       </button>
       <button class="join-corner-btn" style="margin-left:0.4rem;opacity:0.55;font-size:0.65rem" onclick="signOutUser()">Sign Out</button>`;
   } else {
@@ -7982,7 +8341,12 @@ function populateCESFormFromProfile(profile) {
     f_contact_discord: data.contactMethods.discord || '',
     f_contact_signal: data.contactMethods.signal || '',
     f_contact_whatsapp: data.contactMethods.whatsapp || '',
-    f_contact_public: data.publicContactVisibility ? 'checked' : '',
+    f_contact_public_instagram: data.contactVisibility.instagram,
+    f_contact_public_email: data.contactVisibility.email,
+    f_contact_public_phone: data.contactVisibility.phone,
+    f_contact_public_discord: data.contactVisibility.discord,
+    f_contact_public_signal: data.contactVisibility.signal,
+    f_contact_public_whatsapp: data.contactVisibility.whatsapp,
     f_avatar_mark: normalizeAvatarMark(data.emoji || ''),
   };
   Object.entries(fieldMap).forEach(([id, value]) => {
@@ -8117,12 +8481,13 @@ function openProfileModal() {
     ${(submission.portfolioLink || hasAnyContactMethods(submission.contactMethods) || submission.contactMethod) ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Your Shared Contact Paths</div>
       ${renderPortfolioLinkLine(submission)}
-      <div class="portfolio-link-line" style="margin-bottom:0.55rem">Directory visibility: ${submission.publicContactVisibility ? 'Public on Directory' : 'Private until shared through a co-creator connection'}</div>
+      <div class="portfolio-link-line" style="margin-bottom:0.55rem">Public on Directory: ${escapeHtml(getPublicContactVisibilitySummary(submission.contactMethods, submission.contactVisibility))}</div>
       ${renderContactMethodGrid(submission.contactMethods, {
         emptyHtml: submission.contactMethod ? `<div class="portfolio-link-line">Contact: ${escapeHtml(submission.contactMethod)}</div>` : ''
       })}
     </div>` : ''}
     ${renderProfileConnectionsSection(submission)}
+    ${renderProfileAgreementsSection(submission)}
     ${renderProfileWishesSection()}
     <div style="margin-top:1rem;display:flex;gap:0.6rem;flex-wrap:wrap">
       <button onclick="openProfileEditor()" style="padding:0.5rem 1.2rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.35);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.2s">✏️ Edit Core Energetic Signature</button>
@@ -8179,6 +8544,14 @@ function submitCESProfile() {
     signal: (document.getElementById('f_contact_signal')?.value || '').trim(),
     whatsapp: (document.getElementById('f_contact_whatsapp')?.value || '').trim(),
   };
+  const contactVisibility = {
+    instagram: !!document.getElementById('f_contact_public_instagram')?.checked,
+    email: !!document.getElementById('f_contact_public_email')?.checked,
+    phone: !!document.getElementById('f_contact_public_phone')?.checked,
+    discord: !!document.getElementById('f_contact_public_discord')?.checked,
+    signal: !!document.getElementById('f_contact_public_signal')?.checked,
+    whatsapp: !!document.getElementById('f_contact_public_whatsapp')?.checked,
+  };
   const contactSummary = getContactMethodItems(contactMethods).map(item => `${item.label}: ${item.display}`).join(' · ');
   const profile = {
     ...(existingProfile || {}),
@@ -8208,7 +8581,8 @@ function submitCESProfile() {
     portfolioItems,
     mediaPortfolio: portfolioItems,
     contactMethods,
-    publicContactVisibility: !!document.getElementById('f_contact_public')?.checked,
+    contactVisibility,
+    publicContactVisibility: getPublicContactMethodItems(contactMethods, contactVisibility).length > 0,
     contactMethod: contactSummary,
     contact: contactSummary,
     cesNumber: cesNumber || existingProfile?.cesNumber || null,
