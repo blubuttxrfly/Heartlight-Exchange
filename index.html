@@ -6667,7 +6667,7 @@ const HEART_THEMES = [
   {e:'🔥',l:'Courage'},{e:'🕊️',l:'Belonging'},{e:'💎',l:'Clarity'},
   {e:'🌱',l:'Growth'},{e:'🌊',l:'Healing'},{e:'✨',l:'Wonder'},
 ];
-const WISH_FORMATS = ['Text','Audio','Video','Art','Physical','Captioned Video','Async'];
+const WISH_FORMATS = ['Digital','Text','Audio','Video','Art','Physical','Captioned Video','Async'];
 
 let wishState = {
   selectedWishTypes: [],
@@ -6678,89 +6678,7 @@ let wishState = {
 };
 
 const WISH_STORAGE_KEY = 'wish_submissions';
-const WISH_FIELD_DEMOS = [
-  {
-    id: 'wish-demo-aurora',
-    name: 'Aurora Vale',
-    location: 'Maine · EST',
-    portal: '🌱 Spring Equinox — Seed of Co-Creation',
-    wishTypes: ['Music', 'Healing'],
-    heartTheme: 'Belonging',
-    ray: 'Turquoise',
-    formats: ['Audio', 'Async'],
-    exchanges: ['Gift Exchange', 'Sliding Scale'],
-    accessibility: 'Captioned audio notes and gentle pacing.',
-    boundaries: 'No surprise live calls. I need a soft entry.',
-    witnessed: 'This wish is part of a homecoming after grief.',
-    letter: 'I am calling in a song blessing and spoken welcome for a homecoming gathering. I want something tender, spacious, and easy for many beings to receive together.',
-    createdAt: '2026-03-08T14:00:00.000Z',
-    roles: [
-      { label: '🎵 Sound Weaver', beings: ['Lio', 'Maren'], openings: 2 },
-      { label: '✍️ Word Keeper', beings: ['Open resonance'], openings: 1 },
-    ],
-  },
-  {
-    id: 'wish-demo-sable',
-    name: 'Sable Ember',
-    location: 'Georgia · EST',
-    portal: '🍂 Fall Equinox — Heartlight Harvest',
-    wishTypes: ['Art', 'Story'],
-    heartTheme: 'Wonder',
-    ray: 'Violet',
-    formats: ['Art', 'Text'],
-    exchanges: ['Trade', 'Gift Exchange'],
-    accessibility: 'Image descriptions appreciated.',
-    boundaries: 'Please keep the story symbolism intuitive rather than literal.',
-    witnessed: 'This wish wants a little myth and a little laughter.',
-    letter: 'I am wishing for a visual story map for my next chapter: symbols, colors, and a mythic thread I can place on my wall and revisit as I grow.',
-    createdAt: '2026-03-05T18:45:00.000Z',
-    roles: [
-      { label: '🎨 Visual Artist', beings: ['Nia', 'Open resonance'], openings: 2 },
-      { label: '✍️ Word Keeper', beings: ['Pax'], openings: 1 },
-      { label: '📸 Visual Witness', beings: ['Open resonance'], openings: 1 },
-    ],
-  },
-  {
-    id: 'wish-demo-river',
-    name: 'River Sol',
-    location: 'Colorado · MST',
-    portal: '❄️ Winter Solstice — Hearth of Wishes',
-    wishTypes: ['Ritual', 'Guidance'],
-    heartTheme: 'Clarity',
-    ray: 'Indigo',
-    formats: ['Video', 'Text', 'Captioned Video'],
-    exchanges: ['Paid', 'Sliding Scale'],
-    accessibility: 'Captions and written recap requested.',
-    boundaries: 'I prefer directness over vague channeling.',
-    witnessed: 'I am at a threshold and want grounded guidance.',
-    letter: 'I am seeking a threshold ritual and a clear map for a life transition. I want insight that is mystical but practical, so I can move with courage and steadiness.',
-    createdAt: '2026-03-03T09:20:00.000Z',
-    roles: [
-      { label: '🔮 Oracle Guide', beings: ['Aster', 'Open resonance'], openings: 2 },
-      { label: '🌿 Ritual Crafter', beings: ['Jun'], openings: 1 },
-    ],
-  },
-  {
-    id: 'wish-demo-lumen',
-    name: 'Lumen Sky',
-    location: 'California · PST',
-    portal: '🌞 Summer Solstice — Bloom of Form',
-    wishTypes: ['Gift', 'Lesson'],
-    heartTheme: 'Growth',
-    ray: 'Green',
-    formats: ['Physical', 'Text'],
-    exchanges: ['Scholarship', 'Gift Exchange'],
-    accessibility: 'Async replies and spacious timelines help most.',
-    boundaries: 'Scent-free physical items only.',
-    witnessed: 'This wish is for rebuilding trust in my own creativity.',
-    letter: 'I am wishing for a tactile learning bundle that helps me rebuild a daily creative practice: prompts, small rituals, and something handmade I can return to when I freeze.',
-    createdAt: '2026-03-01T11:10:00.000Z',
-    roles: [
-      { label: '🧵 Sacred Maker', beings: ['Omi', 'Tala'], openings: 2 },
-      { label: '🌱 Space Holder', beings: ['Open resonance'], openings: 2 },
-    ],
-  },
-];
+const WISH_FIELD_DEMOS = [];
 
 let wishFieldFilters = {
   search: '',
