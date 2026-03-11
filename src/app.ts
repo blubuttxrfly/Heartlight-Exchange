@@ -723,7 +723,7 @@ function openModal(id) {
     </div>
 
     <div class="modal-section">
-      <div class="modal-section-label">✦ Heartlight Statement</div>
+      <div class="modal-section-label">Heartlight Statement ✦</div>
       <div class="modal-text italic" style="padding-left:1rem;border-left:2px solid ${ray.color}40">"${escapeHtml(c.heartlight)}"</div>
     </div>
 
@@ -760,7 +760,7 @@ function openModal(id) {
     </div>` : ''}
 
     ${c.consent ? `<div class="modal-section">
-      <div class="modal-section-label">🌊 Consent & Boundaries</div>
+      <div class="modal-section-label">Consent & Boundaries 🌊</div>
       <div class="consent-note">${escapeHtml(c.consent)}</div>
     </div>` : ''}
 
@@ -781,7 +781,7 @@ function openModal(id) {
 
     <button class="connect-btn" style="border-color:${ray.color};color:${ray.color};background:linear-gradient(135deg,${ray.color}18,${ray.color}08)"
       onclick="openAgreement('${escapeJsString(c.id)}')">
-      ✦ Connect with ${escapeHtml(c.name.split(' ')[0])}
+        Connect with ${escapeHtml(c.name.split(' ')[0])} ✦
     </button>
   `;
 
@@ -891,7 +891,7 @@ function openAgreement(creatorId) {
   if (!currentUser) {
     document.getElementById('agreementContent').innerHTML = `
       <div style="padding-top:0.5rem">
-        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ C.E.S. Sign-In Required</div>
+        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">C.E.S. Sign-In Required ✦</div>
         <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Connect with ${escapeHtml(c.name.split(' ')[0])}</div>
         <div class="contact-form-note" style="margin-bottom:1rem">Preferred contact details are only shared between signed-in Core Energetic Signatures. Sign into your signature first, then choose which channels you want to share in the connection.</div>
         <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
@@ -908,7 +908,7 @@ function openAgreement(creatorId) {
   if ((currentUser.id && c.id === currentUser.id) || (currentUser.cesNumber && c.cesNumber && currentUser.cesNumber === c.cesNumber)) {
     document.getElementById('agreementContent').innerHTML = `
       <div style="padding-top:0.5rem">
-        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ Your Core Energetic Signature</div>
+        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">Your Core Energetic Signature ✦</div>
         <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">${escapeHtml(currentUser.name || 'Your Core Energetic Signature')}</div>
         <div class="contact-form-note">Private contact sharing happens when one co-creator reaches another. Open your Core Energetic Signature if you want to edit which channels are available to share.</div>
       </div>
@@ -1015,7 +1015,7 @@ function openHeartlightAgreementEditor(context = {}) {
 
   document.getElementById('agreementRayBar').style.background = `linear-gradient(90deg, ${rayColor}, #3a9b6f, transparent)`;
   document.getElementById('agreementContent').innerHTML = `
-    <div class="agreement-title">📜 Heartlight Exchange Agreement</div>
+    <div class="agreement-title">Heartlight Exchange Agreement 📜</div>
     <div class="agreement-subtitle">A living vow that carries the seasonal co-creation structure through scope, exchange pathway, seasonal milestones, consent, and blessings.</div>
 
     ${draft.sourceWishName ? `<div class="agreement-field-group">
@@ -1850,12 +1850,19 @@ function summarizeWish(text, max = 170) {
   return clean.length > max ? clean.slice(0, max).trimEnd() + '…' : clean;
 }
 
+function moveLeadingEmojiToEnd(label) {
+  const text = String(label || '').trim();
+  const match = text.match(/^([^\p{L}\p{N}]+)\s+(.+)$/u);
+  if (!match) return text;
+  return `${match[2].trim()} ${match[1].trim()}`;
+}
+
 function normalizeWishRole(role) {
   const allBeings = Array.isArray(role?.beings) ? role.beings.filter(Boolean) : [];
   const namedBeings = allBeings.filter(name => !/open resonance/i.test(name));
   const openings = Math.max(role?.openings || 0, allBeings.length - namedBeings.length);
   return {
-    label: role?.label || 'Open Role',
+    label: moveLeadingEmojiToEnd(role?.label || 'Open Role'),
     beings: namedBeings,
     openings: openings || (!namedBeings.length ? 1 : 0),
   };
@@ -2006,7 +2013,13 @@ function renderWishFieldFilters() {
     `).join('');
   }
   if (roleRow) {
-    const roleOptions = ['All', ...Array.from(new Set(getWishFieldEntries().flatMap(entry => entry.roles.map(role => role.label)).filter(Boolean))).sort((a, b) => a.localeCompare(b))];
+    const roleOptions = [
+      'All',
+      ...Array.from(new Set([
+        ...PRESET_ROLES.map(role => moveLeadingEmojiToEnd(role.label)),
+        ...getWishFieldEntries().flatMap(entry => entry.roles.map(role => moveLeadingEmojiToEnd(role.label))),
+      ].filter(Boolean))).sort((a, b) => a.localeCompare(b))
+    ];
     roleRow.innerHTML = roleOptions.map(role => `
       <button class="wish-field-filter-btn ${role === 'All' ? (!wishFieldFilters.role.length ? 'active' : '') : (wishFieldFilters.role.includes(role) ? 'active' : '')}"
         style="--wish-filter-color:${role === 'All' ? '#c8922a' : '#3a9b6f'}"
@@ -2019,7 +2032,7 @@ function renderWishFieldFilters() {
       return `
         <button class="wish-field-filter-btn ${theme === 'All' ? (!wishFieldFilters.theme.length ? 'active' : '') : (wishFieldFilters.theme.includes(theme) ? 'active' : '')}"
           style="--wish-filter-color:${theme === 'All' ? '#c8922a' : '#c4407a'}"
-          onclick="toggleWishFieldFilter('theme','${escapeJsString(theme)}')">${themeMeta ? themeMeta.e + ' ' : ''}${theme}</button>
+          onclick="toggleWishFieldFilter('theme','${escapeJsString(theme)}')">${themeMeta ? `${theme} ${themeMeta.e}` : theme}</button>
       `;
     }).join('');
   }
@@ -2029,7 +2042,7 @@ function renderWishFieldFilters() {
       return `
         <button class="wish-field-filter-btn ${rayKey === 'All' ? (!wishFieldFilters.ray.length ? 'active' : '') : (wishFieldFilters.ray.includes(rayKey) ? 'active' : '')}"
           style="--wish-filter-color:${rayKey === 'All' ? '#c8922a' : ray.color}"
-          onclick="toggleWishFieldFilter('ray','${escapeJsString(rayKey)}')">${rayKey === 'All' ? 'All Rays' : ray.emoji + ' ' + ray.label}</button>
+          onclick="toggleWishFieldFilter('ray','${escapeJsString(rayKey)}')">${rayKey === 'All' ? 'All Rays' : `${ray.label} ${ray.emoji}`}</button>
       `;
     }).join('');
   }
@@ -2237,7 +2250,7 @@ function renderProfileWishesSection() {
         : `<div class="my-wishes-empty">You have not cast a wish yet. Visit the Wishing Well to drop one into the field.</div>`
       }
       <div style="margin-top:1rem">
-        <button class="my-wish-btn primary" onclick="closeProfileModal();setTimeout(()=>setView('wish', document.getElementById('navBtnWish')), 80)">🪙 Enter The Wishing Well</button>
+        <button class="my-wish-btn primary" onclick="closeProfileModal();setTimeout(()=>setView('wish', document.getElementById('navBtnWish')), 80)">Enter The Wishing Well 🪙</button>
       </div>
     </div>
   `;
@@ -2303,7 +2316,7 @@ function openWishFieldWish(wishId) {
       </div>
 
       <div class="modal-section">
-        <div class="modal-section-label">💫 Wish Constellation</div>
+        <div class="modal-section-label">Wish Constellation 💫</div>
         <div class="modal-text italic">${escapeHtml(typeLine)}${wish.heartTheme ? ' · ' + escapeHtml(wish.heartTheme) : ''}</div>
       </div>
 
@@ -2341,7 +2354,7 @@ function openWishFieldWish(wishId) {
 
       ${wish.boundaries ? `
         <div class="modal-section">
-          <div class="modal-section-label">🌊 Boundaries</div>
+          <div class="modal-section-label">Boundaries 🌊</div>
           <div class="consent-note">${escapeHtml(wish.boundaries)}</div>
         </div>
       ` : ''}
@@ -2356,7 +2369,7 @@ function openWishFieldWish(wishId) {
       ${wish.status === 'granted'
         ? `<div class="consent-note" style="border-color:${ray.color}55;background:${ray.color}12">This wish has been marked as granted by its wish-holder and is no longer calling for new resonance.</div>`
         : `<button class="connect-btn" style="border-color:${ray.color};color:${ray.color};background:linear-gradient(135deg,${ray.color}18,${ray.color}08)" onclick="openWishResonance('${escapeJsString(wish.id)}')">
-            ✦ Offer Resonance to ${escapeHtml(wish.name.split(' ')[0])}
+            Offer Resonance to ${escapeHtml(wish.name.split(' ')[0])} ✦
           </button>`
       }
     </div>
@@ -2371,7 +2384,7 @@ function openWishResonance(wishId) {
     closeModal();
     document.getElementById('agreementContent').innerHTML = `
       <div style="padding-top:0.5rem">
-        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">✦ C.E.S. Sign-In Required</div>
+        <div style="font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.4rem">C.E.S. Sign-In Required ✦</div>
         <div style="font-family:'Alice',serif;font-size:1.5rem;color:var(--cream);margin-bottom:0.25rem">Respond through the Wishing Well</div>
         <div class="contact-form-note" style="margin-bottom:1rem">Sign into your Core Energetic Signature first so your Heartlight Exchange Agreement can be woven and saved to your profile.</div>
         <div style="display:flex;gap:0.6rem;flex-wrap:wrap">
@@ -2864,18 +2877,18 @@ function renderCharterCodesAccordion() {
 // ══════════════════════════════════════════
 
 const PRESET_ROLES = [
-  { label: '🎨 Visual Artist', key: 'visual-artist' },
-  { label: '🎵 Sound Weaver', key: 'sound-weaver' },
-  { label: '✍️ Word Keeper', key: 'word-keeper' },
-  { label: '💆 Healer', key: 'healer' },
-  { label: '🌿 Ritual Crafter', key: 'ritual-crafter' },
-  { label: '🔮 Oracle Guide', key: 'oracle-guide' },
-  { label: '💃 Movement Artist', key: 'movement-artist' },
-  { label: '🧵 Sacred Maker', key: 'sacred-maker' },
-  { label: '📸 Visual Witness', key: 'visual-witness' },
-  { label: '🌱 Space Holder', key: 'space-holder' },
-  { label: '⚗️ Alchemist', key: 'alchemist' },
-  { label: '🌙 Ceremony Keeper', key: 'ceremony-keeper' },
+  { label: 'Visual Artist 🎨', key: 'visual-artist' },
+  { label: 'Sound Weaver 🎵', key: 'sound-weaver' },
+  { label: 'Word Keeper ✍️', key: 'word-keeper' },
+  { label: 'Healer 💆', key: 'healer' },
+  { label: 'Ritual Crafter 🌿', key: 'ritual-crafter' },
+  { label: 'Oracle Guide 🔮', key: 'oracle-guide' },
+  { label: 'Movement Artist 💃', key: 'movement-artist' },
+  { label: 'Sacred Maker 🧵', key: 'sacred-maker' },
+  { label: 'Visual Witness 📸', key: 'visual-witness' },
+  { label: 'Space Holder 🌱', key: 'space-holder' },
+  { label: 'Alchemist ⚗️', key: 'alchemist' },
+  { label: 'Ceremony Keeper 🌙', key: 'ceremony-keeper' },
 ];
 
 let activeRoles = []; // { key, label, beings: [] }
@@ -2987,12 +3000,12 @@ updateWishPreview = function() {
   const rolesEl = document.getElementById('wPreviewRoles');
   if (!rolesEl) return;
   if (activeRoles.length > 0) {
-    rolesEl.innerHTML = `<div class="wish-portal-label">🌟 Roles</div>
+    rolesEl.innerHTML = `<div class="wish-portal-label">Roles 🌟</div>
     <div class="roles-preview" style="width:100%;margin-top:0.3rem;display:flex;flex-wrap:wrap;gap:0.3rem">
       ${activeRoles.map(r => `<span style="font-size:0.65rem;padding:0.15rem 0.55rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);color:var(--orichalcum);background:rgba(200,146,42,0.06)">${r.label}</span>`).join('')}
     </div>`;
   } else {
-    rolesEl.innerHTML = `<div class="wish-portal-label">🌟 Roles</div><div style="font-size:0.72rem;color:var(--muted);font-style:italic">No roles chosen yet</div>`;
+    rolesEl.innerHTML = `<div class="wish-portal-label">Roles 🌟</div><div style="font-size:0.72rem;color:var(--muted);font-style:italic">No roles chosen yet</div>`;
   }
 };
 
@@ -3069,7 +3082,7 @@ function renderProfileCorner() {
     if (joinCta)   joinCta.style.display   = '';
     corner.innerHTML = `
       <div class="profile-auth-actions">
-        <button class="join-corner-btn" onclick="setView('submit',document.getElementById('navBtnSubmit'))">✦ Join</button>
+        <button class="join-corner-btn" onclick="setView('submit',document.getElementById('navBtnSubmit'))">Join ✦</button>
         <button class="join-corner-btn profile-secondary-btn" onclick="openSignIn()">Sign In</button>
       </div>`;
   }

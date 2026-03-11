@@ -1479,13 +1479,13 @@
 
   <nav>
     <div class="nav-primary">
-      <button id="navBtnDirectory" class="nav-btn-primary" onclick="setView('directory', this)">✦ Directory</button>
-      <button id="navBtnCharter" class="active nav-btn-primary" onclick="setView('charter', this)">📜 Charter</button>
-      <button id="navBtnWish" class="nav-btn-primary" onclick="setView('wish', this)">🪙 Wishing Well</button>
+      <button id="navBtnDirectory" class="nav-btn-primary" onclick="setView('directory', this)">Directory ✦</button>
+      <button id="navBtnCharter" class="active nav-btn-primary" onclick="setView('charter', this)">Charter 📜</button>
+      <button id="navBtnWish" class="nav-btn-primary" onclick="setView('wish', this)">Wishing Well 🪙</button>
     </div>
     <div class="nav-secondary">
-      <button id="navBtnCodes" onclick="setView('codes', this)">💎 Codes of ALL</button>
-      <button id="navBtnPrivacy" onclick="setView('privacy', this)">🔒 Privacy Assurance</button>
+      <button id="navBtnCodes" onclick="setView('codes', this)">Codes of ALL 💎</button>
+      <button id="navBtnPrivacy" onclick="setView('privacy', this)">Privacy Assurance 🔒</button>
     </div>
   </nav>
 
@@ -2046,7 +2046,7 @@
 
         <!-- SECTION 1: IDENTITY -->
         <div class="form-section">
-          <div class="form-section-title">✦ Identity</div>
+          <div class="form-section-title">Identity ✦</div>
           <div class="field-grid-2" style="margin-bottom:0.9rem">
             <div>
               <label class="field-label">Name</label>
@@ -2198,7 +2198,7 @@
 
         <!-- SECTION 9: CONSENT & BOUNDARIES -->
         <div class="form-section">
-          <div class="form-section-title">🌊 Consent & Boundaries</div>
+          <div class="form-section-title">Consent & Boundaries 🌊</div>
           <div class="form-section-hint">Share what receivers need to know before entering co-creation with you</div>
           <textarea class="field-input" id="f_consent" rows="3" placeholder="e.g. Deep emotional content may arise. All sessions held with full consent and care." oninput="updatePreview()" style="resize:vertical"></textarea>
         </div>
@@ -2283,7 +2283,7 @@
         </div>
 
         <div class="form-section">
-          <div class="form-section-title">🪙 Directory Wish Status</div>
+          <div class="form-section-title">Directory Wish Status 🪙</div>
           <div class="form-section-hint">Choose what the Directory shows when beings are feeling for whether you are open to receive new wishes.</div>
           <div class="exchange-toggle-grid" id="wishAvailabilityGrid"></div>
         </div>
@@ -2306,7 +2306,7 @@
           </div>
         </div>
 
-        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>✦ Offer My Core Energetic Signature to the Exchange</button>
+        <button class="ces-submit-btn" id="submitBtn" onclick="submitCES()" disabled>Offer My Core Energetic Signature to the Exchange ✦</button>
         <div id="cesConfirmation" style="display:none;text-align:center;padding:2rem 1rem;animation:fadeIn 0.6s ease">
           <div style="font-size:2rem;margin-bottom:1rem">🌈✨</div>
           <div style="font-family:'Alice',serif;font-size:1.3rem;color:var(--orichalcum-pale);margin-bottom:1rem">Your Core Energetic Signature has been offered to the Exchange.</div>
@@ -2317,7 +2317,7 @@
 
       <!-- RIGHT: LIVE PREVIEW -->
       <div class="ces-preview-sticky">
-        <div class="preview-label">✦ Live Core Energetic Signature Preview</div>
+        <div class="preview-label">Live Core Energetic Signature Preview ✦</div>
         <div class="ces-preview-card" id="previewCard">
           <div class="preview-ray-bar" id="previewRayBar"></div>
           <div class="preview-bg-glow" id="previewGlow"></div>
@@ -2749,6 +2749,8 @@
       /* ── WISH SUBMIT BTN ── */
       .wish-submit-btn {
         width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
         padding: 1rem;
         margin-top: 0.5rem;
         border-radius: 3rem;
@@ -2771,7 +2773,7 @@
       <div class="modal" style="max-width:1180px">
       <button class="modal-close" onclick="closeWishCastSection()">✕</button>
       <div style="max-width:900px;margin:0 auto">
-      <div class="section-heading">🪙 The Wishing Well</div>
+      <div class="section-heading">The Wishing Well 🪙</div>
       <p class="section-sub">Cast a wish into the well, then explore the field of active wishes below.</p>
 
       <div class="wish-form-wrap">
@@ -2780,8 +2782,6 @@
 
           <!-- SECTION: WHO IS WISHING -->
           <div class="form-section">
-            <div class="form-section-title">✨ Wishing Through Your Core Energetic Signature</div>
-            <div class="form-section-hint">An active Co-Creator Core Energetic Signature is required to cast and grant wishes in the Wishing Well</div>
             <div id="wishProfileStatusCard" style="margin-bottom:0.95rem;padding:0.95rem 1rem;border-radius:0.85rem;border:1px solid rgba(200,146,42,0.16);background:rgba(255,255,255,0.03)">
               <!-- rendered by JS -->
             </div>
@@ -2799,7 +2799,7 @@
 
           <!-- SECTION: THE WISH -->
           <div class="form-section">
-            <div class="form-section-title">💫 The Wish</div>
+            <div class="form-section-title">The Wish 💫</div>
             <div class="form-section-hint">Write your wish as a letter, a prayer, a story spark, or a voice from the heart</div>
 
             <div style="margin-bottom:1rem">
@@ -2842,7 +2842,7 @@
 
           <!-- SECTION: HOW IT ARRIVES -->
           <div class="form-section">
-            <div class="form-section-title">🎁 How It Arrives</div>
+            <div class="form-section-title">How It Arrives 🎁</div>
             <div class="form-section-hint">Your preferences for how this co-creation flows to you</div>
 
             <div style="margin-bottom:1rem">
@@ -2868,7 +2868,7 @@
 
           <!-- SECTION: CO-CREATOR ROLES -->
           <div class="form-section">
-            <div class="form-section-title">🌟 Co-Creator Roles</div>
+            <div class="form-section-title">Co-Creator Roles 🌟</div>
             <div class="form-section-hint">A wish may be fulfilled by many beings, each bringing their sacred offering. You decide the roles. There may be many Co-Creators within each role.</div>
 
             <div style="margin-bottom:1.1rem">
@@ -2897,7 +2897,7 @@
 
           <!-- SECTION: SACRED CONTAINER -->
           <div class="form-section">
-            <div class="form-section-title">🌊 Sacred Container</div>
+            <div class="form-section-title">Sacred Container 🌊</div>
             <div class="form-section-hint">What you need to feel safe within this co-creation</div>
 
             <div style="margin-bottom:1rem">
@@ -2920,7 +2920,7 @@
             </div>
           </div>
 
-          <button class="wish-submit-btn" id="wishSubmitBtn" onclick="submitWish()">🪙 Cast My Wish Into The Well</button>
+          <button class="wish-submit-btn" id="wishSubmitBtn" onclick="submitWish()">Cast My Wish 🪙</button>
           <p style="text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.82rem;color:var(--muted);margin-top:0.75rem">A Co-Creator who feels your resonance will respond. When alignment is felt, a Heartlight Exchange Agreement will be offered.</p>
 
           <!-- WHAT HAPPENS NEXT -->
@@ -2966,15 +2966,15 @@
               <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.8rem" id="wPreviewRays"></div>
               <div class="wish-preview-letter" id="wPreviewLetter">Your wish will appear here as you write…</div>
               <div style="margin-bottom:0.7rem">
-                <div class="wish-portal-label">🌍 Portal</div>
+                <div class="wish-portal-label">Portal 🌍</div>
                 <div style="font-size:0.82rem;color:rgba(240,232,213,0.7)" id="wPreviewPortal">—</div>
               </div>
               <div style="margin-bottom:0.7rem">
-                <div class="wish-portal-label">🎁 Preferred Format</div>
+                <div class="wish-portal-label">Preferred Format 🎁</div>
                 <div style="display:flex;flex-wrap:wrap;gap:0.3rem" id="wPreviewFormats"><span style="font-size:0.72rem;color:var(--muted);font-style:italic">None yet</span></div>
               </div>
               <div style="margin-bottom:0.7rem" id="wPreviewRoles">
-                <div class="wish-portal-label">🌟 Roles</div>
+                <div class="wish-portal-label">Roles 🌟</div>
                 <div style="font-size:0.72rem;color:var(--muted);font-style:italic">No roles chosen yet</div>
               </div>
               <div>
@@ -3872,7 +3872,7 @@
 
       <!-- Hero -->
       <div class="privacy-hero">
-        <div class="privacy-hero-title">🔒 Privacy Assurance</div>
+        <div class="privacy-hero-title">Privacy Assurance 🔒</div>
       </div>
 
       <!-- Declaration -->
@@ -3969,7 +3969,7 @@
 
       <!-- Exchange Agreement Boundaries -->
       <div class="privacy-agreement-section">
-        <div class="privacy-section-title">📜 Boundaries of the Exchange Agreement</div>
+        <div class="privacy-section-title">Boundaries of the Exchange Agreement 📜</div>
         <div class="privacy-section-body">
           The Heartlight Exchange Agreement is the living boundary holder of the exchange. Within it, both beings name what is protected, what may flow outward, and how the creative work lives in the world once it is complete. These boundaries are sacred agreements, held with the same reverence as any Heartlight vow.
         </div>
@@ -4026,7 +4026,7 @@
         <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:rgba(240,232,213,0.6);line-height:1.9;margin-bottom:1.8rem">
           Atlas Island treats privacy as dignity and sovereignty. In the Heartlight Exchange, what is shared in love is protected in love, and what is created in trust remains in trust until both beings choose how it lives in the world.
         </div>
-        <button onclick="setView('wish', document.getElementById('navBtnWish'))" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🪙 Enter the Wishing Well</button>
+        <button onclick="setView('wish', document.getElementById('navBtnWish'))" style="padding:0.75rem 2rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:rgba(200,146,42,0.07);color:var(--orichalcum-light);font-family:'Alice',serif;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s" onmouseover="this.style.background='rgba(200,146,42,0.14)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">Enter the Wishing Well 🪙</button>
       </div>
 
     </div>
@@ -4244,7 +4244,7 @@
       </div>
 
       <div class="charter-section">
-        <div class="charter-section-title">✦ How The Exchange Flows</div>
+        <div class="charter-section-title">How The Exchange Flows ✦</div>
         <div class="charter-body">Heartlight Exchange moves through a simple living rhythm: beings join through a Core Energetic Signature, cast and answer wishes through the Wishing Well, and then complete co-creations through resonance, agreement, and granting.</div>
         <div class="charter-flow-grid">
           <div class="charter-flow-card">
@@ -4282,7 +4282,7 @@
 
       <!-- Seasonal Thresholds -->
       <div class="charter-section">
-        <div class="charter-section-title">🌍 Seasonal Exchange Thresholds</div>
+        <div class="charter-section-title">Seasonal Exchange Thresholds 🌍</div>
         <div class="charter-hive-copy">The seasonal wheel now lives as one connected threshold map, so each phase touches the next and the co-creation cycle reads as a single living pattern.</div>
         <div class="charter-hive seasonal-threshold-hive">
           <div class="charter-hex-frame seasonal-threshold-hex" style="--hex-col:0; --hex-row:0; --hex-parity:0; --hex-bg:linear-gradient(180deg, #5f86d6, #0b1224); --hex-border:#5f86d6; --hex-glow:rgba(95,134,214,0.28); --season-color:#8eb6ff;">
@@ -4411,19 +4411,19 @@
 
       <!-- Privacy -->
       <div class="charter-section">
-        <div class="charter-section-title">🔒 Privacy Assurance</div>
+        <div class="charter-section-title">Privacy Assurance 🔒</div>
         <div class="charter-body" style="margin-bottom:1rem">The Privacy Assurance is sacred to the thrival and harmony of every co-creator in the Heartlight Exchange. Letters, personal stories, and creative details stay held within the sacred container shared by the receiver and their chosen Co-Creator. Consent governs every moment of sharing before, during, and after the exchange.</div>
-        <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('privacy',document.getElementById('navBtnPrivacy')),320)" style="padding:0.5rem 1.3rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">🔒 View Full Privacy Assurance →</button>
+        <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('privacy',document.getElementById('navBtnPrivacy')),320)" style="padding:0.5rem 1.3rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">View Full Privacy Assurance → 🔒</button>
       </div>
 
       <!-- Codes of ALL -->
       <div class="charter-section">
-        <div class="charter-section-title">💎 The 12 Codes of ALL</div>
+        <div class="charter-section-title">The 12 Codes of ALL 💎</div>
         <div class="charter-body" style="margin-bottom:1rem">The 12 Codes of ALL are the living values that Atlas Island and the Heartlight Exchange uphold. Each Code is held by a Ray frequency and carries its own mantra of practice.</div>
         <div class="charter-hive-copy" style="margin-bottom:0">Select a colored hex to open the full resonance of that Code.</div>
         <div class="charter-codes-accordion" id="charterCodesAccordion"></div>
         <div style="margin-top:1.1rem">
-          <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('codes',document.getElementById('navBtnCodes')),320)" style="padding:0.5rem 1.3rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">💎 View All 12 Codes of ALL →</button>
+          <button onclick="window.scrollTo({top:0,behavior:'smooth'});setTimeout(()=>setView('codes',document.getElementById('navBtnCodes')),320)" style="padding:0.5rem 1.3rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.07);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.75rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.15)'" onmouseout="this.style.background='rgba(200,146,42,0.07)'">View All 12 Codes of ALL → 💎</button>
         </div>
       </div>
 
@@ -4688,7 +4688,7 @@
 
       <!-- Hero -->
       <div class="codes-hero">
-        <div class="codes-hero-title">💎 The 12 Codes of ALL</div>
+        <div class="codes-hero-title">The 12 Codes of ALL 💎</div>
         <p class="codes-hero-sub">Lived values that shape every space, agreement, and expansion on Atlas Island.<br>In the Heartlight Exchange, these Codes form the sacred container within which every wish, offering, and co-creation flows.</p>
       </div>
 
@@ -4747,7 +4747,7 @@
         <div id="signInCESError" style="display:none;color:#e8a0a0;font-size:0.75rem;margin-top:0.5rem;font-family:'Atkinson Hyperlegible',sans-serif"></div>
       </div>
 
-      <button onclick="submitSignIn()" style="width:100%;padding:0.85rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05));color:var(--orichalcum-light);font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;margin-bottom:1rem" onmouseover="this.style.background='linear-gradient(135deg,rgba(200,146,42,0.24),rgba(200,146,42,0.1))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05))'">✦ Enter the Exchange</button>
+      <button onclick="submitSignIn()" style="width:100%;padding:0.85rem;border-radius:3rem;border:1px solid rgba(200,146,42,0.5);background:linear-gradient(135deg,rgba(200,146,42,0.14),rgba(200,146,42,0.05));color:var(--orichalcum-light);font-family:'Alice',serif;font-size:1rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;margin-bottom:1rem">Enter the Exchange ✦</button>
 
       <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.72rem;color:rgba(240,232,213,0.3);line-height:1.6">
         New here? <button onclick="closeSignIn();setView('submit',document.getElementById('navBtnSubmit'))" style="background:none;border:none;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:2px">Create your Core Energetic Signature</button>
