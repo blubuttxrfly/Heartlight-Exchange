@@ -1124,7 +1124,7 @@ function renderDirectory() {
             : '<span class="offering-tag" style="font-size:0.65rem">Shared only through C.E.S. connection</span>'}</div>
         </div>
         <div class="directory-card-actions">
-          <button class="view-profile-btn" type="button">Open Core Energetic Signature →</button>
+          <button class="view-profile-btn" type="button">Open C.E.S. Profile →</button>
         </div>
       </div>
     </div>`;
