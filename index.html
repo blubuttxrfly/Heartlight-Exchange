@@ -125,6 +125,49 @@
       font-size: 0.63rem;
       letter-spacing: 0.06em;
     }
+    .wish-cast-overlay .modal {
+      width: min(100%, calc(100vw - 0.75rem));
+      max-width: none !important;
+      padding: 1.1rem 0.85rem;
+      overflow-x: hidden;
+    }
+    .wish-cast-overlay .modal > div {
+      width: 100%;
+      max-width: 100% !important;
+      min-width: 0;
+    }
+    .wish-form-wrap,
+    .wish-form-main,
+    .wish-preview-sticky,
+    .wish-preview-card,
+    .wish-info-card,
+    .wish-privacy-box,
+    .wish-role-add-row,
+    #wishProfileStatusCard {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+    .wish-role-add-row,
+    .wish-privacy-box,
+    .wish-info-card {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .wish-role-add-row > * ,
+    .wish-privacy-box > * ,
+    .wish-info-card > * {
+      max-width: 100%;
+    }
+    .wish-role-add-row button,
+    .wish-info-card button {
+      width: 100%;
+      white-space: normal !important;
+    }
+    .wish-preview-sticky {
+      overflow-x: hidden;
+    }
   }
 
   body::after {
@@ -2403,10 +2446,18 @@
         gap: 2.5rem;
         align-items: start;
         margin-bottom: 4rem;
+        min-width: 0;
       }
       @media (max-width: 900px) {
         .wish-form-wrap { grid-template-columns: 1fr; }
         .wish-preview-sticky { position: static !important; }
+      }
+      .wish-form-main,
+      .wish-preview-sticky,
+      .wish-info-card,
+      .wish-privacy-box,
+      .wish-role-add-row {
+        min-width: 0;
       }
 
       /* ── WISH TYPE CHIPS ── */
@@ -2778,7 +2829,7 @@
 
       <div class="wish-form-wrap">
         <!-- LEFT: WISH FORM -->
-        <div>
+        <div class="wish-form-main">
 
           <!-- SECTION: WHO IS WISHING -->
           <div class="form-section">
@@ -2880,7 +2931,7 @@
 
             <div style="margin-bottom:1rem">
               <label class="field-label">Add a Custom Role</label>
-              <div style="display:flex;gap:0.6rem;margin-top:0.35rem">
+              <div class="wish-role-add-row" style="display:flex;gap:0.6rem;margin-top:0.35rem">
                 <input class="field-input" type="text" id="customRoleInput" placeholder="e.g. Sound Weaver, Story Keeper…" style="flex:1">
                 <button onclick="addCustomRole()" style="padding:0.5rem 1rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.08);color:var(--orichalcum);font-size:0.78rem;cursor:pointer;white-space:nowrap;font-family:'Atkinson Hyperlegible',sans-serif;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.16)'" onmouseout="this.style.background='rgba(200,146,42,0.08)'">+ Add Role</button>
               </div>
@@ -2912,10 +2963,10 @@
           </div>
 
           <!-- PRIVACY PROMISE -->
-          <div style="padding:1rem 1.2rem;border:1px solid rgba(200,146,42,0.15);border-radius:0.75rem;background:rgba(200,146,42,0.03);margin-bottom:1.2rem;display:flex;gap:0.9rem;align-items:flex-start">
+          <div class="wish-privacy-box" style="padding:1rem 1.2rem;border:1px solid rgba(200,146,42,0.15);border-radius:0.75rem;background:rgba(200,146,42,0.03);margin-bottom:1.2rem;display:flex;gap:0.9rem;align-items:flex-start">
             <span style="font-size:1.2rem;flex-shrink:0">🔒</span>
             <div>
-              <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.3rem">Privacy Promise</div>
+              <div style="font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--orichalcum);opacity:0.8;margin-bottom:0.3rem">Privacy Assurance</div>
               <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.88rem;color:rgba(240,232,213,0.65);line-height:1.65">Letters and personal stories receive reverence. Your details stay held within the sacred co-creation container, shared only with your chosen Co-Creator.</div>
             </div>
           </div>
@@ -2927,14 +2978,14 @@
           <div style="margin-top:2.5rem">
             <div style="font-family:'Alice',serif;font-size:1.1rem;color:var(--orichalcum-pale);margin-bottom:1rem">What Happens After Your Wish Lands</div>
             <div style="display:grid;gap:0.75rem">
-              <div style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
+              <div class="wish-info-card" style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
                 <span style="font-size:1.4rem;flex-shrink:0">🌱</span>
                 <div>
                   <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.78rem;font-weight:700;color:var(--cream);margin-bottom:0.25rem;letter-spacing:0.04em">RESONANCE MATCH</div>
                   <div style="font-size:0.82rem;color:rgba(240,232,213,0.65);line-height:1.6">Co-Creators feel into the wish field and those who resonate with your frequency reach out through the well, guided by consent and seasonal capacity.</div>
                 </div>
               </div>
-              <div style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
+              <div class="wish-info-card" style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
                 <span style="font-size:1.4rem;flex-shrink:0">📜</span>
                 <div>
                   <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.78rem;font-weight:700;color:var(--cream);margin-bottom:0.25rem;letter-spacing:0.04em">HEARTLIGHT EXCHANGE AGREEMENT</div>
@@ -2942,7 +2993,7 @@
                   <button onclick="openHeartlightAgreementTemplate()" style="margin-top:0.6rem;padding:0.35rem 0.9rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:transparent;color:var(--orichalcum);font-size:0.72rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.08)'" onmouseout="this.style.background='transparent'">View Heartlight Exchange Agreement →</button>
                 </div>
               </div>
-              <div style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
+              <div class="wish-info-card" style="display:flex;gap:1rem;align-items:flex-start;padding:1rem;border:1px solid rgba(200,146,42,0.1);border-radius:0.75rem;background:rgba(255,255,255,0.02)">
                 <span style="font-size:1.4rem;flex-shrink:0">🍂</span>
                 <div>
                   <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.78rem;font-weight:700;color:var(--cream);margin-bottom:0.25rem;letter-spacing:0.04em">HEARTLIGHT HARVEST</div>
