@@ -78,6 +78,10 @@
   /* ── MOBILE OVERRIDES ── */
   @media (max-width: 640px) {
     .wrap { padding: 0 1rem; }
+    header {
+      padding-top: 4.9rem;
+      padding-right: 5.8rem;
+    }
     .site-title { font-size: 1.9rem; }
     nav { gap: 0; padding: 0.7rem 0 0; }
     nav button { font-size: 0.65rem; padding: 0.35rem 0.7rem; }
@@ -94,16 +98,30 @@
     .ray-select-grid { grid-template-columns: repeat(3,1fr) !important; }
     .season-toggle-grid { grid-template-columns: repeat(2,1fr) !important; }
     .join-cta { padding: 2rem 1rem; }
-    .profile-corner { top: 0.9rem; right: 1rem; align-items: flex-end; }
+    .sigil-wrap { margin-bottom: 1rem; }
+    .dodecahedron-svg { width: 72px; height: 72px; }
+    .profile-corner {
+      top: 0.65rem;
+      right: 0.35rem;
+      gap: 0.35rem;
+      max-width: calc(100vw - 0.7rem);
+      align-items: flex-end;
+    }
     .profile-auth-actions {
       flex-direction: column;
-      align-items: stretch;
-      gap: 0.45rem;
-      width: min(8.75rem, calc(100vw - 2rem));
+      align-items: flex-end;
+      gap: 0.3rem;
+      width: auto;
     }
     .profile-auth-actions .join-corner-btn {
-      width: 100%;
+      width: auto;
+      min-width: 5.1rem;
       text-align: center;
+    }
+    .join-corner-btn {
+      padding: 0.34rem 0.68rem;
+      font-size: 0.63rem;
+      letter-spacing: 0.06em;
     }
   }
 
@@ -1303,15 +1321,20 @@
   /* ── MOBILE RESPONSIVE ── */
   @media (max-width: 640px) {
 
-    /* Background: single full-page gradient, no tiling */
+    /* Keep the desktop atmosphere on mobile without flattening the stars */
     html {
       min-height: 100%;
+      background: #06050f;
     }
     body {
       min-height: 100vh;
-      background-size: 100% 100% !important;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255,255,255,0.08) 0%, transparent 24%),
+        radial-gradient(circle at 82% 16%, rgba(200,146,42,0.16) 0%, transparent 28%),
+        var(--page-gradient) !important;
+      background-size: cover !important;
       background-repeat: no-repeat !important;
-      background-attachment: scroll !important;
+      background-attachment: fixed !important;
     }
 
     /* Admin settings grid → single column */
@@ -1444,8 +1467,8 @@
 
   <nav>
     <div class="nav-primary">
-      <button id="navBtnDirectory" class="active nav-btn-primary" onclick="setView('directory', this)">✦ Directory</button>
-      <button id="navBtnCharter" class="nav-btn-primary" onclick="setView('charter', this)">📜 Charter</button>
+      <button id="navBtnDirectory" class="nav-btn-primary" onclick="setView('directory', this)">✦ Directory</button>
+      <button id="navBtnCharter" class="active nav-btn-primary" onclick="setView('charter', this)">📜 Charter</button>
       <button id="navBtnWish" class="nav-btn-primary" onclick="setView('wish', this)">🪙 Wishing Well</button>
     </div>
     <div class="nav-secondary">
@@ -1456,7 +1479,7 @@
 
 
   <!-- DIRECTORY VIEW -->
-  <div id="view-directory">
+  <div id="view-directory" style="display:none">
 
     <!-- Search -->
     <div class="search-wrap fade-up">
@@ -2352,7 +2375,7 @@
   </div>
 
   <!-- JOIN CTA -->
-  <div class="join-cta fade-up" id="joinCta">
+  <div class="join-cta fade-up" id="joinCta" style="display:none">
     <h2>Your frequency is felt here.</h2>
     <p>We all carry a core energetic signature that is felt when we co-create together. Share your frequency today.</p>
     <button class="join-btn" onclick="setView('submit', document.getElementById('navBtnSubmit'))">
@@ -4009,7 +4032,7 @@
 
 
   <!-- HEARTLIGHT EXCHANGES CHARTER VIEW -->
-  <div id="view-charter" style="display:none">
+  <div id="view-charter">
     <style>
       .charter-hero { text-align:center; padding:1rem 0 2.5rem; max-width:680px; margin:0 auto; }
       .charter-hero-title { font-family:'Alice',serif; font-size:2rem; color:var(--orichalcum-pale); margin-bottom:0.5rem; letter-spacing:0.02em; }
@@ -4017,11 +4040,11 @@
       .charter-section { margin-bottom:2.5rem; }
       .charter-section-title { font-family:'Alice',serif; font-size:1.2rem; color:var(--orichalcum-pale); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.6rem; }
       .charter-body { font-size:0.88rem; color:rgba(240,232,213,0.78); line-height:1.8; font-family:'Atkinson Hyperlegible',sans-serif; }
-      .charter-flow-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.9rem; margin-top:1rem; }
+      .charter-flow-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.9rem; margin-top:1rem; }
       .charter-flow-card { border-radius:1rem; border:1px solid rgba(200,146,42,0.14); background:rgba(255,255,255,0.03); padding:1rem 1rem 1.05rem; }
-      .charter-flow-step { font-family:'Atkinson Hyperlegible',sans-serif; font-size:0.62rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--orichalcum); margin-bottom:0.45rem; }
+      .charter-flow-step { font-family:'Atkinson Hyperlegible',sans-serif; font-size:0.92rem; letter-spacing:0.09em; text-transform:uppercase; color:var(--orichalcum-light); margin-bottom:0.45rem; line-height:1.4; }
       .charter-flow-title { font-family:'Alice',serif; font-size:1rem; color:var(--cream); margin-bottom:0.35rem; }
-      .charter-flow-copy { font-family:'Atkinson Hyperlegible',sans-serif; font-size:0.8rem; line-height:1.65; color:rgba(240,232,213,0.7); }
+      .charter-flow-copy { font-family:'Atkinson Hyperlegible',sans-serif; font-size:0.78rem; line-height:1.65; color:rgba(240,232,213,0.7); }
       .charter-hive-copy { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:1rem; color:rgba(240,232,213,0.74); line-height:1.8; max-width:720px; margin-bottom:1.15rem; }
       .charter-hive {
         position:relative;
@@ -4227,14 +4250,24 @@
             <div class="charter-flow-copy">Every being enters through a Core Energetic Signature. Your signature holds your resonance, offerings, exchange pathways, and seasonal capacity inside the Heartlight Exchange.</div>
           </div>
           <div class="charter-flow-card">
-            <div class="charter-flow-step">2. Enter The Wishing Well</div>
+            <div class="charter-flow-step">2. Connect with Co-Creators in Directory</div>
+            <div class="charter-flow-title">Reach Through The Directory</div>
+            <div class="charter-flow-copy">The Directory lets beings feel resonance directly, discover aligned co-creators, and begin contact with those whose offerings and frequency match the wish or dream taking form.</div>
+          </div>
+          <div class="charter-flow-card">
+            <div class="charter-flow-step">3. Enter The Wishing Well</div>
             <div class="charter-flow-title">Cast And Answer Wishes</div>
             <div class="charter-flow-copy">Wishes are cast through an active Core Energetic Signature. The same Wishing Well lets beings answer wishes, feel resonance, and step forward for the roles they are called to fulfill.</div>
           </div>
           <div class="charter-flow-card">
-            <div class="charter-flow-step">3. Grant Through Co-Creation</div>
-            <div class="charter-flow-title">Weave The Exchange</div>
-            <div class="charter-flow-copy">When resonance is mutual, the co-creation moves into seasonal agreements, shared stewardship, and eventually into a granted wish that the wish-holder marks as fulfilled.</div>
+            <div class="charter-flow-step">4. Co-Creators Sign Heartlight Exchange Agreement</div>
+            <div class="charter-flow-title">Sign The Exchange</div>
+            <div class="charter-flow-copy">When resonance is mutual, the co-creators move into the Heartlight Exchange agreement, where scope, intentions, roles, boundaries, exchange pathways, and seasonal milestones are consciously held.</div>
+          </div>
+          <div class="charter-flow-card">
+            <div class="charter-flow-step">5. Wishes Granted &amp; Fulfilled Through the Exchange</div>
+            <div class="charter-flow-title">Fulfill The Wish</div>
+            <div class="charter-flow-copy">Through the agreement and the co-creation itself, wishes and dreams are brought into form together until the exchange is complete and the wish-holder marks the wish as fulfilled.</div>
           </div>
         </div>
       </div>
