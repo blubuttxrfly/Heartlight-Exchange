@@ -62,9 +62,14 @@ interface PortfolioItem {
 
 interface StewardAlert {
   id: string;
-  kind: 'media_removed';
+  kind: 'media_removed' | 'audit_notice';
   message: string;
-  mediaLabel: string;
+  mediaLabel?: string;
+  title?: string;
+  auditId?: string;
+  auditStatus?: 'opened' | 'closed';
+  auditOutcome?: string;
+  auditStanding?: 'active' | 'suspended' | 'banned';
   createdAt: string;
   createdBy: string;
 }
@@ -185,6 +190,8 @@ interface CreatorRecord {
   passphrase: string;
   wishAvailability: WishAvailability;
   directoryWishStatus: WishAvailability;
+  stewardStanding: 'active' | 'suspended' | 'banned';
+  stewardStandingNote: string;
   [key: string]: unknown;
 }
 
@@ -713,6 +720,9 @@ function normalizeCreatorRecord(profile: PartialRecord = {}): CreatorRecord {
   ) as ContactVisibility;
   const publicContactVisibility = getPublicContactMethodItems(contactMethods, contactVisibility).length > 0;
   const contactMethodItems = getContactMethodItems(contactMethods) as ContactMethodItem[];
+  const stewardStanding = ['suspended', 'banned'].includes(String(profile.stewardStanding || '').trim())
+    ? String(profile.stewardStanding || '').trim() as 'suspended' | 'banned'
+    : 'active';
 
   return {
     ...profile,
@@ -748,9 +758,16 @@ function normalizeCreatorRecord(profile: PartialRecord = {}): CreatorRecord {
     stewardAlerts: Array.isArray(profile.stewardAlerts)
       ? profile.stewardAlerts.map(alert => ({
           id: String(alert?.id || ''),
-          kind: 'media_removed' as const,
+          kind: String(alert?.kind || '').trim() === 'audit_notice' ? 'audit_notice' as const : 'media_removed' as const,
           message: String(alert?.message || '').trim(),
           mediaLabel: String(alert?.mediaLabel || '').trim(),
+          title: String(alert?.title || '').trim(),
+          auditId: String(alert?.auditId || '').trim(),
+          auditStatus: String(alert?.auditStatus || '').trim() === 'closed' ? 'closed' as const : 'opened' as const,
+          auditOutcome: String(alert?.auditOutcome || '').trim(),
+          auditStanding: ['suspended', 'banned'].includes(String(alert?.auditStanding || '').trim())
+            ? String(alert?.auditStanding || '').trim() as 'suspended' | 'banned'
+            : 'active' as const,
           createdAt: String(alert?.createdAt || ''),
           createdBy: String(alert?.createdBy || 'Steward').trim() || 'Steward',
         })).filter(alert => alert.id && alert.message)
@@ -766,13 +783,16 @@ function normalizeCreatorRecord(profile: PartialRecord = {}): CreatorRecord {
     passphrase,
     wishAvailability,
     directoryWishStatus: wishAvailability,
+    stewardStanding,
+    stewardStandingNote: String(profile.stewardStandingNote || '').trim(),
   };
 }
 
 function getDirectoryProfiles(): CreatorRecord[] {
   return getStorage('approved', [])
     .map(normalizeCreatorRecord)
-    .filter(profile => String(profile.cesNumber || '').trim().length === 9);
+    .filter(profile => String(profile.cesNumber || '').trim().length === 9)
+    .filter(profile => profile.stewardStanding === 'active');
 }
 
 function getCreatorById(id: string | number): CreatorRecord | undefined {

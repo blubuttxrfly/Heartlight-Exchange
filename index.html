@@ -5004,7 +5004,29 @@
       <div class="charter-section">
         <div class="charter-section-title">Code Stewardship 🛡️</div>
         <div class="charter-body">
-          Code Stewards uphold the codes and mediates conflict resolution. For more support or to report a situation, direct message a being with the role of <span style="color:var(--orichalcum-light)">Code Steward</span> 🛡️ on the Atlas Island Discord.
+          Code Stewards uphold the codes and mediate conflict resolution. Code Stewards are able to access information from your C.E.S. Profile through a <span style="color:var(--orichalcum-light)">C.E.S. Audit</span>, which assures the sanctity of the Heartlight Exchange, the Codes of ALL, and the Privacy Assurance. You may create a <span style="color:var(--orichalcum-light)">Report Audit</span> explaining why the investigation is being opened. If a C.E.S. Profile Audit is opened, the affected being will be sent a notification with the results. It is greatly significant to review the Codes of ALL and the Privacy Assurance, as violations of these may result in long-term suspension and/or banning.
+        </div>
+        <div style="margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.65rem;align-items:center">
+          <button onclick="toggleAuditReportForm()" style="padding:0.52rem 1.2rem;border-radius:2rem;border:1px solid rgba(200,146,42,0.4);background:rgba(200,146,42,0.08);color:var(--orichalcum-light);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.74rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(200,146,42,0.16)'" onmouseout="this.style.background='rgba(200,146,42,0.08)'">Report Audit</button>
+          <div style="font-size:0.74rem;color:rgba(240,232,213,0.56);font-family:'Cormorant Garamond',serif;font-style:italic">For additional support, you may still direct message a being with the role of Code Steward on the Atlas Island Discord.</div>
+        </div>
+        <div id="auditReportFormPanel" style="display:none;margin-top:1rem;padding:1rem 1.05rem;border-radius:1rem;border:1px solid rgba(200,146,42,0.22);background:rgba(200,146,42,0.05)">
+          <div style="font-family:'Alice',serif;font-size:1rem;color:var(--orichalcum-pale);margin-bottom:0.25rem">Report Audit Intake</div>
+          <div style="font-size:0.8rem;line-height:1.7;color:rgba(240,232,213,0.72);margin-bottom:0.9rem">Use this form to notify Code Stewards why an investigation should be opened. Report Audits require a signed-in C.E.S. Profile.</div>
+          <div style="font-size:0.67rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(200,146,42,0.64);font-family:'Atkinson Hyperlegible',sans-serif;margin-bottom:0.35rem">Reporting C.E.S.</div>
+          <div id="auditReportReporter" style="font-size:0.82rem;color:rgba(240,232,213,0.82);margin-bottom:0.85rem">Sign into your C.E.S. Profile to file a Report Audit.</div>
+          <div style="display:grid;gap:0.75rem">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.75rem" class="field-grid-2">
+              <input id="auditTargetCESInput" class="field-input" type="text" maxlength="9" placeholder="Target 9-digit C.E.S. number" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+              <input id="auditTargetNameInput" class="field-input" type="text" placeholder="Target being name (optional)">
+            </div>
+            <textarea id="auditReasonInput" class="field-input" rows="5" placeholder="Explain why the investigation is being opened, including the behavior, concern, or violation that should be reviewed..."></textarea>
+          </div>
+          <div style="margin-top:0.85rem;display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+            <button id="auditReportSubmitBtn" onclick="submitAuditReport()" style="padding:0.55rem 1.25rem;border-radius:2rem;border:1px solid rgba(58,155,111,0.45);background:rgba(58,155,111,0.08);color:#7dd9a8;font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.74rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(58,155,111,0.18)'" onmouseout="this.style.background='rgba(58,155,111,0.08)'">Submit Report Audit</button>
+            <button onclick="toggleAuditReportForm(false)" style="padding:0.55rem 1.1rem;border-radius:2rem;border:1px solid rgba(255,255,255,0.12);background:transparent;color:rgba(240,232,213,0.45);font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.72rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.color='rgba(240,232,213,0.72)'" onmouseout="this.style.color='rgba(240,232,213,0.45)'">Close</button>
+          </div>
+          <div id="auditReportStatus" style="display:none;margin-top:0.7rem;font-size:0.8rem;font-family:'Atkinson Hyperlegible',sans-serif"></div>
         </div>
       </div>
 
@@ -5106,10 +5128,32 @@
             <div id="pendingCesChangeRequests"><!-- rendered --></div>
           </div>
 
-          <!-- Lockout Log -->
+          <div style="margin-bottom:2rem">
+            <div class="admin-section-title">🕯️ Report Audit Intake</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem;line-height:1.7">Reports submitted through Code Stewardship arrive here. Open a C.E.S. Audit when an investigation should proceed, or dismiss the report if no audit is needed.</div>
+            <div id="pendingAuditReports"><!-- rendered --></div>
+          </div>
+
+          <div style="margin-bottom:2rem">
+            <div class="admin-section-title">🛡️ C.E.S. Audits</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem;line-height:1.7">Open audits notify the affected C.E.S. Profile and preserve the reason the review was opened. Close the audit with findings to send the results and record the stewardship outcome.</div>
+            <div style="padding:0.9rem 1rem;border-radius:0.9rem;border:1px solid rgba(58,155,111,0.2);background:rgba(58,155,111,0.05);margin-bottom:1rem">
+              <div style="font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(125,217,168,0.72);margin-bottom:0.6rem">Open Manual C.E.S. Audit</div>
+              <div style="display:grid;gap:0.7rem">
+                <input type="text" id="manualAuditCesInput" class="field-input" placeholder="Target 9-digit C.E.S. number" maxlength="9" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                <textarea id="manualAuditReasonInput" class="field-input" rows="3" placeholder="Reason the manual C.E.S. Audit is being opened..."></textarea>
+              </div>
+              <div style="margin-top:0.75rem;display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center">
+                <button onclick="openManualCesAudit()" style="padding:0.55rem 1.2rem;border-radius:2rem;border:1px solid rgba(58,155,111,0.45);background:rgba(58,155,111,0.08);color:#7dd9a8;font-family:'Atkinson Hyperlegible',sans-serif;font-size:0.74rem;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.2s" onmouseover="this.style.background='rgba(58,155,111,0.18)'" onmouseout="this.style.background='rgba(58,155,111,0.08)'">Open Manual Audit</button>
+                <div id="manualAuditStatus" style="display:none;font-size:0.76rem;font-family:'Atkinson Hyperlegible',sans-serif"></div>
+              </div>
+            </div>
+            <div id="openCesAudits"><!-- rendered --></div>
+          </div>
+
           <div style="margin-bottom:2rem">
             <div class="admin-section-title">📋 Steward Activity Log</div>
-            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">Failed access attempts, profile updates, passphrase changes, and resolved C.E.S. number requests are recorded here.</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:0.85rem;color:rgba(240,232,213,0.4);margin-bottom:1rem">Failed access attempts, profile updates, passphrase changes, audit resolutions, and resolved C.E.S. number requests are recorded here.</div>
             <div id="securityLog"><!-- rendered --></div>
           </div>
 

@@ -359,6 +359,93 @@ function getSecurityLogEntries() {
   return getStorage('securityLog', []);
 }
 
+function buildProfileReference(profile = {}) {
+  return {
+    id: profile?.id || null,
+    cesNumber: String(profile?.cesNumber || '').trim() || null,
+  };
+}
+
+function findProfileByReference(reference = {}) {
+  return getAllCESProfiles()
+    .map(normalizeCreatorRecord)
+    .find(profile => profileMatchesReference(profile, reference)) || null;
+}
+
+function findProfileByCesNumber(cesNumber = '') {
+  const normalized = String(cesNumber || '').trim();
+  if (normalized.length !== 9) return null;
+  return getAllCESProfiles()
+    .map(normalizeCreatorRecord)
+    .find(profile => String(profile?.cesNumber || '').trim() === normalized) || null;
+}
+
+function getStandingFromAuditOutcome(outcome = '') {
+  const normalized = String(outcome || '').trim().toLowerCase();
+  if (normalized === 'long-term suspension') return 'suspended';
+  if (normalized === 'banning') return 'banned';
+  return 'active';
+}
+
+function getStandingLabel(standing = '') {
+  if (standing === 'suspended') return 'Long-term suspension';
+  if (standing === 'banned') return 'Banned from the Exchange';
+  return 'Active';
+}
+
+function createAuditNoticeAlert({
+  title = '',
+  message = '',
+  createdBy = 'Steward',
+  auditId = '',
+  auditStatus = 'opened',
+  auditOutcome = '',
+  auditStanding = 'active',
+} = {}) {
+  return {
+    id: `audit_notice_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    kind: 'audit_notice',
+    title: String(title || '').trim() || 'C.E.S. Profile Audit Notice',
+    message: String(message || '').trim(),
+    auditId: String(auditId || '').trim(),
+    auditStatus: auditStatus === 'closed' ? 'closed' : 'opened',
+    auditOutcome: String(auditOutcome || '').trim(),
+    auditStanding: ['suspended', 'banned'].includes(String(auditStanding || '').trim())
+      ? String(auditStanding || '').trim()
+      : 'active',
+    createdAt: new Date().toISOString(),
+    createdBy: String(createdBy || 'Steward').trim() || 'Steward',
+  };
+}
+
+function refreshCurrentUserStewardViews() {
+  renderSubmitStewardAlerts(getCurrentUser());
+  renderProfileCorner();
+  if (document.getElementById('profileModalOverlay')?.classList.contains('open')) {
+    openProfileModal();
+  }
+}
+
+function prependStewardAlertToProfile(profile, alert, extraUpdates = {}) {
+  if (!profile) return null;
+  const normalized = normalizeCreatorRecord(profile);
+  const updated = {
+    ...normalized,
+    ...extraUpdates,
+    stewardAlerts: [alert, ...(normalized.stewardAlerts || [])],
+    updatedAt: new Date().toISOString(),
+  };
+  replaceProfileAcrossCollections(updated);
+  refreshCurrentUserStewardViews();
+  return updated;
+}
+
+function prependStewardAlertByReference(reference = {}, alert, extraUpdates = {}) {
+  const profile = findProfileByReference(reference);
+  if (!profile) return null;
+  return prependStewardAlertToProfile(profile, alert, extraUpdates);
+}
+
 function getPendingCesChangeRequestForProfile(profile = {}) {
   return getSecurityLogEntries().find(entry =>
     entry?.type === 'ces_change_request' &&
@@ -3761,6 +3848,31 @@ function getStewardAlertCount(profile) {
   return Array.isArray(profile?.stewardAlerts) ? profile.stewardAlerts.length : 0;
 }
 
+function renderStewardAlertCard(alert = {}, compact = false) {
+  if (alert?.kind === 'audit_notice') {
+    const statusLabel = alert.auditStatus === 'closed' ? 'C.E.S. Audit Results' : 'C.E.S. Audit Opened';
+    const outcomeLine = alert.auditOutcome
+      ? `<div class="steward-alert-body" style="margin-top:${compact ? '0.35rem' : '0.5rem'};color:${alert.auditStanding === 'active' ? 'rgba(125,217,168,0.92)' : '#f3c16f'}">Outcome: ${escapeHtml(alert.auditOutcome)}</div>`
+      : '';
+    return `
+      <div class="steward-alert-card">
+        <div class="steward-alert-meta">${escapeHtml(alert.createdBy || 'Steward')} · ${escapeHtml(new Date(alert.createdAt).toLocaleString())}</div>
+        <div class="steward-alert-title">${escapeHtml(alert.title || statusLabel)}</div>
+        <div class="steward-alert-body">${escapeHtml(alert.message || 'A Code Steward has opened a C.E.S. Profile Audit.')}</div>
+        ${outcomeLine}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="steward-alert-card">
+      <div class="steward-alert-meta">${escapeHtml(alert.createdBy || 'Steward')} · ${escapeHtml(new Date(alert.createdAt).toLocaleString())}</div>
+      <div class="steward-alert-title">Removed media: ${escapeHtml(alert.mediaLabel || 'Portfolio item')}</div>
+      <div class="steward-alert-body">${escapeHtml(alert.message || 'A steward removed one of your portfolio uploads.')}</div>
+    </div>
+  `;
+}
+
 function renderStewardAlertsSection(profile) {
   const alerts = Array.isArray(profile?.stewardAlerts) ? profile.stewardAlerts : [];
   if (!alerts.length) return '';
@@ -3768,13 +3880,7 @@ function renderStewardAlertsSection(profile) {
     <div class="profile-modal-section">
       <div class="profile-modal-label">Steward Alerts</div>
       <div class="steward-alert-stack">
-        ${alerts.map(alert => `
-          <div class="steward-alert-card">
-            <div class="steward-alert-meta">${escapeHtml(alert.createdBy || 'Steward')} · ${escapeHtml(new Date(alert.createdAt).toLocaleString())}</div>
-            <div class="steward-alert-title">Removed media: ${escapeHtml(alert.mediaLabel || 'Portfolio item')}</div>
-            <div class="steward-alert-body">${escapeHtml(alert.message || 'A steward removed one of your portfolio uploads.')}</div>
-          </div>
-        `).join('')}
+        ${alerts.map(alert => renderStewardAlertCard(alert)).join('')}
       </div>
     </div>
   `;
@@ -3785,7 +3891,9 @@ function renderSubmitStewardAlerts(profile) {
   if (!container) return;
   const alerts = Array.isArray(profile?.stewardAlerts) ? profile.stewardAlerts : [];
   const pendingCesChange = profile ? getPendingCesChangeRequestForProfile(profile) : null;
-  if (!alerts.length && !pendingCesChange) {
+  const auditAlerts = alerts.filter(alert => alert?.kind === 'audit_notice').slice(0, 2);
+  const hasMediaAlerts = alerts.some(alert => alert?.kind === 'media_removed');
+  if (!pendingCesChange && !auditAlerts.length && !hasMediaAlerts) {
     container.innerHTML = '';
     return;
   }
@@ -3797,7 +3905,8 @@ function renderSubmitStewardAlerts(profile) {
         <div class="steward-alert-body">This requested C.E.S. number is available and has been sent to the Stewards. Your active profile still holds ${escapeHtml(pendingCesChange.currentCesNumber || 'your current number')} until approval.</div>
       </div>
     ` : '',
-    alerts.length ? `
+    ...auditAlerts.map(alert => renderStewardAlertCard(alert, true)),
+    hasMediaAlerts ? `
       <div class="steward-alert-card">
         <div class="steward-alert-meta">Steward Review Notice</div>
         <div class="steward-alert-title">Your portfolio has review updates.</div>
@@ -3839,6 +3948,7 @@ function renderProfileCorner() {
         <button class="join-corner-btn profile-secondary-btn" onclick="openSignIn()">Sign In</button>
       </div>`;
   }
+  updateAuditReportFormState();
   renderCharterFlowActions();
 }
 
@@ -3993,7 +4103,11 @@ function openProfileModal() {
   const statusReturned = returned.find(s => s.id === user.id);
 
   let statusLabel = '';
-  if (statusInApproved) {
+  if (submission.stewardStanding === 'banned') {
+    statusLabel = `<span style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;font-family:'Atkinson Hyperlegible',sans-serif;color:#e8a0a0">⛔ Banned from the Exchange</span>`;
+  } else if (submission.stewardStanding === 'suspended') {
+    statusLabel = `<span style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;font-family:'Atkinson Hyperlegible',sans-serif;color:#f3c16f">🛑 Long-term suspension</span>`;
+  } else if (statusInApproved) {
     statusLabel = `<span class="admin-tag admin-tag-approved">✦ Active in Directory</span>`;
   } else if (statusInPending) {
     statusLabel = `<span class="admin-tag admin-tag-pending">⏳ Awaiting Steward Review</span>`;
@@ -4036,6 +4150,10 @@ function openProfileModal() {
       <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.3rem">${submission.offerings.map(o=>`<span style="padding:0.2rem 0.65rem;border-radius:2rem;font-size:0.72rem;border:1px solid rgba(200,146,42,0.3);color:var(--orichalcum);font-family:'Atkinson Hyperlegible',sans-serif">${escapeHtml(o)}</span>`).join('')}</div>
     </div>` : ''}
     ${renderStewardAlertsSection(submission)}
+    ${submission.stewardStanding !== 'active' && submission.stewardStandingNote ? `<div class="profile-modal-section">
+      <div class="profile-modal-label">Steward Standing</div>
+      <div class="profile-modal-value">${escapeHtml(submission.stewardStandingNote)}</div>
+    </div>` : ''}
     ${pendingCesChange ? `<div class="profile-modal-section">
       <div class="profile-modal-label">Pending C.E.S. Number Change</div>
       <div class="profile-modal-value">Requested change: ${escapeHtml(pendingCesChange.currentCesNumber || '—')} → ${escapeHtml(pendingCesChange.requestedCesNumber || '—')}. Your approved sign-in number remains ${escapeHtml(pendingCesChange.currentCesNumber || submission.cesNumber || 'unchanged')} until a Steward approves this request.</div>
@@ -4374,6 +4492,7 @@ function adminCardHTML(profile, actions) {
           <div class="admin-card-name">${profile.name}</div>
           <div class="admin-card-ray">${profile.primaryRay||'Ray unspecified'} ${profile.rays&&profile.rays.length>1?'+ '+(profile.rays.length-1)+' more':''}</div>
           ${profile.cesNumber ? `<div style="font-size:0.62rem;letter-spacing:0.12em;color:rgba(200,146,42,0.4);font-family:'Atkinson Hyperlegible',sans-serif;margin-top:0.15rem">C.E.S. ${profile.cesNumber}</div>` : ''}
+          ${profile.stewardStanding && profile.stewardStanding !== 'active' ? `<div style="font-size:0.62rem;letter-spacing:0.12em;color:${profile.stewardStanding === 'banned' ? '#e8a0a0' : '#f3c16f'};font-family:'Atkinson Hyperlegible',sans-serif;margin-top:0.2rem">${profile.stewardStanding === 'banned' ? 'Banned from Exchange' : 'Long-term suspension'}</div>` : ''}
         </div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -4854,9 +4973,415 @@ function createCesChangeRequestLogEntry(profile, requestedCesNumber) {
   };
 }
 
+const AUDIT_OUTCOME_OPTIONS = [
+  'No confirmed violations',
+  'Guidance shared',
+  'Long-term suspension',
+  'Banning',
+];
+
+function getPendingAuditReports() {
+  return getSecurityLogEntries().filter(entry => entry?.type === 'audit_report' && entry?.status === 'pending');
+}
+
+function getOpenCesAudits() {
+  return getSecurityLogEntries().filter(entry => entry?.type === 'ces_audit' && entry?.status === 'opened');
+}
+
+function hasOpenAuditForProfile(profile = {}) {
+  const profileRef = buildProfileReference(profile);
+  return getOpenCesAudits().some(entry => profileMatchesReference(entry?.profileRef || {}, profileRef));
+}
+
+function updateAuditReportFormState() {
+  const summary = document.getElementById('auditReportReporter');
+  const submitBtn = document.getElementById('auditReportSubmitBtn');
+  const user = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
+  if (summary) {
+    summary.innerHTML = user
+      ? `<strong style="color:var(--orichalcum-pale)">${escapeHtml(user.name || 'Signed-in being')}</strong>${user.cesNumber ? ` · C.E.S. ${escapeHtml(user.cesNumber)}` : ''}`
+      : 'Sign into your C.E.S. Profile to file a Report Audit.';
+  }
+  if (submitBtn) {
+    submitBtn.textContent = user ? 'Submit Report Audit' : 'Sign In To Report Audit';
+  }
+}
+
+function toggleAuditReportForm(forceOpen = null) {
+  const panel = document.getElementById('auditReportFormPanel');
+  if (!panel) return;
+  const nextOpen = typeof forceOpen === 'boolean' ? forceOpen : panel.style.display !== 'block';
+  panel.style.display = nextOpen ? 'block' : 'none';
+  updateAuditReportFormState();
+  if (nextOpen) {
+    setTimeout(() => {
+      const input = document.getElementById('auditTargetCESInput');
+      if (input) input.focus();
+    }, 60);
+  }
+}
+
+function createAuditReportLogEntry(reporter, targetProfile, targetName, reason) {
+  return {
+    id: 'audit_report_' + Date.now(),
+    type: 'audit_report',
+    status: 'pending',
+    timestamp: new Date().toISOString(),
+    message: `${reporter?.name || 'A being'} submitted a Report Audit for C.E.S. ${targetProfile?.cesNumber || '—'}.`,
+    reporterName: reporter?.name || 'Unknown Being',
+    reporterCes: String(reporter?.cesNumber || '').trim(),
+    reporterProfileRef: buildProfileReference(reporter),
+    targetName: String(targetName || targetProfile?.name || '').trim(),
+    targetCesNumber: String(targetProfile?.cesNumber || '').trim(),
+    targetProfileRef: buildProfileReference(targetProfile),
+    reason: String(reason || '').trim(),
+    resolvedAt: null,
+    resolvedBy: '',
+    openedAuditId: '',
+  };
+}
+
+async function submitAuditReport() {
+  await hydrateStorageFromRemote();
+  const user = getCurrentUser() ? normalizeCreatorRecord(getCurrentUser()) : null;
+  const msg = document.getElementById('auditReportStatus');
+  const targetInput = document.getElementById('auditTargetCESInput');
+  const nameInput = document.getElementById('auditTargetNameInput');
+  const reasonInput = document.getElementById('auditReasonInput');
+
+  const setMsg = (text, color) => {
+    if (!msg) return;
+    msg.style.display = 'block';
+    msg.style.color = color;
+    msg.textContent = text;
+  };
+
+  if (!user || !user.cesNumber) {
+    setMsg('Sign into your C.E.S. Profile before submitting a Report Audit.', '#f3c16f');
+    openSignIn();
+    return;
+  }
+
+  const targetCes = String(targetInput?.value || '').trim();
+  const targetName = String(nameInput?.value || '').trim();
+  const reason = String(reasonInput?.value || '').trim();
+
+  if (!/^\d{9}$/.test(targetCes)) {
+    setMsg('Enter the 9-digit C.E.S. number for the profile you are reporting.', '#e8a0a0');
+    return;
+  }
+  if (targetCes === String(user.cesNumber || '').trim()) {
+    setMsg('A Report Audit cannot be opened against your own active C.E.S. Profile.', '#e8a0a0');
+    return;
+  }
+  if (reason.length < 24) {
+    setMsg('Please explain why the investigation is being opened with at least a few clear sentences.', '#e8a0a0');
+    return;
+  }
+
+  const targetProfile = findProfileByCesNumber(targetCes);
+  if (!targetProfile) {
+    setMsg('No C.E.S. Profile was found for that number. Review the number and try again.', '#e8a0a0');
+    return;
+  }
+
+  const log = getSecurityLogEntries();
+  log.unshift(createAuditReportLogEntry(user, targetProfile, targetName, reason));
+  setStorage('securityLog', log);
+
+  if (targetInput) targetInput.value = '';
+  if (nameInput) nameInput.value = '';
+  if (reasonInput) reasonInput.value = '';
+  setMsg('Your Report Audit has been sent to the Code Stewards for review.', '#7dd9a8');
+  renderSecuritySettings();
+}
+
+function createCesAuditLogEntry({ targetProfile, reason = '', sourceReport = null } = {}) {
+  return {
+    id: 'ces_audit_' + Date.now(),
+    type: 'ces_audit',
+    status: 'opened',
+    timestamp: new Date().toISOString(),
+    openedAt: new Date().toISOString(),
+    openedBy: getActiveStewardName(),
+    stewardName: getActiveStewardName(),
+    profileRef: buildProfileReference(targetProfile),
+    targetName: String(targetProfile?.name || '').trim(),
+    targetCesNumber: String(targetProfile?.cesNumber || '').trim(),
+    reason: String(reason || '').trim(),
+    sourceReportId: String(sourceReport?.id || '').trim(),
+    reporterName: String(sourceReport?.reporterName || '').trim(),
+    reporterCes: String(sourceReport?.reporterCes || '').trim(),
+    findings: '',
+    outcome: '',
+    actionTaken: '',
+    message: `C.E.S. Audit opened for ${targetProfile?.name || 'a being'} (${targetProfile?.cesNumber || '—'}).`,
+    resolvedAt: null,
+    resolvedBy: '',
+  };
+}
+
+function openCesAuditFromReport(reportId) {
+  const log = getSecurityLogEntries();
+  const reportIndex = log.findIndex(entry => String(entry?.id) === String(reportId));
+  if (reportIndex < 0) return;
+  const report = log[reportIndex];
+  if (report?.type !== 'audit_report' || report?.status !== 'pending') return;
+
+  const targetProfile = findProfileByReference(report.targetProfileRef || {}) || findProfileByCesNumber(report.targetCesNumber || '');
+  if (!targetProfile) {
+    alert('That reported C.E.S. Profile could not be found.');
+    return;
+  }
+  if (hasOpenAuditForProfile(targetProfile)) {
+    alert('A C.E.S. Audit is already open for this profile.');
+    return;
+  }
+
+  const auditEntry = createCesAuditLogEntry({
+    targetProfile,
+    reason: report.reason || '',
+    sourceReport: report,
+  });
+
+  log.unshift(auditEntry);
+  log[reportIndex + 1] = {
+    ...report,
+    status: 'opened',
+    openedAuditId: auditEntry.id,
+    resolvedAt: new Date().toISOString(),
+    resolvedBy: getActiveStewardName(),
+    message: `Report Audit advanced into a C.E.S. Audit for C.E.S. ${targetProfile.cesNumber || '—'}.`,
+  };
+  setStorage('securityLog', log);
+
+  prependStewardAlertToProfile(targetProfile, createAuditNoticeAlert({
+    title: 'C.E.S. Profile Audit Opened',
+    message: 'A Code Steward has opened a C.E.S. Profile Audit to assure the sanctity of the Heartlight Exchange, Codes of ALL, and Privacy Assurance. You will receive the results here when the review is complete.',
+    createdBy: getActiveStewardName(),
+    auditId: auditEntry.id,
+    auditStatus: 'opened',
+  }));
+
+  renderSecuritySettings();
+}
+
+function openManualCesAudit() {
+  const cesInput = document.getElementById('manualAuditCesInput');
+  const reasonInput = document.getElementById('manualAuditReasonInput');
+  const msg = document.getElementById('manualAuditStatus');
+  const targetCes = String(cesInput?.value || '').trim();
+  const reason = String(reasonInput?.value || '').trim();
+
+  const setMsg = (text, color) => {
+    if (!msg) return;
+    msg.style.display = 'block';
+    msg.style.color = color;
+    msg.textContent = text;
+  };
+
+  if (!/^\d{9}$/.test(targetCes)) {
+    setMsg('Enter the 9-digit C.E.S. number for the audit target.', '#e8a0a0');
+    return;
+  }
+  if (reason.length < 18) {
+    setMsg('Please include the reason this manual C.E.S. Audit is being opened.', '#e8a0a0');
+    return;
+  }
+
+  const targetProfile = findProfileByCesNumber(targetCes);
+  if (!targetProfile) {
+    setMsg('No C.E.S. Profile was found for that number.', '#e8a0a0');
+    return;
+  }
+  if (hasOpenAuditForProfile(targetProfile)) {
+    setMsg('A C.E.S. Audit is already open for that profile.', '#f3c16f');
+    return;
+  }
+
+  const log = getSecurityLogEntries();
+  const auditEntry = createCesAuditLogEntry({ targetProfile, reason });
+  log.unshift(auditEntry);
+  setStorage('securityLog', log);
+
+  prependStewardAlertToProfile(targetProfile, createAuditNoticeAlert({
+    title: 'C.E.S. Profile Audit Opened',
+    message: 'A Code Steward has opened a C.E.S. Profile Audit to assure the sanctity of the Heartlight Exchange, Codes of ALL, and Privacy Assurance. You will receive the results here when the review is complete.',
+    createdBy: getActiveStewardName(),
+    auditId: auditEntry.id,
+    auditStatus: 'opened',
+  }));
+
+  if (cesInput) cesInput.value = '';
+  if (reasonInput) reasonInput.value = '';
+  setMsg('Manual C.E.S. Audit opened and the affected profile has been notified.', '#7dd9a8');
+  renderSecuritySettings();
+}
+
+function closeCesAudit(auditId) {
+  const findingsInput = document.getElementById(`audit_findings_${auditId}`);
+  const actionInput = document.getElementById(`audit_action_${auditId}`);
+  const outcomeInput = document.getElementById(`audit_outcome_${auditId}`);
+  const findings = String(findingsInput?.value || '').trim();
+  const actionTaken = String(actionInput?.value || '').trim();
+  const outcome = String(outcomeInput?.value || '').trim();
+
+  if (findings.length < 18) {
+    alert('Please record the audit findings before closing the C.E.S. Audit.');
+    return;
+  }
+
+  const log = getSecurityLogEntries();
+  const auditIndex = log.findIndex(entry => String(entry?.id) === String(auditId));
+  if (auditIndex < 0) return;
+  const audit = log[auditIndex];
+  if (audit?.type !== 'ces_audit' || audit?.status !== 'opened') return;
+
+  const now = new Date().toISOString();
+  const targetProfile = findProfileByReference(audit.profileRef || {}) || findProfileByCesNumber(audit.targetCesNumber || '');
+  const standing = getStandingFromAuditOutcome(outcome);
+  const standingNote = standing === 'active'
+    ? ''
+    : `${getStandingLabel(standing)} set by ${getActiveStewardName()}. ${actionTaken || findings}`;
+
+  log[auditIndex] = {
+    ...audit,
+    status: 'closed',
+    findings,
+    outcome,
+    actionTaken,
+    resolvedAt: now,
+    resolvedBy: getActiveStewardName(),
+    message: `C.E.S. Audit closed for ${audit.targetName || 'a being'} (${audit.targetCesNumber || '—'}).`,
+  };
+
+  if (audit.sourceReportId) {
+    const reportIndex = log.findIndex(entry => String(entry?.id) === String(audit.sourceReportId));
+    if (reportIndex > -1) {
+      log[reportIndex] = {
+        ...log[reportIndex],
+        status: 'closed',
+        resolvedAt: now,
+        resolvedBy: getActiveStewardName(),
+        message: `Report Audit resolved for C.E.S. ${audit.targetCesNumber || '—'}.`,
+      };
+    }
+  }
+
+  setStorage('securityLog', log);
+
+  if (targetProfile) {
+    prependStewardAlertToProfile(targetProfile, createAuditNoticeAlert({
+      title: 'C.E.S. Profile Audit Results',
+      message: `${findings}${actionTaken ? ` Action taken: ${actionTaken}` : ''}`,
+      createdBy: getActiveStewardName(),
+      auditId,
+      auditStatus: 'closed',
+      auditOutcome: outcome,
+      auditStanding: standing,
+    }), {
+      stewardStanding: standing,
+      stewardStandingNote: standingNote,
+    });
+  }
+
+  renderSecuritySettings();
+  renderPendingList();
+  renderApprovedList();
+  renderReturnedList();
+  renderDirectory();
+}
+
+function dismissAuditReport(reportId) {
+  const log = getSecurityLogEntries();
+  const reportIndex = log.findIndex(entry => String(entry?.id) === String(reportId));
+  if (reportIndex < 0) return;
+  const report = log[reportIndex];
+  if (report?.type !== 'audit_report' || report?.status !== 'pending') return;
+  if (!confirm('Dismiss this Report Audit without opening a C.E.S. Audit?')) return;
+
+  log[reportIndex] = {
+    ...report,
+    status: 'dismissed',
+    resolvedAt: new Date().toISOString(),
+    resolvedBy: getActiveStewardName(),
+    message: `Report Audit dismissed for C.E.S. ${report.targetCesNumber || '—'}.`,
+  };
+  setStorage('securityLog', log);
+  renderSecuritySettings();
+}
+
+function renderPendingAuditReports() {
+  const el = document.getElementById('pendingAuditReports');
+  if (!el) return;
+  const reports = getPendingAuditReports();
+  if (!reports.length) {
+    el.innerHTML = '<div class="admin-empty" style="padding:1rem">No Report Audit requests are awaiting stewardship.</div>';
+    return;
+  }
+  el.innerHTML = reports.map(report => {
+    const targetProfile = findProfileByReference(report.targetProfileRef || {}) || findProfileByCesNumber(report.targetCesNumber || '');
+    const auditAlreadyOpen = !!(targetProfile && hasOpenAuditForProfile(targetProfile));
+    return `<div style="padding:1rem 1.05rem;border-radius:0.8rem;border:1px solid rgba(200,146,42,0.22);background:rgba(200,146,42,0.05);margin-bottom:0.75rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <div style="font-family:'Alice',serif;font-size:0.96rem;color:var(--cream);margin-bottom:0.3rem">${escapeHtml(report.reporterName || 'Unknown being')} filed a Report Audit</div>
+          <div style="font-size:0.72rem;color:rgba(240,232,213,0.72);font-family:'Atkinson Hyperlegible',sans-serif;line-height:1.65">
+            Reporter C.E.S.: ${escapeHtml(report.reporterCes || '—')}<br>
+            Target C.E.S.: ${escapeHtml(report.targetCesNumber || '—')} ${report.targetName ? `· ${escapeHtml(report.targetName)}` : ''}<br>
+            ${targetProfile ? `Target profile found: ${escapeHtml(targetProfile.name || 'Unnamed being')}` : '<span style="color:#e8a0a0">Target profile could not be found.</span>'}
+          </div>
+          <div style="margin-top:0.65rem;padding:0.7rem 0.85rem;border-radius:0.65rem;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);font-size:0.8rem;line-height:1.7;color:rgba(240,232,213,0.84)">${escapeHtml(report.reason || '')}</div>
+        </div>
+        <div style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+          ${targetProfile && !auditAlreadyOpen ? `<button class="admin-btn-accept" onclick="openCesAuditFromReport('${report.id}')">Open C.E.S. Audit</button>` : ''}
+          ${auditAlreadyOpen ? `<div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:#f3c16f;font-family:'Atkinson Hyperlegible',sans-serif">Audit already open</div>` : ''}
+          <button class="admin-btn-return" onclick="dismissAuditReport('${report.id}')">Dismiss</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderOpenCesAudits() {
+  const el = document.getElementById('openCesAudits');
+  if (!el) return;
+  const audits = getOpenCesAudits();
+  if (!audits.length) {
+    el.innerHTML = '<div class="admin-empty" style="padding:1rem">No active C.E.S. Audits are open.</div>';
+    return;
+  }
+  el.innerHTML = audits.map(audit => `
+    <div style="padding:1rem 1.05rem;border-radius:0.9rem;border:1px solid rgba(58,155,111,0.24);background:rgba(58,155,111,0.06);margin-bottom:0.8rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:0.7rem">
+        <div>
+          <div style="font-family:'Alice',serif;font-size:0.98rem;color:var(--cream);margin-bottom:0.24rem">${escapeHtml(audit.targetName || 'Unknown being')} · C.E.S. ${escapeHtml(audit.targetCesNumber || '—')}</div>
+          <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:#7dd9a8;font-family:'Atkinson Hyperlegible',sans-serif">Opened by ${escapeHtml(audit.openedBy || audit.stewardName || 'Steward')} · ${escapeHtml(new Date(audit.openedAt || audit.timestamp).toLocaleString())}</div>
+        </div>
+        <div style="font-size:0.7rem;color:rgba(240,232,213,0.52);font-family:'Atkinson Hyperlegible',sans-serif;text-align:right">${audit.sourceReportId ? 'Origin: Report Audit' : 'Origin: Manual C.E.S. Audit'}</div>
+      </div>
+      <div style="margin-bottom:0.8rem;padding:0.7rem 0.85rem;border-radius:0.65rem;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);font-size:0.8rem;line-height:1.7;color:rgba(240,232,213,0.84)">${escapeHtml(audit.reason || '')}</div>
+      <div style="display:grid;gap:0.7rem">
+        <textarea id="audit_findings_${audit.id}" class="field-input" rows="4" placeholder="Audit findings and what the review confirmed..."></textarea>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0.7rem" class="field-grid-2">
+          <input id="audit_action_${audit.id}" class="field-input" type="text" placeholder="Action taken, guidance given, or next steps">
+          <select id="audit_outcome_${audit.id}" class="field-input" style="background:rgba(15,12,25,0.9)">
+            ${AUDIT_OUTCOME_OPTIONS.map(option => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:0.8rem;display:flex;justify-content:flex-end">
+        <button class="admin-btn-accept" onclick="closeCesAudit('${audit.id}')">Close Audit & Send Results</button>
+      </div>
+    </div>
+  `).join('');
+}
+
 function renderSecuritySettings() {
   renderAuthorizedList();
   renderPendingCesChangeRequests();
+  renderPendingAuditReports();
+  renderOpenCesAudits();
   renderSecurityLog();
 }
 
@@ -5035,7 +5560,11 @@ function saveEditPassphrase(i) {
 function renderSecurityLog() {
   const el = document.getElementById('securityLog');
   if (!el) return;
-  const log = getStorage('securityLog', []).filter(entry => !(entry?.type === 'ces_change_request' && entry?.status === 'pending'));
+  const log = getStorage('securityLog', []).filter(entry => !(
+    (entry?.type === 'ces_change_request' && entry?.status === 'pending') ||
+    (entry?.type === 'audit_report' && entry?.status === 'pending') ||
+    (entry?.type === 'ces_audit' && entry?.status === 'opened')
+  ));
   if (!log.length) {
     el.innerHTML = '<div class="admin-empty" style="padding:1rem">The field is clear. No Steward activity has been recorded.</div>';
     return;
@@ -5046,6 +5575,10 @@ function renderSecurityLog() {
       ? `Updated fields: ${entry.changes.join(', ')}`
       : entry?.type === 'ces_change_request'
         ? `C.E.S. change ${entry.status === 'approved' ? 'approved' : 'declined'} · ${entry.currentCesNumber || '—'} → ${entry.requestedCesNumber || '—'}${entry.resolvedBy ? ` · ${entry.resolvedBy}` : ''}`
+        : entry?.type === 'audit_report'
+          ? `Report Audit ${entry.status || 'recorded'} · target C.E.S. ${entry.targetCesNumber || '—'}${entry.resolvedBy ? ` · ${entry.resolvedBy}` : ''}`
+          : entry?.type === 'ces_audit'
+            ? `C.E.S. Audit ${entry.status || 'closed'} · ${entry.targetCesNumber || '—'} · ${entry.outcome || 'Outcome not recorded'}${entry.resolvedBy ? ` · ${entry.resolvedBy}` : ''}`
         : `CES: ${entry.cesEncrypted} &nbsp;·&nbsp; ${entry.stewardName}`;
     return `<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:0.7rem 1rem;border-radius:0.65rem;background:rgba(201,64,64,0.04);border:1px solid rgba(201,64,64,0.15);margin-bottom:0.45rem;gap:1rem">
       <div>
